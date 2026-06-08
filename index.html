@@ -262,5 +262,27 @@
     })();
 
   </script>
-</body>
+<!-- Script para carregar ofertas do GitHub para o site automaticamente -->
+<script>
+async function carregarOfertasDoGithub() {
+    try {
+        const response = await fetch('/data/offers.json', { cache: 'no-cache' });
+        if (response.ok) {
+            const ofertasNovas = await response.json();
+            // Salva no LocalStorage para o site ler
+            localStorage.setItem('offers', JSON.stringify(ofertasNovas));
+            console.log('Ofertas atualizadas do GitHub com sucesso!');
+            
+            // Se a página estiver vazia, recarrega para mostrar os produtos
+            if (document.body.innerText.includes("Nenhuma oferta encontrada")) {
+                location.reload();
+            }
+        }
+    } catch (erro) {
+        console.error('Erro ao buscar ofertas:', erro);
+    }
+}
+// Executa o carregamento assim que a página abre
+carregarOfertasDoGithub();
+</script> </body>
 </html>
