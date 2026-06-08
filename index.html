@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Central de Ofertas - As Melhores Ofertas da Internet</title>
+    <meta name="description" content="Descontos atualizados diariamente nas maiores lojas do Brasil. Amazon, Mercado Livre, Shopee e mais.">
+    <script src="https://cdn.tailwindcss.com/"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'DM Sans', sans-serif; scroll-behavior: smooth; }
+        .pulse-btn { animation: pulse-scale 2s infinite; }
+        @keyframes pulse-scale {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .gradient-fire { 
+            background: linear-gradient(135deg, #FF4D00, #FF8C00, #FF0000); 
+            background-size: 200% 200%; 
+            animation: fire 4s ease infinite; 
+        }
+        @keyframes fire { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+        
+        .card-offer { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-offer:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        
+        .admin-panel { display: none; }
+        .admin-panel.active { display: flex; }
+
+        /* Esconder scrollbar do painel admin */
+        #admin-list::-webkit-scrollbar { width: 4px; }
+        #admin-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+    <!-- Nav -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 text-orange-600 font-bold text-2xl">
+                <i data-lucide="zap"></i>
+                <span>OfertasVip</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="#vip" class="hidden md:block text-sm font-semibold text-gray-600 hover:text-orange-600">Grupo VIP</a>
+                <button id="admin-toggle" class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors">
+                    <i data-lucide="user-cog" class="w-5 h-5 text-gray-700"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative bg-neutral-900 py-20 px-4 text-center text-white overflow-hidden">
+            <div class="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80')] bg-cover bg-center"></div>
+            <div class="relative z-10 max-w-4xl mx-auto">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">Economize de verdade com as <span class="text-orange-500">melhores ofertas</span></h1>
+                <p class="text-lg md:text-xl text-gray-300 mb-10">Curadoria diária dos maiores descontos da Amazon, Shopee e Mercado Livre.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#ofertas" class="pulse-btn bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl inline-flex items-center gap-2">
+                        Ver Ofertas <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                    </a>
+                    <a href="#vip" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-full font-bold text-lg inline-flex items-center gap-2">
+                        Entrar no VIP <i data-lucide="users" class="w-5 h-5"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Flash Sale -->
+        <section class="max-w-6xl mx-auto px-4 -mt-10 mb-12 relative z-20">
+            <div class="gradient-fire rounded-3xl p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 text-white text-center md:text-left">
+                <div>
+                    <h2 class="text-2xl font-black uppercase tracking-widest">Ofertas Relâmpago</h2>
+                    <p class="opacity-90 font-medium">Os preços sobem quando o cronômetro zerar!</p>
+                </div>
+                <div id="countdown" class="flex gap-4">
+                    <div class="bg-black/20 backdrop-blur-md rounded-xl p-3 min-w-[70px]">
+                        <span id="hours" class="block text-3xl font-bold font-mono">00</span>
+                        <span class="text-[10px] uppercase font-bold opacity-70">Horas</span>
+                    </div>
+                    <div class="bg-black/20 backdrop-blur-md rounded-xl p-3 min-w-[70px]">
+                        <span id="minutes" class="block text-3xl font-bold font-mono">00</span>
+                        <span class="text-[10px] uppercase font-bold opacity-70">Min</span>
+                    </div>
+                    <div class="bg-black/20 backdrop-blur-md rounded-xl p-3 min-w-[70px]">
+                        <span id="seconds" class="block text-3xl font-bold font-mono">00</span>
+                        <span class="text-[10px] uppercase font-bold opacity-70">Seg</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Ofertas Grid -->
+        <section id="ofertas" class="max-w-7xl mx-auto px-4 py-8">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-2xl font-bold text-gray-800">Ofertas em Destaque</h2>
+                <div class="h-1 flex-1 mx-6 bg-gray-200 rounded-full hidden md:block"></div>
+            </div>
+            
+            <div id="offers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Ofertas serão inseridas aqui via JS -->
+            </div>
+
+            <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 mt-6">
+                <i data-lucide="shopping-bag" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
+                <p class="text-gray-500 font-medium text-lg">Nenhuma oferta cadastrada ainda.</p>
+            </div>
+        </section>
+
+        <!-- VIP Section -->
+        <section id="vip" class="bg-orange-50 py-20 px-4 mt-20">
+            <div class="max-w-3xl mx-auto text-center">
+                <span class="bg-orange-100 text-orange-700 font-bold px-4 py-1 rounded-full text-sm uppercase tracking-widest mb-4 inline-block">Grupos de Descontos</span>
+                <h2 class="text-4xl font-extrabold text-gray-900 mb-6">Receba as ofertas no seu celular</h2>
+                <p class="text-gray-600 text-lg mb-10">Participe dos nossos grupos e receba em primeira mão bugs de preços e promoções exclusivas.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="#" class="bg-[#25D366] hover:bg-[#1ebd5b] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 transition-transform hover:scale-105">
+                        <i data-lucide="message-circle" class="w-6 h-6"></i> WhatsApp
+                    </a>
+                    <a href="#" class="bg-[#0088CC] hover:bg-[#0077b3] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 transition-transform hover:scale-105">
+                        <i data-lucide="send" class="w-6 h-6"></i> Telegram
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 py-12 px-4 text-center">
+        <p class="text-gray-500 text-sm">© 2026 Central de Ofertas. Alguns links podem conter comissão de afiliado.</p>
+    </footer>
+
+    <!-- Admin Modal -->
+    <div id="admin-panel" class="admin-panel fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+            <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50">
+                <h3 class="font-bold text-xl text-gray-800">Gerenciar Ofertas</h3>
+                <button id="admin-close" class="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 max-h-[80vh] overflow-y-auto">
+                <form id="offer-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Nome do Produto</label>
+                            <input id="f-name" type="text" required class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Preço Antigo (Ex: 199.90)</label>
+                            <input id="f-original" type="number" step="0.01" required class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Preço Atual</label>
+                            <input id="f-promo" type="number" step="0.01" required class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Link de Afiliado</label>
+                            <input id="f-link" type="url" required placeholder="https://..." class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">URL da Imagem</label>
+                            <input id="f-image" type="url" placeholder="https://..." class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
+                        </div>
+                    </div>
+                    <button type="submit" id="submit-btn" class="w-full py-4 bg-orange-600 text-white font-bold rounded-2xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-200">
+                        Salvar Oferta
+                    </button>
+                </form>
+
+                <div class="mt-10">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Ofertas Atuais</h4>
+                    <div id="admin-list" class="space-y-2">
+                        <!-- Itens admin via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Lógica de Dados (Simulada com LocalStorage) ---
+        let allOffers = JSON.parse(localStorage.getItem('minhas_ofertas')) || [];
+        let editingId = null;
+
+        function saveToStorage() {
+            localStorage.setItem('minhas_ofertas', JSON.stringify(allOffers));
+            renderOffers();
+            renderAdminList();
+        }
+
+        // --- Renderização do Site ---
+        function renderOffers() {
+            const grid = document.getElementById('offers-grid');
+            const emptyState = document.getElementById('empty-state');
+            grid.innerHTML = '';
+            
+            if (allOffers.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            allOffers.forEach((item, index) => {
+                const discount = Math.round(((item.original_price - item.promotional_price) / item.original_price) * 100);
+                const card = `
+                    <div class="card-offer bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col">
+                        <div class="relative h-48 bg-white p-6 flex items-center justify-center">
+                            <span class="absolute top-3 left-3 bg-green-500 text-white text-[10px] font-black px-2 py-1 rounded-md">-${discount}% OFF</span>
+                            <img src="${item.image_url || 'https://via.placeholder.com/200'}" class="max-h-full object-contain" alt="Produto">
+                        </div>
+                        <div class="p-5 flex-1 flex flex-col border-t border-gray-50">
+                            <h3 class="text-sm font-bold text-gray-800 line-clamp-2 h-10 mb-4">${item.product_name}</h3>
+                            <div class="mt-auto">
+                                <p class="text-xs text-gray-400 line-through">R$ ${Number(item.original_price).toFixed(2).replace('.', ',')}</p>
+                                <div class="flex items-baseline gap-1 pt-1">
+                                    <span class="text-sm font-bold text-orange-600">R$</span>
+                                    <span class="text-2xl font-black text-orange-600">${Number(item.promotional_price).toFixed(2).replace('.', ',')}</span>
+                                </div>
+                                <a href="${item.affiliate_link}" target="_blank" class="block w-full mt-4 text-center py-3 bg-neutral-900 text-white text-xs font-bold rounded-xl hover:bg-orange-600 transition-colors uppercase tracking-widest">
+                                    Resgatar Oferta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        // --- Lógica do Painel Admin ---
+        const adminPanel = document.getElementById('admin-panel');
+        document.getElementById('admin-toggle').onclick = () => adminPanel.classList.add('active');
+        document.getElementById('admin-close').onclick = () => adminPanel.classList.remove('active');
+
+        document.getElementById('offer-form').onsubmit = (e) => {
+            e.preventDefault();
+            const newOffer = {
+                id: editingId !== null ? editingId : Date.now(),
+                product_name: document.getElementById('f-name').value,
+                original_price: parseFloat(document.getElementById('f-original').value),
+                promotional_price: parseFloat(document.getElementById('f-promo').value),
+                affiliate_link: document.getElementById('f-link').value,
+                image_url: document.getElementById('f-image').value
+            };
+
+            if (editingId !== null) {
+                allOffers = allOffers.map(o => o.id === editingId ? newOffer : o);
+                editingId = null;
+            } else {
+                allOffers.push(newOffer);
+            }
+
+            e.target.reset();
+            document.getElementById('submit-btn').textContent = 'Salvar Oferta';
+            saveToStorage();
+        };
+
+        function renderAdminList() {
+            const list = document.getElementById('admin-list');
+            list.innerHTML = '';
+            allOffers.forEach(item => {
+                list.innerHTML += `
+                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
+                        <div class="flex-1 min-w-0 pr-4">
+                            <p class="font-bold text-sm text-gray-800 truncate">${item.product_name}</p>
+                            <p class="text-xs text-orange-600 font-medium">R$ ${item.promotional_price}</p>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="editItem(${item.id})" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem(${item.id})" class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"><i data-lucide="trash" class="w-4 h-4"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        window.deleteItem = (id) => {
+            if(confirm('Excluir oferta?')) {
+                allOffers = allOffers.filter(o => o.id !== id);
+                saveToStorage();
+            }
+        };
+
+        window.editItem = (id) => {
+            const item = allOffers.find(o => o.id === id);
+            document.getElementById('f-name').value = item.product_name;
+            document.getElementById('f-original').value = item.original_price;
+            document.getElementById('f-promo').value = item.promotional_price;
+            document.getElementById('f-link').value = item.affiliate_link;
+            document.getElementById('f-image').value = item.image_url;
+            editingId = id;
+            document.getElementById('submit-btn').textContent = 'Atualizar Agora';
+        };
+
+        // --- Cronômetro ---
+        function updateTimer() {
+            const now = new Date();
+            // Reseta toda meia-noite para efeito de "oferta do dia"
+            const hours = 23 - now.getHours();
+            const minutes = 59 - now.getMinutes();
+            const seconds = 59 - now.getSeconds();
+            document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+        }
+
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Inicializar
+        renderOffers();
+        renderAdminList();
+        lucide.createIcons();
+    </script>
+</body>
+</html>
