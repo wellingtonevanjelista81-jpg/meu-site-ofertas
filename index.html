@@ -151,7 +151,7 @@
    ************************************************/
   const REMOTE_JSON_PATH = '/data/offers.json';
   const LS_KEYS = ['site_offers_v1','offers','ofertas','data','minhas_ofertas'];
-  const ADMIN_HASH = 'PHILAdelfiaPe26'; // substitua pelo hash SHA-256 da sua senha
+  const ADMIN_HASH = 'PHILADELFIApe26'; // substitua pelo hash SHA-256 da sua senha
   /************************************************
    * Helpers
    ************************************************/
@@ -194,7 +194,7 @@
         const s = pick(r, ['score','rating','nota','stars','value']);
         if(s!==undefined && s!==null && !isNaN(Number(s))){ total += Number(s); count++; }
       }
-      if(count>0) return { avg: +(total/count).toFixed(2), count: reviewsField.length };
+      if(count>0) return { avg: +(total/count).toFixed(02), count: reviewsField.length };
       // se não tiver score, mas array existe, usamos count
       return { avg: null, count: reviewsField.length };
     }
