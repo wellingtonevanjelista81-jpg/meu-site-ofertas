@@ -151,7 +151,7 @@
    ************************************************/
   const REMOTE_JSON_PATH = '/data/offers.json';
   const LS_KEYS = ['site_offers_v1','offers','ofertas','data','minhas_ofertas'];
-  const ADMIN_HASH = 'PHILADELFIApe26'; // substitua pelo hash SHA-256 da sua senha
+  const ADMIN_HASH = '15e34b9a32578efbaafcd39a2eca3cb9210efdeffde9012d9fa2450c770a4051';
   /************************************************
    * Helpers
    ************************************************/
@@ -182,24 +182,17 @@
     return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
   }
 
-  // recebe objeto de oferta e retorna {avg: number|null, count: number|null}
   function extractRatingInfo(o){
-    // Caso 1: reviews é array de objects com score
     const reviewsField = pick(o, ['reviews','avaliacoes','ratings','comments']);
     if(Array.isArray(reviewsField) && reviewsField.length){
-      // tentar extrair score dentro dos itens
       let total = 0, count = 0;
       for(const r of reviewsField){
-        // possíveis chaves: score, rating, nota, stars
         const s = pick(r, ['score','rating','nota','stars','value']);
         if(s!==undefined && s!==null && !isNaN(Number(s))){ total += Number(s); count++; }
       }
-      if(count>0) return { avg: +(total/count).toFixed(02), count: reviewsField.length };
-      // se não tiver score, mas array existe, usamos count
+      if(count>0) return { avg: +(total/count).toFixed(2), count: reviewsField.length };
       return { avg: null, count: reviewsField.length };
     }
-
-    // Caso 2: rating e reviews separados
     const rating = pick(o, ['rating','rating_value','ratingAverage','averageRating','avaliacao','nota','stars','rating_score']);
     const reviewsCount = pick(o, ['reviews','review_count','reviews_count','avaliacoes','totalReviews','ratings']);
     const rNum = (rating!==undefined && rating!==null && !isNaN(Number(rating))) ? Number(rating) : null;
@@ -289,7 +282,6 @@
         discountHtml = `<span class="badge-discount">-${p}%</span>`;
       }
 
-      // ratings
       const ratingInfo = extractRatingInfo(o); // {avg, count}
       const ratingHtml = (ratingInfo.avg !== null || ratingInfo.count !== null) ? `<div class="rating" aria-hidden="false">${renderStarsInline(ratingInfo.avg, ratingInfo.count)}</div>` : '';
 
@@ -326,9 +318,6 @@
     setTimeout(()=>{ b.style.display='none'; }, 8000);
   }
 
-  /************************************************
-   * Admin: senha client-side e ações
-   ************************************************/
   async function sha256Hex(text){
     const enc = new TextEncoder().encode(text);
     const hash = await crypto.subtle.digest('SHA-256', enc);
