@@ -21,14 +21,10 @@
             animation: fire 4s ease infinite; 
         }
         @keyframes fire { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        
         .card-offer { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .card-offer:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
-        
         .admin-panel { display: none; }
         .admin-panel.active { display: flex; }
-
-        /* Esconder scrollbar do painel admin */
         #admin-list::-webkit-scrollbar { width: 4px; }
         #admin-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
     </style>
@@ -43,7 +39,6 @@
                 <span>OfertasVip</span>
             </div>
             <div class="flex items-center gap-4">
-                <a href="#vip" class="hidden md:block text-sm font-semibold text-gray-600 hover:text-orange-600">Grupo VIP</a>
                 <button id="admin-toggle" class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors">
                     <i data-lucide="user-cog" class="w-5 h-5 text-gray-700"></i>
                 </button>
@@ -63,7 +58,7 @@
                         Ver Ofertas <i data-lucide="chevron-down" class="w-5 h-5"></i>
                     </a>
                     <a href="#vip" class="bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white px-8 py-4 rounded-full font-bold text-lg inline-flex items-center gap-2">
-                        Entrar no VIP <i data-lucide="users" class="w-5 h-5"></i>
+                        Grupos VIP <i data-lucide="users" class="w-5 h-5"></i>
                     </a>
                 </div>
             </div>
@@ -95,170 +90,126 @@
 
         <!-- Ofertas Grid -->
         <section id="ofertas" class="max-w-7xl mx-auto px-4 py-8">
-            <div class="flex items-center justify-between mb-8">
-                <h2 class="text-2xl font-bold text-gray-800">Ofertas em Destaque</h2>
-                <div class="h-1 flex-1 mx-6 bg-gray-200 rounded-full hidden md:block"></div>
-            </div>
-            
-            <div id="offers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Ofertas serão inseridas aqui via JS -->
-            </div>
-
-            <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 mt-6">
-                <i data-lucide="shopping-bag" class="w-16 h-16 text-gray-300 mx-auto mb-4"></i>
-                <p class="text-gray-500 font-medium text-lg">Nenhuma oferta cadastrada ainda.</p>
-            </div>
+            <div id="offers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            <div id="empty-state" class="hidden text-center py-20 bg-white rounded-3xl border-2 border-dashed border-gray-200 mt-6 text-gray-500">Nenhuma oferta cadastrada.</div>
         </section>
 
         <!-- VIP Section -->
         <section id="vip" class="bg-orange-50 py-20 px-4 mt-20">
             <div class="max-w-3xl mx-auto text-center">
-                <span class="bg-orange-100 text-orange-700 font-bold px-4 py-1 rounded-full text-sm uppercase tracking-widest mb-4 inline-block">Grupos de Descontos</span>
                 <h2 class="text-4xl font-extrabold text-gray-900 mb-6">Receba as ofertas no seu celular</h2>
-                <p class="text-gray-600 text-lg mb-10">Participe dos nossos grupos e receba em primeira mão bugs de preços e promoções exclusivas.</p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="#" class="bg-[#25D366] hover:bg-[#1ebd5b] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 transition-transform hover:scale-105">
-                        <i data-lucide="message-circle" class="w-6 h-6"></i> WhatsApp
+                    <a id="btn-wa" href="#" target="_blank" class="bg-[#25D366] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3">
+                        <i data-lucide="message-circle"></i> WhatsApp
                     </a>
-                    <a href="#" class="bg-[#0088CC] hover:bg-[#0077b3] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3 transition-transform hover:scale-105">
-                        <i data-lucide="send" class="w-6 h-6"></i> Telegram
+                    <a id="btn-tg" href="#" target="_blank" class="bg-[#0088CC] text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-lg flex items-center justify-center gap-3">
+                        <i data-lucide="send"></i> Telegram
                     </a>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-100 py-12 px-4 text-center">
-        <p class="text-gray-500 text-sm">© 2026 Central de Ofertas. Alguns links podem conter comissão de afiliado.</p>
-    </footer>
-
     <!-- Admin Modal -->
     <div id="admin-panel" class="admin-panel fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
-            <div class="p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50">
-                <h3 class="font-bold text-xl text-gray-800">Gerenciar Ofertas</h3>
-                <button id="admin-close" class="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
+        <div class="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between mb-6">
+                <h3 class="font-bold text-xl">Painel de Controle</h3>
+                <button id="admin-close"><i data-lucide="x"></i></button>
             </div>
             
-            <div class="p-6 max-h-[80vh] overflow-y-auto">
-                <form id="offer-form" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Nome do Produto</label>
-                            <input id="f-name" type="text" required class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Preço Antigo (Ex: 199.90)</label>
-                            <input id="f-original" type="number" step="0.01" required class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Preço Atual</label>
-                            <input id="f-promo" type="number" step="0.01" required class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">Link de Afiliado</label>
-                            <input id="f-link" type="url" required placeholder="https://..." class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="text-xs font-bold text-gray-500 uppercase ml-1">URL da Imagem</label>
-                            <input id="f-image" type="url" placeholder="https://..." class="w-full mt-1 px-4 py-3 bg-gray-100 border-none rounded-xl focus:ring-2 focus:ring-orange-500 outline-none">
-                        </div>
-                    </div>
-                    <button type="submit" id="submit-btn" class="w-full py-4 bg-orange-600 text-white font-bold rounded-2xl hover:bg-orange-700 transition-all shadow-lg hover:shadow-orange-200">
-                        Salvar Oferta
-                    </button>
-                </form>
-
-                <div class="mt-10">
-                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Ofertas Atuais</h4>
-                    <div id="admin-list" class="space-y-2">
-                        <!-- Itens admin via JS -->
-                    </div>
+            <form id="offer-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input id="f-name" type="text" placeholder="Nome do Produto" required class="w-full p-3 bg-gray-100 rounded-xl outline-none">
+                    <input id="f-original" type="number" step="0.01" placeholder="Preço De" required class="w-full p-3 bg-gray-100 rounded-xl outline-none">
+                    <input id="f-promo" type="number" step="0.01" placeholder="Preço Por" required class="w-full p-3 bg-gray-100 rounded-xl outline-none">
+                    <input id="f-image" type="url" placeholder="URL da Imagem" class="w-full p-3 bg-gray-100 rounded-xl outline-none">
+                    <input id="f-link" type="url" placeholder="Link de Afiliado" required class="w-full p-3 bg-gray-100 rounded-xl outline-none md:col-span-2">
                 </div>
-            </div>
+                
+                <div class="pt-4 border-t border-gray-100">
+                    <h4 class="text-xs font-bold text-gray-400 mb-2 uppercase">Configurações dos Grupos</h4>
+                    <input id="f-wa-link" type="url" placeholder="Link do Grupo WhatsApp" class="w-full p-3 bg-orange-50 rounded-xl outline-none mb-2 border border-orange-100">
+                    <input id="f-tg-link" type="url" placeholder="Link do Canal Telegram" class="w-full p-3 bg-orange-50 rounded-xl outline-none border border-orange-100">
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full py-4 bg-orange-600 text-white font-bold rounded-2xl">Salvar Alterações</button>
+            </form>
+
+            <div id="admin-list" class="mt-6 space-y-2"></div>
         </div>
     </div>
 
     <script>
-        // --- Lógica de Dados (Simulada com LocalStorage) ---
         let allOffers = JSON.parse(localStorage.getItem('minhas_ofertas')) || [];
+        let waLink = localStorage.getItem('link_wa') || '#';
+        let tgLink = localStorage.getItem('link_tg') || '#';
         let editingId = null;
 
-        function saveToStorage() {
-            localStorage.setItem('minhas_ofertas', JSON.stringify(allOffers));
-            renderOffers();
-            renderAdminList();
+        function updateVipButtons() {
+            document.getElementById('btn-wa').href = waLink;
+            document.getElementById('btn-tg').href = tgLink;
         }
 
-        // --- Renderização do Site ---
+        function saveAndRender() {
+            localStorage.setItem('minhas_ofertas', JSON.stringify(allOffers));
+            localStorage.setItem('link_wa', waLink);
+            localStorage.setItem('link_tg', tgLink);
+            renderOffers();
+            renderAdminList();
+            updateVipButtons();
+        }
+
         function renderOffers() {
             const grid = document.getElementById('offers-grid');
-            const emptyState = document.getElementById('empty-state');
             grid.innerHTML = '';
-            
-            if (allOffers.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
+            if (allOffers.length === 0) document.getElementById('empty-state').classList.remove('hidden');
+            else document.getElementById('empty-state').classList.add('hidden');
 
-            allOffers.forEach((item, index) => {
-                const discount = Math.round(((item.original_price - item.promotional_price) / item.original_price) * 100);
-                const card = `
-                    <div class="card-offer bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col">
-                        <div class="relative h-48 bg-white p-6 flex items-center justify-center">
-                            <span class="absolute top-3 left-3 bg-green-500 text-white text-[10px] font-black px-2 py-1 rounded-md">-${discount}% OFF</span>
-                            <img src="${item.image_url || 'https://via.placeholder.com/200'}" class="max-h-full object-contain" alt="Produto">
+            allOffers.forEach(item => {
+                const disc = Math.round(((item.original_price - item.promotional_price) / item.original_price) * 100);
+                grid.innerHTML += `
+                    <div class="card-offer bg-white rounded-2xl overflow-hidden border border-gray-100 p-4 flex flex-col">
+                        <div class="relative h-40 mb-4 flex items-center justify-center">
+                            <span class="absolute top-0 left-0 bg-green-500 text-white text-[10px] font-bold px-2 py-1 rounded">-${disc}%</span>
+                            <img src="${item.image_url}" class="max-h-full object-contain">
                         </div>
-                        <div class="p-5 flex-1 flex flex-col border-t border-gray-50">
-                            <h3 class="text-sm font-bold text-gray-800 line-clamp-2 h-10 mb-4">${item.product_name}</h3>
-                            <div class="mt-auto">
-                                <p class="text-xs text-gray-400 line-through">R$ ${Number(item.original_price).toFixed(2).replace('.', ',')}</p>
-                                <div class="flex items-baseline gap-1 pt-1">
-                                    <span class="text-sm font-bold text-orange-600">R$</span>
-                                    <span class="text-2xl font-black text-orange-600">${Number(item.promotional_price).toFixed(2).replace('.', ',')}</span>
-                                </div>
-                                <a href="${item.affiliate_link}" target="_blank" class="block w-full mt-4 text-center py-3 bg-neutral-900 text-white text-xs font-bold rounded-xl hover:bg-orange-600 transition-colors uppercase tracking-widest">
-                                    Resgatar Oferta
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                grid.innerHTML += card;
+                        <h3 class="text-xs font-bold h-8 mb-2 line-clamp-2">${item.product_name}</h3>
+                        <p class="text-[10px] text-gray-400 line-through">R$ ${item.original_price}</p>
+                        <p class="text-xl font-black text-orange-600">R$ ${item.promotional_price}</p>
+                        <a href="${item.affiliate_link}" target="_blank" class="mt-4 block text-center py-2 bg-neutral-900 text-white text-[10px] font-bold rounded-lg uppercase">Comprar</a>
+                    </div>`;
             });
         }
 
-        // --- Lógica do Painel Admin ---
         const adminPanel = document.getElementById('admin-panel');
-        document.getElementById('admin-toggle').onclick = () => adminPanel.classList.add('active');
+        document.getElementById('admin-toggle').onclick = () => {
+            adminPanel.classList.add('active');
+            document.getElementById('f-wa-link').value = waLink === '#' ? '' : waLink;
+            document.getElementById('f-tg-link').value = tgLink === '#' ? '' : tgLink;
+        };
         document.getElementById('admin-close').onclick = () => adminPanel.classList.remove('active');
 
         document.getElementById('offer-form').onsubmit = (e) => {
             e.preventDefault();
-            const newOffer = {
-                id: editingId !== null ? editingId : Date.now(),
+            waLink = document.getElementById('f-wa-link').value || '#';
+            tgLink = document.getElementById('f-tg-link').value || '#';
+
+            const data = {
+                id: editingId || Date.now(),
                 product_name: document.getElementById('f-name').value,
                 original_price: parseFloat(document.getElementById('f-original').value),
                 promotional_price: parseFloat(document.getElementById('f-promo').value),
-                affiliate_link: document.getElementById('f-link').value,
-                image_url: document.getElementById('f-image').value
+                image_url: document.getElementById('f-image').value,
+                affiliate_link: document.getElementById('f-link').value
             };
 
-            if (editingId !== null) {
-                allOffers = allOffers.map(o => o.id === editingId ? newOffer : o);
-                editingId = null;
-            } else {
-                allOffers.push(newOffer);
-            }
+            if (editingId) allOffers = allOffers.map(o => o.id === editingId ? data : o);
+            else allOffers.push(data);
 
+            editingId = null;
             e.target.reset();
-            document.getElementById('submit-btn').textContent = 'Salvar Oferta';
-            saveToStorage();
+            saveAndRender();
         };
 
         function renderAdminList() {
@@ -266,57 +217,36 @@
             list.innerHTML = '';
             allOffers.forEach(item => {
                 list.innerHTML += `
-                    <div class="flex items-center justify-between bg-gray-50 p-3 rounded-xl border border-gray-100">
-                        <div class="flex-1 min-w-0 pr-4">
-                            <p class="font-bold text-sm text-gray-800 truncate">${item.product_name}</p>
-                            <p class="text-xs text-orange-600 font-medium">R$ ${item.promotional_price}</p>
+                    <div class="flex items-center justify-between bg-gray-50 p-2 rounded-lg text-xs">
+                        <span class="truncate font-bold">${item.product_name}</span>
+                        <div class="flex gap-2">
+                            <button onclick="editItem(${item.id})" class="text-blue-600">Editar</button>
+                            <button onclick="deleteItem(${item.id})" class="text-red-600">X</button>
                         </div>
-                        <div class="flex gap-1">
-                            <button onclick="editItem(${item.id})" class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
-                            <button onclick="deleteItem(${item.id})" class="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-colors"><i data-lucide="trash" class="w-4 h-4"></i></button>
-                        </div>
-                    </div>
-                `;
+                    </div>`;
             });
-            lucide.createIcons();
         }
 
-        window.deleteItem = (id) => {
-            if(confirm('Excluir oferta?')) {
-                allOffers = allOffers.filter(o => o.id !== id);
-                saveToStorage();
-            }
-        };
-
+        window.deleteItem = (id) => { if(confirm('Excluir?')) { allOffers = allOffers.filter(o => o.id !== id); saveAndRender(); } };
         window.editItem = (id) => {
-            const item = allOffers.find(o => o.id === id);
-            document.getElementById('f-name').value = item.product_name;
-            document.getElementById('f-original').value = item.original_price;
-            document.getElementById('f-promo').value = item.promotional_price;
-            document.getElementById('f-link').value = item.affiliate_link;
-            document.getElementById('f-image').value = item.image_url;
+            const i = allOffers.find(o => o.id === id);
+            document.getElementById('f-name').value = i.product_name;
+            document.getElementById('f-original').value = i.original_price;
+            document.getElementById('f-promo').value = i.promotional_price;
+            document.getElementById('f-image').value = i.image_url;
+            document.getElementById('f-link').value = i.affiliate_link;
             editingId = id;
-            document.getElementById('submit-btn').textContent = 'Atualizar Agora';
         };
 
-        // --- Cronômetro ---
         function updateTimer() {
             const now = new Date();
-            // Reseta toda meia-noite para efeito de "oferta do dia"
-            const hours = 23 - now.getHours();
-            const minutes = 59 - now.getMinutes();
-            const seconds = 59 - now.getSeconds();
-            document.getElementById('hours').innerText = String(hours).padStart(2, '0');
-            document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
-            document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+            document.getElementById('hours').innerText = String(23 - now.getHours()).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(59 - now.getMinutes()).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(59 - now.getSeconds()).padStart(2, '0');
         }
-
         setInterval(updateTimer, 1000);
         updateTimer();
-
-        // Inicializar
-        renderOffers();
-        renderAdminList();
+        saveAndRender();
         lucide.createIcons();
     </script>
 </body>
