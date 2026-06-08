@@ -3,189 +3,281 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>OfertasVip — Central de Ofertas</title>
-  <meta name="description" content="As melhores promoções atualizadas automaticamente." />
+  <title>OfertasVip — Via Mais Store</title>
+  <meta name="description" content="Descontos atualizados nas maiores lojas do Brasil.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root { --accent:#0b72ff; --bg:#fafafa; --card-bg:#fff; --muted:#666; --border:#e6e6e6; }
-    body { margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #fff; color:#111; }
-    header { background: #ffea3d; padding:14px 18px; display:flex; align-items:center; gap:12px; }
-    header img { height:34px; }
-    header h1 { margin:0; font-size:18px; color:#111; }
-    main { padding:18px; max-width:1200px; margin:0 auto; }
-    .hero { margin-bottom:12px; }
-    .hero h2 { margin:6px 0 0; font-size:20px; }
-    .hero p { margin:6px 0 0; color:var(--muted); }
-    #offers-area { padding:12px 0; min-height:220px; display:flex; align-items:center; justify-content:center; }
-    #offers-list { display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-start; align-items:flex-start; }
-    .card { border:1px solid var(--border); border-radius:6px; padding:10px; width:240px; background:var(--card-bg); box-sizing:border-box; }
-    .card img { width:100%; height:150px; object-fit:contain; background:#f7f7f7; display:block; }
-    .card h3 { font-size:14px; margin:8px 0 4px; min-height:38px; color:#111; }
-    .card .price { font-weight:700; color:#222; margin-bottom:6px;}
-    .card p { font-size:12px; color:var(--muted); min-height:36px; margin:0 0 8px; }
-    .card a { display:inline-block; padding:8px 10px; background:var(--accent); color:#fff; border-radius:4px; text-decoration:none; font-size:13px; }
-    .admin { margin-top:18px; display:flex; gap:8px; flex-wrap:wrap; }
-    .btn { padding:8px 10px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer; }
-    .muted { color:var(--muted); font-size:13px; }
-    #injected-offers-wrapper { width:100%; }
-    @media (max-width:600px){ .card{ width:46%; } }
+    body{font-family:'DM Sans',sans-serif}
+    .card-offer{transition:all .25s}
+    .admin-panel{display:none}
+    .admin-panel.active{display:flex}
   </style>
 </head>
-<body>
-  <header>
-    <!-- Logo (substitua se tiver logo real) -->
-    <img src="https://via.placeholder.com/120x34?text=logo" alt="logo">
-    <div>
-      <h1>OfertasVip</h1>
-      <div class="muted">Central de Ofertas</div>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Nav com Logo -->
+  <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <img src="/assets/logo.png" alt="OfertasVip" class="h-10 w-auto" id="site-logo">
+        <span class="text-orange-600 font-bold text-xl">OfertasVip</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="admin-toggle" class="bg-gray-100 p-2 rounded-full hover:bg-gray-200 transition-colors">
+          <i data-lucide="user-cog" class="w-5 h-5 text-gray-700"></i>
+        </button>
+      </div>
     </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="py-12 text-center">
+    <h1 class="text-3xl md:text-5xl font-extrabold">Central de Ofertas</h1>
+    <p id="hero-desc" class="text-gray-600 mt-2">As melhores promoções atualizadas automaticamente.</p>
   </header>
 
-  <main>
-    <section class="hero">
-      <h2>As melhores promoções atualizadas automaticamente.</h2>
-      <p class="muted">Os melhores descontos com seus links de afiliado.</p>
+  <!-- Ofertas -->
+  <main class="max-w-6xl mx-auto px-4 pb-16">
+    <section id="offers-section" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></section>
+    <div id="empty" class="text-center text-gray-400 py-16 hidden">Nenhuma oferta encontrada.</div>
+
+    <!-- VIP buttons -->
+    <section class="mt-12 text-center">
+      <div class="flex justify-center gap-4">
+        <a id="btn-wa" href="#" target="_blank" class="px-6 py-3 bg-green-500 text-white rounded-xl inline-flex items-center gap-2">
+          <i data-lucide="message-circle"></i> WhatsApp
+        </a>
+        <a id="btn-tg" href="#" target="_blank" class="px-6 py-3 bg-blue-600 text-white rounded-xl inline-flex items-center gap-2">
+          <i data-lucide="send"></i> Telegram
+        </a>
+      </div>
     </section>
-
-    <!-- Área que o script detecta e substitui -->
-    <section id="offers-area">
-      <div id="offers-placeholder" class="muted">Nenhuma oferta encontrada.</div>
-    </section>
-
-    <div class="admin" aria-label="Painel Admin">
-      <button class="btn" id="save-local">Salvar (Local)</button>
-      <button class="btn" id="export-json">Exportar JSON</button>
-      <button class="btn" id="clear-local">Limpar Local</button>
-      <div style="flex:1"></div>
-      <a class="btn" href="#" id="link-whatsapp">WhatsApp</a>
-      <a class="btn" href="#" id="link-telegram">Telegram</a>
-    </div>
-
-    <div style="margin-top:24px;" class="muted">Ofertas locais</div>
   </main>
 
-  <!-- Auto-load and render offers from /data/offers.json (cache-bust, compatibility, safe render) -->
+  <!-- Admin modal (protegido) -->
+  <div id="admin-panel" class="admin-panel fixed inset-0 bg-black/50 items-start pt-16 pb-8">
+    <div class="bg-white max-w-2xl mx-auto w-full rounded-xl shadow-xl p-6 overflow-y-auto max-h-[80vh]">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-bold text-lg">Painel Admin</h2>
+        <button id="admin-close" class="p-2"><i data-lucide="x"></i></button>
+      </div>
+
+      <form id="offer-form" class="space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <input id="f-name" placeholder="Nome do produto" class="p-3 border rounded" required>
+          <input id="f-image" placeholder="URL da imagem" class="p-3 border rounded">
+          <input id="f-original" placeholder="Preço original (ex: 199.90)" type="number" step="0.01" class="p-3 border rounded">
+          <input id="f-promo" placeholder="Preço promocional (ex: 149.90)" type="number" step="0.01" class="p-3 border rounded">
+        </div>
+        <input id="f-link" placeholder="Link de afiliado" class="w-full p-3 border rounded" required>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <input id="f-wa-link" placeholder="Link do grupo WhatsApp" class="p-3 border rounded">
+          <input id="f-tg-link" placeholder="Link do Telegram" class="p-3 border rounded">
+        </div>
+
+        <div class="flex gap-2">
+          <button id="submit-btn" class="px-4 py-2 bg-orange-600 text-white rounded">Salvar (Local)</button>
+          <button id="download-json" type="button" class="px-4 py-2 bg-gray-200 rounded">Exportar JSON</button>
+          <button id="reset-local" type="button" class="px-4 py-2 bg-red-100 text-red-700 rounded">Limpar Local</button>
+        </div>
+      </form>
+
+      <hr class="my-4">
+
+      <div>
+        <h4 class="font-semibold mb-2">Ofertas locais</h4>
+        <div id="admin-list" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
-  (async function renderOffersFromData(){
-    try {
-      // cache-bust para evitar CDN/edge cache
-      const url = '/data/offers.json?t=' + Date.now();
-      const resp = await fetch(url, { cache: 'no-cache' });
-      if (!resp.ok) {
-        console.warn('offers.json não disponível (status ' + resp.status + ')');
-        return;
-      }
-      const arr = await resp.json();
-      if (!arr || (Array.isArray(arr) && arr.length === 0)) return;
+    // CONFIG
+    const REMOTE_JSON_PATH = '/data/offers.json';
+    const LS_KEY = 'site_offers_v1';
+    const LS_WA = 'site_wa_v1';
+    const LS_TG = 'site_tg_v1';
 
-      // grava nas chaves para máxima compatibilidade
-      const chaves = ['offers','ofertas','offersLocal','ofertasLocal','localOffers','data','products','items','minhas_ofertas','site_offers','site_offers_v1'];
-      chaves.forEach(k => {
-        try { localStorage.setItem(k, JSON.stringify(arr)); } catch(e){}
-      });
+    // ADMIN HASH (substitua pelo hash SHA-256 que VOCÊ gerar localmente)
+    // Exemplo: '3a7bd3...'
+    const ADMIN_HASH = 'PHILADELFIA26';
 
-      // adiciona timestamp para debug/cache
-      try { localStorage.setItem('offers_last_updated', new Date().toISOString()); } catch(e){}
-
-      // notifica apps que escutam mudanças
-      window.dispatchEvent(new Event('offers-updated'));
-
-      // container específico onde as ofertas devem aparecer
-      const offersArea = document.getElementById('offers-area');
-      if (!offersArea) return;
-
-      // remove wrapper anterior se existir
-      const prev = document.getElementById('injected-offers-wrapper');
-      if (prev && prev.parentNode) prev.parentNode.removeChild(prev);
-
-      // limita a quantidade de itens para evitar sobrecarregar a página
-      const maxItems = 60;
-      const list = Array.isArray(arr) ? arr.slice(0, maxItems) : (arr.offers || []);
-
-      // função simples de sanitização
-      const sanitize = s => (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-      // monta wrapper e cards
-      const wrapper = document.createElement('div');
-      wrapper.id = 'injected-offers-wrapper';
-      wrapper.style.display = 'flex';
-      wrapper.style.flexWrap = 'wrap';
-      wrapper.style.gap = '12px';
-      wrapper.style.padding = '16px';
-      wrapper.style.background = 'var(--bg)';
-
-      wrapper.innerHTML = list.map(o=>{
-        const title = sanitize(o.title || o.name || o['título'] || o.nome || 'Sem título');
-        const desc  = sanitize(o.description || o['descrição'] || '');
-        const img   = sanitize(o.image_url || o.imagem_url || o.imagemProduto || '');
-        const link  = sanitize(o.affiliate_link || o.link_de_afiliado || o.urlAfiliado || '#');
-        const priceNum = (o.price_number || o['número_do_preço']);
-        const priceText = sanitize(o.price || o.price_text || o['preço'] || '');
-        const priceHtml = (priceNum || priceNum === 0) ? ('R$ ' + Number(priceNum).toLocaleString('pt-BR',{minimumFractionDigits:2})) : priceText;
-        return `<div class="card" role="article" aria-label="${title}">
-          <div style="width:100%;height:150px;display:flex;align-items:center;justify-content:center;background:#f8f8f8;">
-            <img src="${img}" alt="${title}" loading="lazy">
-          </div>
-          <h3>${title}</h3>
-          <div class="price">${priceHtml}</div>
-          <p>${desc}</p>
-          <a href="${link}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
-        </div>`;
-      }).join('');
-
-      // limpa placeholder e insere
-      offersArea.innerHTML = '';
-      offersArea.appendChild(wrapper);
-      wrapper.scrollIntoView({behavior:'smooth'});
-
-      // badge visual temporário com a hora da atualização (útil para debug)
-      try {
-        let badge = document.getElementById('offers-last-updated-badge');
-        if (!badge) {
-          badge = document.createElement('div');
-          badge.id = 'offers-last-updated-badge';
-          badge.style.position = 'fixed';
-          badge.style.right = '12px';
-          badge.style.bottom = '12px';
-          badge.style.padding = '6px 10px';
-          badge.style.background = 'rgba(0,0,0,0.7)';
-          badge.style.color = '#fff';
-          badge.style.fontSize = '12px';
-          badge.style.borderRadius = '6px';
-          document.body.appendChild(badge);
-        }
-        badge.textContent = 'Ofertas atualizadas: ' + new Date().toLocaleString();
-        setTimeout(()=>{ if (badge && badge.parentNode) badge.parentNode.removeChild(badge); }, 8000);
-      } catch(e){}
-
-    } catch(e) {
-      console.warn('renderOffersFromData falhou', e);
+    // HELPERS para hash
+    async function sha256Hex(text){
+      const enc = new TextEncoder().encode(text);
+      const hash = await crypto.subtle.digest('SHA-256', enc);
+      return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');
     }
-  })();
-  </script>
 
-  <!-- Pequenas ações admin para o painel local (opcionais) -->
-  <script>
-    document.getElementById('clear-local').addEventListener('click', function(){
-      const keys = Object.keys(localStorage);
-      // lista de chaves que queremos limpar (mantemos outras)
-      const toRemove = ['offers','ofertas','offersLocal','ofertasLocal','localOffers','data','products','items','minhas_ofertas','site_offers','site_offers_v1','offers_last_updated'];
-      toRemove.forEach(k => localStorage.removeItem(k));
-      alert('LocalStorage de ofertas limpo.');
-      location.reload();
+    // STATE
+    let offers = [];
+    let waLink = localStorage.getItem(LS_WA) || '#';
+    let tgLink = localStorage.getItem(LS_TG) || '#';
+
+    // DOM refs
+    const offersSection = document.getElementById('offers-section');
+    const emptyEl = document.getElementById('empty');
+    const btnWA = document.getElementById('btn-wa');
+    const btnTG = document.getElementById('btn-tg');
+    const adminPanel = document.getElementById('admin-panel');
+
+    function formatPrice(v){ if(v===undefined || v===null) return '0,00'; return Number(v).toFixed(2).replace('.',','); }
+    function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])); }
+
+    function renderOffers(){
+      offersSection.innerHTML = '';
+      if (!offers || offers.length === 0) { emptyEl.classList.remove('hidden'); return; }
+      emptyEl.classList.add('hidden');
+      offers.forEach(item => {
+        const disc = item.original_price && item.promotional_price ? Math.round(((item.original_price - item.promotional_price)/item.original_price)*100) : 0;
+        const card = document.createElement('article');
+        card.className = 'card-offer bg-white rounded shadow p-4 flex flex-col';
+        card.innerHTML = `
+          <div class="h-40 flex items-center justify-center mb-3">
+            <img src="${item.image_url || 'https://via.placeholder.com/250'}" alt="" class="max-h-full object-contain">
+          </div>
+          <h3 class="font-semibold text-sm mb-1">${escapeHtml(item.product_name)}</h3>
+          <div class="text-xs text-gray-400 line-through">R$ ${formatPrice(item.original_price)}</div>
+          <div class="text-lg font-bold text-orange-600">R$ ${formatPrice(item.promotional_price)}</div>
+          <a href="${item.affiliate_link || '#'}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-block text-center bg-black text-white py-2 rounded">Comprar</a>
+        `;
+        offersSection.appendChild(card);
+      });
+    }
+
+    async function loadRemoteOffers(){
+      try{
+        const res = await fetch(REMOTE_JSON_PATH, {cache: 'no-cache'});
+        if(!res.ok) throw new Error('no remote');
+        const data = await res.json();
+        if(Array.isArray(data)) { offers = data; localStorage.setItem(LS_KEY, JSON.stringify(offers)); renderOffers(); return true; }
+      }catch(e){
+        const local = localStorage.getItem(LS_KEY);
+        offers = local ? JSON.parse(local) : [];
+        renderOffers();
+        return false;
+      }
+    }
+
+    // admin UI
+    document.getElementById('admin-toggle').addEventListener('click', async () => {
+      // pede senha antes de abrir
+      try{
+        const pwd = prompt('Senha do painel administrativo:');
+        if(!pwd) return;
+        const h = await sha256Hex(pwd);
+        if(h === ADMIN_HASH){
+          adminPanel.classList.add('active');
+          // preencher campos dos links
+          document.getElementById('f-wa-link').value = localStorage.getItem(LS_WA) || '';
+          document.getElementById('f-tg-link').value = localStorage.getItem(LS_TG) || '';
+        } else {
+          alert('Senha incorreta');
+        }
+      }catch(err){
+        console.error(err);
+        alert('Erro ao validar senha');
+      }
     });
-    document.getElementById('export-json').addEventListener('click', function(){
-      const data = localStorage.getItem('offers') || localStorage.getItem('ofertas') || localStorage.getItem('data') || '[]';
-      const blob = new Blob([data], {type:'application/json'});
+
+    document.getElementById('admin-close').addEventListener('click', () => {
+      adminPanel.classList.remove('active');
+    });
+
+    // form / local save
+    const form = document.getElementById('offer-form');
+    const fName = document.getElementById('f-name');
+    const fImage = document.getElementById('f-image');
+    const fOriginal = document.getElementById('f-original');
+    const fPromo = document.getElementById('f-promo');
+    const fLink = document.getElementById('f-link');
+    const fWa = document.getElementById('f-wa-link');
+    const fTg = document.getElementById('f-tg-link');
+    const adminList = document.getElementById('admin-list');
+
+    function saveLocal(){
+      localStorage.setItem(LS_KEY, JSON.stringify(offers));
+      localStorage.setItem(LS_WA, waLink);
+      localStorage.setItem(LS_TG, tgLink);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      waLink = fWa.value.trim() || '#';
+      tgLink = fTg.value.trim() || '#';
+      const id = Date.now();
+      const item = {
+        id,
+        product_name: fName.value.trim(),
+        image_url: fImage.value.trim(),
+        original_price: parseFloat(fOriginal.value) || 0,
+        promotional_price: parseFloat(fPromo.value) || 0,
+        affiliate_link: fLink.value.trim()
+      };
+      offers.unshift(item);
+      form.reset();
+      saveLocal();
+      renderAdminList();
+      renderOffers();
+      updateVipButtons();
+      alert('Salvo localmente. Para publicar globalmente, configure o n8n para atualizar /data/offers.json.');
+    });
+
+    function renderAdminList(){
+      adminList.innerHTML = '';
+      offers.forEach(o => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between bg-gray-50 p-2 rounded text-sm';
+        div.innerHTML = `<div class="truncate">${escapeHtml(o.product_name)}</div>
+                         <div class="flex gap-2">
+                           <button data-id="${o.id}" class="edit-btn text-blue-600">Editar</button>
+                           <button data-id="${o.id}" class="del-btn text-red-600">Excluir</button>
+                         </div>`;
+        adminList.appendChild(div);
+      });
+      adminList.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', e => {
+        const id = e.currentTarget.dataset.id;
+        if(confirm('Excluir oferta?')) { offers = offers.filter(x => String(x.id) !== String(id)); saveLocal(); renderAdminList(); renderOffers(); }
+      }));
+      adminList.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', e => {
+        const id = e.currentTarget.dataset.id;
+        const item = offers.find(x => String(x.id) === String(id));
+        if(!item) return;
+        fName.value = item.product_name;
+        fImage.value = item.image_url || '';
+        fOriginal.value = item.original_price || '';
+        fPromo.value = item.promotional_price || '';
+        fLink.value = item.affiliate_link || '';
+        window.scrollTo({top:0,behavior:'smooth'});
+        form.dataset.editing = id;
+      }));
+    }
+
+    // export JSON
+    document.getElementById('download-json').addEventListener('click', () => {
+      const blob = new Blob([JSON.stringify(offers, null, 2)], {type:'application/json'});
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
+      const a = document.createElement('a'); a.href = url; a.download = 'offers.json'; document.body.appendChild(a); a.click(); a.remove();
       URL.revokeObjectURL(url);
     });
-    document.getElementById('save-local').addEventListener('click', function(){
-      // Faz um backup local do current offers
-      const data = localStorage.getItem('offers') || localStorage.getItem('ofertas') || localStorage.getItem('data') || '[]';
-      localStorage.setItem('offers_backup_' + Date.now(), data);
-      alert('Backup das ofertas salvo no localStorage.');
+
+    document.getElementById('reset-local').addEventListener('click', () => {
+      if(confirm('Limpar ofertas locais?')) { offers = []; waLink = '#'; tgLink = '#'; saveLocal(); renderOffers(); renderAdminList(); updateVipButtons(); }
     });
+
+    function updateVipButtons(){ btnWA.href = waLink || '#'; btnTG.href = tgLink || '#'; }
+
+    // init
+    (async function init(){
+      await loadRemoteOffers();
+      waLink = localStorage.getItem(LS_WA) || waLink;
+      tgLink = localStorage.getItem(LS_TG) || tgLink;
+      updateVipButtons();
+      renderAdminList();
+      lucide.createIcons();
+    })();
   </script>
 </body>
 </html>
