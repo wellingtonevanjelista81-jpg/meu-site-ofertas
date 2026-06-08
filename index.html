@@ -12,13 +12,11 @@
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111}
-    /* header */
     header{background:#fff;padding:12px 18px;border-bottom:1px solid #e6e8ef;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:60}
     header img{height:38px}
     header .brand{display:flex;flex-direction:column}
     header h1{margin:0;font-size:18px;color:#111}
     header p{margin:0;color:var(--muted);font-size:13px}
-    /* faixa preta (VIP) */
     .vip-bar{background:#111;color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
     .vip-left{display:flex;align-items:center;gap:12px}
     .vip-badge{background:#ffd54d;color:#111;padding:6px 10px;border-radius:999px;font-weight:800}
@@ -27,49 +25,40 @@
     .vip-actions a{padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
     .vip-actions .wa{background:var(--wa)}
     .vip-actions .tg{background:var(--tg)}
-
-    /* hero & container */
     .hero{max-width:1200px;margin:18px auto;padding:18px}
     .hero h2{margin:0;font-size:20px}
     .hero p{color:var(--muted);margin:6px 0 0}
     main .container{max-width:1200px;margin:0 auto;padding:0 18px 80px}
-
-    /* grid */
     #offers-list{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px}
     @media (max-width:1100px){ #offers-list{grid-template-columns:repeat(3,1fr)} }
     @media (max-width:780px){ #offers-list{grid-template-columns:repeat(2,1fr)} }
     @media (max-width:420px){ #offers-list{grid-template-columns:repeat(1,1fr)} }
-
-    /* card estilo marketplace */
     .card{background:var(--card);border-radius:var(--card-radius);overflow:hidden;border:1px solid #e8eaf2;box-shadow:0 6px 18px rgba(12,14,20,0.04);display:flex;flex-direction:column}
     .media{height:200px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px}
     .media img{max-width:100%;max-height:100%;object-fit:contain}
     .body{padding:12px;flex:1;display:flex;flex-direction:column}
     .title{font-size:14px;font-weight:600;min-height:44px;margin-bottom:6px;color:#111}
     .desc{font-size:12px;color:var(--muted);min-height:36px;margin-bottom:8px}
-    .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+    .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
     .badge-discount{background:linear-gradient(90deg,#ffbaba,#ff8a8a);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
-    .rating{display:flex;align-items:center;gap:6px;font-size:13px;color:#111}
+    .rating{display:flex;align-items:center;gap:8px;font-size:13px;color:#111}
     .stars{display:inline-flex;gap:2px;align-items:center}
+    .rating .score{font-weight:700;font-size:14px;color:#111}
+    .rating .count{color:var(--muted);font-size:13px}
     .price-row{display:flex;align-items:center;gap:8px;justify-content:space-between}
     .price {font-weight:800;color:var(--price);font-size:18px}
     .old-price{color:var(--old-price);text-decoration:line-through;font-size:13px}
     .buy{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:10px;background:#111;color:#fff;text-decoration:none;text-align:center;font-weight:700}
-    .footer-row{padding:12px;border-top:1px solid #f0f2f6;display:flex;gap:8px;align-items:center;justify-content:space-between}
     .muted{color:var(--muted)}
-    /* admin modal */
     .admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;z-index:120}
     .admin-panel .card{width:720px;max-width:100%}
     .admin-panel.active{display:flex}
     .form-row{display:flex;gap:8px;margin-bottom:8px}
     .form-row input{flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef}
     .small{font-size:13px;color:var(--muted)}
-    /* footer gear (discreto) */
     .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
     .gear-btn svg{width:20px;height:20px;color:#111}
-    /* last updated badge */
     #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60}
-    /* hide top json/admin controls from header (kept for accessibility but visually hidden) */
     .hidden-visually{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0!important;border:0!important;height:1px!important;width:1px!important;overflow:hidden}
   </style>
 </head>
@@ -80,21 +69,18 @@
       <h1>Via Mais Store!</h1>
       <p class="small">Central de Ofertas</p>
     </div>
-    <!-- botões Json/Admin ficam ocultos no topo (visualmente escondidos, acessíveis via footer gear) -->
     <div class="hidden-visually" aria-hidden="false">
       <a id="open-admin-top">Admin</a>
       <a href="/data/offers.json" target="_blank" rel="noopener">JSON</a>
     </div>
   </header>
 
-  <!-- Faixa preta estilo Amazon com destaque Grupo Vip e botões lado a lado -->
   <div class="vip-bar" role="region" aria-label="Grupo Vip">
     <div class="vip-left">
       <div class="vip-badge">GRUPO VIP!</div>
       <div class="vip-text">Entre no nosso Grupo Vip! Receba ofertas exclusivas em primeira mão.</div>
     </div>
     <div class="vip-actions" aria-hidden="false">
-      <!-- links puxados do localStorage (admin pode trocar) -->
       <a id="vip-wa" class="wa" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
       <a id="vip-tg" class="tg" href="#" target="_blank" rel="noopener noreferrer">Telegram</a>
     </div>
@@ -112,7 +98,6 @@
     </section>
   </main>
 
-  <!-- Admin modal (senha client-side) -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
     <div class="card">
       <div style="padding:16px;border-bottom:1px solid #f0f2f6;display:flex;justify-content:space-between;align-items:center">
@@ -137,7 +122,7 @@
         </div>
         <div style="margin-top:8px" class="form-row">
           <input id="f-link" placeholder="Link de afiliado">
-          <input id="f-rating" placeholder="Avaliação (ex: 4.5)">
+          <input id="f-rating" placeholder="Avaliação (ex: 4.5) ou deixar vazio">
         </div>
 
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
@@ -151,9 +136,7 @@
     </div>
   </div>
 
-  <!-- Gear (rodapé) para abrir admin de forma discreta -->
   <button id="gear" class="gear-btn" aria-label="Abrir painel administrativo">
-    <!-- simples ícone de engrenagem SVG -->
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
       <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" fill="#111"/>
       <path d="M19.4 13.5v-2.9l2.1-1.6-2-3.5-2.6.7a8.9 8.9 0 0 0-1.7-.9L15 2h-6l-.2 3.3a8.9 8.9 0 0 0-1.7.9l-2.6-.7-2 3.5L4.6 10.6v2.9l-1.6 1.2 2 3.5 2.6-.7c.5.4 1.1.7 1.7.9L9 22h6l.2-3.3c.6-.2 1.2-.5 1.7-.9l2.6.7 2-3.5-1.6-1.2z" fill="#111" opacity="0.08"/>
@@ -164,17 +147,17 @@
 
   <script>
   /************************************************
-   * Configurações
+   * Config
    ************************************************/
   const REMOTE_JSON_PATH = '/data/offers.json';
   const LS_KEYS = ['site_offers_v1','offers','ofertas','data','minhas_ofertas'];
-  const ADMIN_HASH = 'COLE_AQUI_O_HASH_SHA256'; // <- substitua pelo hash SHA-256 da sua senha
+  const ADMIN_HASH = 'PHILAdelfiaPe26'; // substitua pelo hash SHA-256 da sua senha
   /************************************************
    * Helpers
    ************************************************/
   const sanitize = s => (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   function pick(obj, list){
-    for(const k of list) if(obj[k]!==undefined) return obj[k];
+    for(const k of list) if(obj && obj[k]!==undefined) return obj[k];
     return undefined;
   }
   function formatPriceVal(v){
@@ -183,14 +166,51 @@
     if(isNaN(n)) return String(v);
     return 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2});
   }
-  function starSVG(type='full'){
+  function humanNumber(n){
+    if(!n && n!==0) return '';
+    n = Number(n);
+    if(isNaN(n)) return '';
+    if(n >= 1000) return (n/1000).toFixed(n>=10000?0:1) + 'k';
+    return String(n);
+  }
+  /************************************************
+   * Stars & ratings
+   ************************************************/
+  function starSVG(type='full'){ 
     if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
     if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
     return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
   }
-  function renderStars(rating, reviews){
-    if(!rating && rating !== 0) return '';
-    const r = Math.max(0, Math.min(5, Number(rating)));
+
+  // recebe objeto de oferta e retorna {avg: number|null, count: number|null}
+  function extractRatingInfo(o){
+    // Caso 1: reviews é array de objects com score
+    const reviewsField = pick(o, ['reviews','avaliacoes','ratings','comments']);
+    if(Array.isArray(reviewsField) && reviewsField.length){
+      // tentar extrair score dentro dos itens
+      let total = 0, count = 0;
+      for(const r of reviewsField){
+        // possíveis chaves: score, rating, nota, stars
+        const s = pick(r, ['score','rating','nota','stars','value']);
+        if(s!==undefined && s!==null && !isNaN(Number(s))){ total += Number(s); count++; }
+      }
+      if(count>0) return { avg: +(total/count).toFixed(2), count: reviewsField.length };
+      // se não tiver score, mas array existe, usamos count
+      return { avg: null, count: reviewsField.length };
+    }
+
+    // Caso 2: rating e reviews separados
+    const rating = pick(o, ['rating','rating_value','ratingAverage','averageRating','avaliacao','nota','stars','rating_score']);
+    const reviewsCount = pick(o, ['reviews','review_count','reviews_count','avaliacoes','totalReviews','ratings']);
+    const rNum = (rating!==undefined && rating!==null && !isNaN(Number(rating))) ? Number(rating) : null;
+    const cNum = (reviewsCount!==undefined && reviewsCount!==null && !isNaN(Number(reviewsCount))) ? Number(reviewsCount) : null;
+    if(rNum !== null || cNum !== null) return { avg: rNum, count: cNum };
+    return { avg: null, count: null };
+  }
+
+  function renderStarsInline(avg, count){
+    if(avg === null && count === null) return '';
+    const r = (avg===null) ? 0 : Math.max(0, Math.min(5, Number(avg)));
     const full = Math.floor(r);
     const half = (r - full) >= 0.5 ? 1 : 0;
     const empty = 5 - full - half;
@@ -199,12 +219,13 @@
     if(half) html += starSVG('half');
     for(let i=0;i<empty;i++) html += starSVG('empty');
     html += `</span>`;
-    if(reviews) html += `<span class="muted" style="font-size:13px"> ${sanitize(String(reviews))}</span>`;
+    if(avg !== null) html += `<span class="score" aria-label="Avaliação ${avg}"> ${avg}</span>`;
+    if(count !== null) html += `<span class="count"> (${humanNumber(count)})</span>`;
     return html;
   }
 
   /************************************************
-   * load & render
+   * Load & render
    ************************************************/
   async function loadAndRender(){
     try{
@@ -213,7 +234,6 @@
       const data = await resp.json();
       const arr = Array.isArray(data) ? data : (data.offers || data.items || data.products || []);
       if(!Array.isArray(arr) || arr.length === 0){ showEmpty(); return; }
-
       try{ LS_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(arr))); }catch(e){}
       renderList(arr);
       showUpdatedBadge();
@@ -224,6 +244,7 @@
       console.warn('loadAndRender:', err);
     }
   }
+
   function tryLoadLocal(){
     for(const k of LS_KEYS){
       const v = localStorage.getItem(k);
@@ -233,11 +254,13 @@
     }
     return null;
   }
+
   function showEmpty(){
     document.getElementById('offers-list').innerHTML = '';
     document.getElementById('empty').style.display = 'block';
     document.getElementById('offers-last-updated-badge').style.display='none';
   }
+
   function renderList(list){
     document.getElementById('empty').style.display = 'none';
     const cont = document.getElementById('offers-list');
@@ -265,9 +288,10 @@
         const p = Math.round((1 - (numericPromo / numericOld)) * 100);
         discountHtml = `<span class="badge-discount">-${p}%</span>`;
       }
-      const rating = pick(o, ['rating','rating_value','ratingAverage','averageRating','avaliacao','nota']) || pick(o,['stars','rating_score']);
-      const reviews = pick(o, ['reviews','ratings','avaliacoes','review_count','totalReviews']) || pick(o,['count_reviews','comment_count']);
-      const ratingHtml = rating ? `<div class="rating">${renderStars(rating,reviews)}</div>` : '';
+
+      // ratings
+      const ratingInfo = extractRatingInfo(o); // {avg, count}
+      const ratingHtml = (ratingInfo.avg !== null || ratingInfo.count !== null) ? `<div class="rating" aria-hidden="false">${renderStarsInline(ratingInfo.avg, ratingInfo.count)}</div>` : '';
 
       const card = document.createElement('article');
       card.className = 'card';
@@ -293,6 +317,7 @@
       cont.appendChild(card);
     }
   }
+
   function showUpdatedBadge(){
     const b = document.getElementById('offers-last-updated-badge');
     if(!b) return;
@@ -311,7 +336,7 @@
   }
 
   document.getElementById('gear').addEventListener('click', async () => {
-    const pwd = prompt('PHILAdelfiaPe26:');
+    const pwd = prompt('Senha do painel administrativo:');
     if(!pwd) return;
     const h = await sha256Hex(pwd);
     if(h === ADMIN_HASH){
@@ -330,7 +355,6 @@
     panel.setAttribute('aria-hidden','true');
   });
 
-  // admin actions
   document.getElementById('btn-save-local').addEventListener('click', () => {
     const name = document.getElementById('f-name').value.trim();
     if(!name){ alert('Informe o nome'); return; }
@@ -346,6 +370,7 @@
     renderList(existing);
     alert('Oferta adicionada localmente.');
   });
+
   document.getElementById('btn-export').addEventListener('click', () => {
     const data = tryLoadLocal() || [];
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -353,13 +378,13 @@
     const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
     URL.revokeObjectURL(url);
   });
+
   document.getElementById('btn-clear').addEventListener('click', () => {
     if(!confirm('Limpar ofertas locais?')) return;
     LS_KEYS.forEach(k => localStorage.removeItem(k));
     location.reload();
   });
 
-  // update vip buttons from localStorage
   function updateVipButtons(){
     const wa = localStorage.getItem('site_wa') || '#';
     const tg = localStorage.getItem('site_tg') || '#';
@@ -369,7 +394,6 @@
   document.getElementById('f-wa-link').addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
   document.getElementById('f-tg-link').addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
 
-  // start
   (function init(){
     updateVipButtons();
     loadAndRender();
