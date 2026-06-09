@@ -61,6 +61,13 @@
     #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60;transition:opacity .25s}
     .hidden-visually{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0!important;border:0!important;height:1px!important;width:1px!important;overflow:hidden}
     .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
+    /* reviews */
+    .reviews summary{cursor:pointer;padding:8px;border-radius:8px;background:#f7f9fc;margin-top:8px;font-weight:700}
+    .reviews-list{padding:8px 0 0}
+    .review-item{padding:8px;border-bottom:1px solid #eef2f7}
+    .review-meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .review-text{font-size:13px;color:#111;white-space:pre-wrap}
+    .no-reviews{font-size:13px;color:var(--muted);padding:8px}
   </style>
 </head>
 <body>
@@ -136,7 +143,6 @@
 
         <hr style="margin:14px 0">
 
-        <!-- NOVA CONFIGURAÇÃO: Minimo de ofertas para aceitar atualização -->
         <div class="small">Mínimo de ofertas para aceitar atualização remota:</div>
         <div class="form-row" style="margin-top:8px">
           <input id="f-min-offers" placeholder="Número mínimo (ex: 2)" />
@@ -209,7 +215,55 @@
   }
 
   /************************************************
-   * Stars & ratings
+   * Reviews normalization: tenta extrair avaliações detalhadas
+   ************************************************/
+  function getReviews(item){
+    // tenta campos comumente usados
+    const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
+    for(const k of candidates){
+      if(item[k] && Array.isArray(item[k]) && item[k].length) return normalizeReviewsArray(item[k]);
+    }
+    // às vezes reviews vem como objeto com key 'items' ou 'data'
+    for(const k of candidates){
+      if(item[k] && typeof item[k] === 'object'){
+        if(Array.isArray(item[k].items) && item[k].items.length) return normalizeReviewsArray(item[k].items);
+        if(Array.isArray(item[k].data) && item[k].data.length) return normalizeReviewsArray(item[k].data);
+      }
+    }
+    // sem array detalhada: retornar vazio (renderizar apenas média/contagem)
+    return [];
+  }
+
+  function normalizeReviewsArray(arr){
+    // converte cada entrada para {author, score, text, date}
+    const out = [];
+    for(const r of arr){
+      if(r === null || r === undefined) continue;
+      // se for string simples (apenas texto)
+      if(typeof r === 'string'){
+        out.push({ author: null, score: null, text: r, date: null });
+        continue;
+      }
+      // procura campos possíveis
+      const text = pick(r, ['text','comment','body','review','message','descricao','conteudo']) || pick(r, ['textContent','content']) || null;
+      const score = pick(r, ['score','rating','nota','value','stars','rating_value']) || null;
+      const author = pick(r, ['author','user','usuario','name','nome','reviewer','userName']) || pick(r, ['owner']) || null;
+      const date = pick(r, ['date','created_at','updated_at','data','timestamp']) || null;
+      // se objeto inteiro tem chaves pequenas, stringify fallback
+      if(!text && !score && !author){
+        // tenta pegar propriedades que pareçam texto
+        const possible = Object.values(r).filter(v => typeof v === 'string' && v.length < 300 && v.length > 5);
+        if(possible.length) out.push({ author: null, score: null, text: possible[0], date: null });
+        else out.push({ author: null, score: null, text: JSON.stringify(r), date: null });
+      } else {
+        out.push({ author: author ? String(author) : null, score: (score !== null && score !== undefined) ? score : null, text: text ? String(text) : null, date: date ? String(date) : null });
+      }
+    }
+    return out;
+  }
+
+  /************************************************
+   * Stars & ratings (unchanged)
    ************************************************/
   function starSVG(type='full'){ 
     if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
@@ -351,14 +405,34 @@
       const ratingInfo = extractRatingInfo(o); // {avg, count}
       const ratingHtml = (ratingInfo.avg !== null || ratingInfo.count !== null) ? `<div class="rating" aria-hidden="false">${renderStarsInline(ratingInfo.avg, ratingInfo.count)}</div>` : '';
 
+      // extrai reviews detalhadas
+      const reviewsArr = getReviews(o); // array de {author, score, text, date}
+
       const card = document.createElement('article');
       card.className = 'card';
+      // montar html do bloco de reviews (se houver)
+      let reviewsHtml = '';
+      if(Array.isArray(reviewsArr) && reviewsArr.length){
+        let itemsHtml = '';
+        for(const r of reviewsArr){
+          const author = r.author ? sanitize(r.author) : '';
+          const scoreText = (r.score !== null && r.score !== undefined) ? ` — <strong>${sanitize(String(r.score))}</strong>` : '';
+          const dateText = r.date ? ` • ${sanitize(r.date)}` : '';
+          const textHtml = r.text ? `<div class="review-text">${sanitize(r.text)}</div>` : '';
+          itemsHtml += `<div class="review-item"><div class="review-meta">${author}${scoreText}${dateText}</div>${textHtml}</div>`;
+        }
+        reviewsHtml = `<details class="reviews"><summary>Ver avaliações (${reviewsArr.length})</summary><div class="reviews-list">${itemsHtml}</div></details>`;
+      } else {
+        // sem reviews detalhadas: nada extra (ratingHtml já mostra média/contagem quando disponível)
+      }
+
       card.innerHTML = `
         <div class="media"><img src="${sanitize(imageUrl) || 'https://via.placeholder.com/320x240?text=Sem+imagem'}" alt="${sanitize(title)}" loading="lazy"></div>
         <div class="body">
           <div class="title">${sanitize(title)}</div>
           <div class="meta">${discountHtml}${ratingHtml}</div>
           <div class="desc">${sanitize(desc)}</div>
+          ${reviewsHtml}
           <div style="margin-top:auto">
             <div class="price-row">
               <div>
