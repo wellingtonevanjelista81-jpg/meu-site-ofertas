@@ -7,7 +7,7 @@
   <meta name="description" content="As melhores promoções atualizadas automaticamente." />
   <style>
     :root { --accent:#0b72ff; --bg:#fafafa; --card-bg:#fff; --muted:#666; --border:#e6e6e6; }
-     { box-sizing: border-box; }
+    * { box-sizing: border-box; }
     body { margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #fff; color:#111; }
     header { background: #ffea3d; padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #f0d93a; }
     header img { height:34px; }
@@ -44,4 +44,208 @@
 
   <main>
     <section class="hero">
-      <h2>As melhores prom
+      <h2>As melhores promoções atualizadas automaticamente.</h2>
+      <p class="muted">Os melhores descontos com seus links de afiliado.</p>
+    </section>
+
+    <section id="offers-area">
+      <div id="offers-placeholder">Nenhuma oferta encontrada.</div>
+      <div id="injected-offers-wrapper" style="display:none"></div>
+    </section>
+
+    <div class="admin" aria-label="Painel Admin">
+      <button class="btn" id="save-local">Salvar (Local)</button>
+      <button class="btn" id="export-json">Exportar JSON</button>
+      <button class="btn" id="clear-local">Limpar Local</button>
+      <div style="flex:1"></div>
+      <a class="btn" id="link-whatsapp" href="#" target="_blank">WhatsApp</a>
+    </div>
+
+    <div style="margin-top:18px" class="muted">Últimas ofertas</div>
+  </main>
+
+  <script>
+  (function(){
+    // Configuráveis
+    const JSON_PATH = '/data/offers.json';
+    const ACCEPT_RATIO = 0.5; // aceita nova lista se newLen >= prevLen * ACCEPT_RATIO (ajuste se quiser)
+    const MIN_KEEP_COUNT = 5;  // se prevLen <= MIN_KEEP_COUNT, não aplica trava
+    const MAX_ITEMS = 60;      // limite de itens a renderizar
+    const KEYS = ['offers','ofertas','offersLocal','ofertasLocal','localOffers','data','products','items','minhas_ofertas','site_offers','site_offers_v1'];
+
+    // Utilidades
+    const sanitize = s => (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const now = () => new Date().toISOString();
+
+    // Render de cards (mantém layout original)
+    function renderCards(list) {
+      const wrapper = document.getElementById('injected-offers-wrapper');
+      const placeholder = document.getElementById('offers-placeholder');
+      if (!list || list.length === 0) {
+        wrapper.style.display = 'none';
+        placeholder.style.display = 'block';
+        placeholder.textContent = 'Nenhuma oferta encontrada.';
+        return;
+      }
+      placeholder.style.display = 'none';
+      wrapper.style.display = 'flex';
+      const arr = list.slice(0, MAX_ITEMS);
+      wrapper.innerHTML = arr.map(o => {
+        const title = sanitize(o.title || o.name || o.nome || o['título'] || 'Sem título');
+        const desc  = sanitize(o.description || o['descrição'] || '');
+        const img   = sanitize(o.image_url || o.imagem_url || o.imagemProduto || '');
+        const link  = sanitize(o.affiliate_link || o.link_de_afiliado || o.urlAfiliado || '#');
+        const priceNum = (o.price_number || o['número_do_preço']);
+        const priceText = sanitize(o.price || o.price_text || o['preço'] || '');
+        const priceHtml = (priceNum || priceNum === 0) ? ('R$ ' + Number(priceNum).toLocaleString('pt-BR',{minimumFractionDigits:2})) : priceText;
+        return `
+          <div class="card" role="article" aria-label="${title}">
+            <div style="width:100%;height:150px;display:flex;align-items:center;justify-content:center;background:#f8f8f8;border-radius:4px;overflow:hidden;">
+              <img src="${img}" alt="${title}" loading="lazy">
+            </div>
+            <h3>${title}</h3>
+            <div class="price">${priceHtml}</div>
+            <p>${desc}</p>
+            <a href="${link}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
+          </div>`;
+      }).join('');
+      // smooth scroll para as ofertas (apenas se estava no topo)
+      try { document.getElementById('injected-offers-wrapper').scrollIntoView({behavior:'smooth'}); } catch(e){}
+    }
+
+    // Status badge
+    function showStatus(msg, timeout = 5000) {
+      let b = document.getElementById('offers-last-updated-badge');
+      if (!b) {
+        b = document.createElement('div');
+        b.id = 'offers-last-updated-badge';
+        b.className = 'status-badge';
+        document.body.appendChild(b);
+      }
+      b.textContent = msg;
+      if (timeout) setTimeout(()=>{ try{ b.remove(); }catch(e){} }, timeout);
+    }
+
+    // Segurança: compara tamanho anterior vs novo
+    function shouldAcceptUpdate(prevLen, newLen) {
+      if (!prevLen) return true;
+      if (prevLen <= MIN_KEEP_COUNT) return true;
+      // Rejeita se newLen for muito menor
+      if (newLen < Math.max(1, Math.round(prevLen * ACCEPT_RATIO))) return false;
+      return true;
+    }
+
+    // Carrega JSON com cache-bust
+    async function fetchOffers() {
+      try {
+        const url = JSON_PATH + '?t=' + Date.now();
+        const resp = await fetch(url, { cache: 'no-cache' });
+        if (!resp.ok) {
+          console.warn('offers.json não disponível (status ' + resp.status + ')');
+          return null;
+        }
+        const data = await resp.json();
+        return Array.isArray(data) ? data : (data.offers || []);
+      } catch (e) {
+        console.warn('Falha ao buscar offers.json', e);
+        return null;
+      }
+    }
+
+    // Inicial: renderiza o que já existe no local (se houver)
+    function loadLocalAndRender() {
+      let found = null;
+      for (const k of KEYS) {
+        try {
+          const v = localStorage.getItem(k);
+          if (v) {
+            const parsed = JSON.parse(v);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              found = parsed;
+              break;
+            }
+          }
+        } catch(e){}
+      }
+      if (found) {
+        renderCards(found);
+      } else {
+        // show placeholder
+        document.getElementById('offers-placeholder').textContent = 'Carregando melhores ofertas...';
+      }
+      return found || [];
+    }
+
+    // Main flow
+    (async function mainFlow(){
+      const prev = loadLocalAndRender();
+      const prevLen = Array.isArray(prev) ? prev.length : 0;
+
+      const fresh = await fetchOffers();
+      if (!fresh) {
+        // sem fresh, mantemos o prev
+        showStatus('Sem atualização (offers.json indisponível)', 3000);
+        return;
+      }
+      const freshLen = Array.isArray(fresh) ? fresh.length : 0;
+
+      if (!shouldAcceptUpdate(prevLen, freshLen)) {
+        console.warn('Atualização ignorada: novo offers.json tem menos itens que o atual', {prevLen, freshLen});
+        // salva candidate para inspeção
+        try { localStorage.setItem('offers_candidate_' + Date.now(), JSON.stringify(fresh)); } catch(e){}
+        showStatus('Atualização ignorada (arquivo incompleto no servidor)', 6000);
+        return;
+      }
+
+      // grava nas chaves compatíveis
+      try {
+        for (const k of KEYS) localStorage.setItem(k, JSON.stringify(fresh));
+        localStorage.setItem('offers_last_updated', now());
+      } catch(e){ console.warn('Falha ao gravar localStorage', e); }
+
+      renderCards(fresh);
+      showStatus('Ofertas atualizadas: ' + freshLen + ' itens', 4500);
+    })();
+
+    // Admin buttons
+    document.getElementById('clear-local').addEventListener('click', function(){
+      const toRemove = [...KEYS, 'offers_last_updated'];
+      toRemove.forEach(k => localStorage.removeItem(k));
+      alert('LocalStorage de ofertas limpo.');
+      location.reload();
+    });
+
+    document.getElementById('export-json').addEventListener('click', function(){
+      const data = localStorage.getItem('offers') || localStorage.getItem('ofertas') || localStorage.getItem('data') || '[]';
+      const blob = new Blob([data], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('save-local').addEventListener('click', function(){
+      const data = localStorage.getItem('offers') || localStorage.getItem('ofertas') || localStorage.getItem('data') || '[]';
+      localStorage.setItem('offers_backup_' + Date.now(), data);
+      alert('Backup das ofertas salvo no localStorage.');
+    });
+
+    // Expor link WhatsApp (opcional: configure)
+    const waBtn = document.getElementById('link-whatsapp');
+    if (waBtn) {
+      // substitua pelo link do seu grupo se quiser
+      waBtn.href = '#';
+      waBtn.addEventListener('click', (e)=> { e.preventDefault(); alert('Configurar link do WhatsApp no index.html se desejar.'); });
+    }
+
+    // Monitor simples: loga mudanças no localStorage (opcional)
+    // setInterval(()=> {
+    //   try {
+    //     const v = localStorage.getItem('offers');
+    //     if (v) console.log('offers len=', JSON.parse(v).length);
+    //   } catch(e){}
+    // }, 10000);
+
+  })();
+  </script>
+</body>
+</html>
