@@ -3,249 +3,483 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>OfertasVip — Central de Ofertas</title>
-  <meta name="description" content="As melhores promoções atualizadas automaticamente." />
+  <title>Via Mais Store! — Central de Ofertas</title>
+  <meta name="description" content="Ofertas e descontos atualizados automaticamente." />
   <style>
-    :root { --accent:#0b72ff; --bg:#fafafa; --card-bg:#fff; --muted:#666; --border:#e6e6e6; }
-    * { box-sizing: border-box; }
-    body { margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #fff; color:#111; }
-    header { background: #ffea3d; padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #f0d93a; }
-    header img { height:34px; }
-    header h1 { margin:0; font-size:18px; color:#111; }
-    main { padding:18px; max-width:1200px; margin:0 auto; }
-    .hero { margin-bottom:12px; }
-    .hero h2 { margin:6px 0 0; font-size:20px; }
-    .hero p { margin:6px 0 0; color:var(--muted); }
-    #offers-area { padding:12px 0; min-height:220px; }
-    #offers-placeholder { color:var(--muted); text-align:center; padding:40px 0; }
-    #injected-offers-wrapper { display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-start; align-items:flex-start; }
-    .card { border:1px solid var(--border); border-radius:6px; padding:10px; width:240px; background:var(--card-bg); box-sizing:border-box; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
-    .card img { width:100%; height:150px; object-fit:contain; background:#f7f7f7; display:block; }
-    .card h3 { font-size:14px; margin:8px 0 4px; min-height:38px; color:#111; line-height:1.2; }
-    .card .price { font-weight:700; color:#222; margin-bottom:6px; }
-    .card p { font-size:12px; color:var(--muted); min-height:36px; margin:0 0 8px; }
-    .card a { display:inline-block; padding:8px 10px; background:var(--accent); color:#fff; border-radius:4px; text-decoration:none; font-size:13px; }
-    .admin { margin-top:18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-    .btn { padding:8px 10px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer; }
-    .muted { color:var(--muted); font-size:13px; }
-    .status-badge { position: fixed; right: 12px; bottom: 12px; padding:6px 10px; background: rgba(0,0,0,0.75); color:#fff; font-size:12px; border-radius:6px; z-index:9999; }
-    @media (max-width:600px) { .card { width: calc(50% - 12px); } }
-    @media (max-width:420px) { .card { width: 100%; } }
+    :root{
+      --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#0b72ff; --wa:#25D366; --tg:#0088CC;
+      --price:#ef4444; --old-price:#9ca3af; --card-radius:12px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111}
+    header{background:#fff;padding:12px 18px;border-bottom:1px solid #e6e8ef;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:60}
+    header img{height:38px}
+    header .brand{display:flex;flex-direction:column}
+    header h1{margin:0;font-size:18px;color:#111}
+    header p{margin:0;color:var(--muted);font-size:13px}
+    .vip-bar{background:#111;color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+    .vip-left{display:flex;align-items:center;gap:12px}
+    .vip-badge{background:#ffd54d;color:#111;padding:6px 10px;border-radius:999px;font-weight:800}
+    .vip-text{font-weight:700}
+    .vip-actions{display:flex;gap:8px}
+    .vip-actions a{padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+    .vip-actions .wa{background:var(--wa)}
+    .vip-actions .tg{background:var(--tg)}
+    .hero{max-width:1200px;margin:18px auto;padding:18px}
+    .hero h2{margin:0;font-size:20px}
+    .hero p{color:var(--muted);margin:6px 0 0}
+    main .container{max-width:1200px;margin:0 auto;padding:0 18px 80px}
+    #offers-list{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px}
+    @media (max-width:1100px){ #offers-list{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:780px){ #offers-list{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:420px){ #offers-list{grid-template-columns:repeat(1,1fr)} }
+    .card{background:var(--card);border-radius:var(--card-radius);overflow:hidden;border:1px solid #e8eaf2;box-shadow:0 6px 18px rgba(12,14,20,0.04);display:flex;flex-direction:column}
+    .media{height:200px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px}
+    .media img{max-width:100%;max-height:100%;object-fit:contain}
+    .body{padding:12px;flex:1;display:flex;flex-direction:column}
+    .title{font-size:14px;font-weight:600;min-height:44px;margin-bottom:6px;color:#111}
+    .desc{font-size:12px;color:var(--muted);min-height:36px;margin-bottom:8px}
+    .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+    .badge-discount{background:linear-gradient(90deg,#ffbaba,#ff8a8a);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
+    .rating{display:flex;align-items:center;gap:8px;font-size:13px;color:#111}
+    .stars{display:inline-flex;gap:2px;align-items:center}
+    .rating .score{font-weight:700;font-size:14px;color:#111}
+    .rating .count{color:var(--muted);font-size:13px}
+    .price-row{display:flex;align-items:center;gap:8px;justify-content:space-between}
+    .price {font-weight:800;color:var(--price);font-size:18px}
+    .old-price{color:var(--old-price);text-decoration:line-through;font-size:13px}
+    .buy{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:10px;background:#111;color:#fff;text-decoration:none;text-align:center;font-weight:700}
+    .muted{color:var(--muted)}
+    .admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;z-index:120}
+    .admin-panel .card{width:720px;max-width:100%}
+    .admin-panel.active{display:flex}
+    .form-row{display:flex;gap:8px;margin-bottom:8px}
+    .form-row input{flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef}
+    .small{font-size:13px;color:var(--muted)}
+    .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
+    .gear-btn svg{width:20px;height:20px;color:#111}
+    #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60;transition:opacity .25s}
+    .hidden-visually{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0!important;border:0!important;height:1px!important;width:1px!important;overflow:hidden}
+    .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
   </style>
 </head>
 <body>
   <header>
-    <img src="https://via.placeholder.com/120x34?text=logo" alt="logo">
-    <div>
-      <h1>OfertasVip</h1>
-      <div class="muted">Central de Ofertas</div>
+    <img src="/assets/logo.png" alt="Via Mais Store" id="site-logo">
+    <div class="brand">
+      <h1>Via Mais Store!</h1>
+      <p class="small">Central de Ofertas</p>
+    </div>
+    <div class="hidden-visually" aria-hidden="false">
+      <a id="open-admin-top">Admin</a>
+      <a href="/data/offers.json" target="_blank" rel="noopener">JSON</a>
     </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <h2>As melhores promoções atualizadas automaticamente.</h2>
-      <p class="muted">Os melhores descontos com seus links de afiliado.</p>
-    </section>
-
-    <section id="offers-area">
-      <div id="offers-placeholder">Nenhuma oferta encontrada.</div>
-      <div id="injected-offers-wrapper" style="display:none"></div>
-    </section>
-
-    <div class="admin" aria-label="Painel Admin">
-      <button class="btn" id="save-local">Salvar (Local)</button>
-      <button class="btn" id="export-json">Exportar JSON</button>
-      <button class="btn" id="clear-local">Limpar Local</button>
-      <div style="flex:1"></div>
-      <a class="btn" id="link-whatsapp" href="#" target="_blank">WhatsApp</a>
+  <div class="vip-bar" role="region" aria-label="Grupo Vip">
+    <div class="vip-left">
+      <div class="vip-badge">GRUPO VIP!</div>
+      <div class="vip-text">Entre no nosso Grupo Vip! Receba ofertas exclusivas em primeira mão.</div>
     </div>
+    <div class="vip-actions" aria-hidden="false">
+      <a id="vip-wa" class="wa" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a id="vip-tg" class="tg" href="#" target="_blank" rel="noopener noreferrer">Telegram</a>
+    </div>
+  </div>
 
-    <div style="margin-top:18px" class="muted">Últimas ofertas</div>
+  <main>
+    <section class="hero container">
+      <h2>Via Mais Store!</h2>
+      <p class="muted">As melhores ofertas e descontos selecionados para você.</p>
+    </section>
+
+    <section class="container">
+      <div id="offers-list" aria-live="polite"></div>
+      <div id="empty" class="muted" style="text-align:center;padding:36px;">Nenhuma oferta encontrada.</div>
+    </section>
   </main>
 
+  <div id="admin-panel" class="admin-panel" aria-hidden="true">
+    <div class="card">
+      <div style="padding:16px;border-bottom:1px solid #f0f2f6;display:flex;justify-content:space-between;align-items:center">
+        <strong>Painel Admin</strong>
+        <button id="close-admin" class="btn-ghost" aria-label="Fechar painel">Fechar</button>
+      </div>
+      <div style="padding:16px">
+        <div class="small">Editar links de grupo (WhatsApp / Telegram)</div>
+        <div class="form-row" style="margin-top:8px">
+          <input id="f-wa-link" placeholder="Link do grupo WhatsApp (https://chat.whatsapp.com/...)">
+          <input id="f-tg-link" placeholder="Link do Telegram (https://t.me/...)">
+        </div>
+
+        <hr style="margin:12px 0">
+
+        <div class="small" style="margin-top:12px">Adicionar oferta manual (salva somente no seu navegador):</div>
+        <div class="form-row" style="margin-top:8px">
+          <input id="f-name" placeholder="Nome do produto">
+          <input id="f-image" placeholder="URL da imagem">
+        </div>
+        <div class="form-row">
+          <input id="f-original" placeholder="Preço original (ex: 199.90)">
+          <input id="f-promo" placeholder="Preço promocional (ex: 89.90)">
+        </div>
+        <div style="margin-top:8px" class="form-row">
+          <input id="f-link" placeholder="Link de afiliado">
+          <input id="f-rating" placeholder="Avaliação (ex: 4.5) ou deixar vazio">
+        </div>
+
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          <button id="btn-save-local" class="btn-ghost">Adicionar local</button>
+          <button id="btn-export" class="btn-ghost">Exportar JSON</button>
+          <button id="btn-clear" class="btn-ghost">Limpar ofertas locais</button>
+        </div>
+
+        <hr style="margin:14px 0">
+
+        <!-- NOVA CONFIGURAÇÃO: Minimo de ofertas para aceitar atualização -->
+        <div class="small">Mínimo de ofertas para aceitar atualização remota:</div>
+        <div class="form-row" style="margin-top:8px">
+          <input id="f-min-offers" placeholder="Número mínimo (ex: 2)" />
+          <button id="btn-apply-min" class="btn-ghost">Aplicar</button>
+          <button id="btn-clear-min" class="btn-ghost">Remover</button>
+        </div>
+        <div class="small" style="margin-top:8px">Se a atualização remota retornar menos que este valor, ela será ignorada e o site continuará mostrando a última lista válida.</div>
+
+        <div style="margin-top:12px" class="small">Observação: para publicar globalmente, configure seu fluxo n8n para atualizar /data/offers.json no repositório.</div>
+      </div>
+    </div>
+  </div>
+
+  <button id="gear" class="gear-btn" aria-label="Abrir painel administrativo">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+      <path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" fill="#111"/>
+      <path d="M19.4 13.5v-2.9l2.1-1.6-2-3.5-2.6.7a8.9 8.9 0 0 0-1.7-.9L15 2h-6l-.2 3.3a8.9 8.9 0 0 0-1.7.9l-2.6-.7-2 3.5L4.6 10.6v2.9l-1.6 1.2 2 3.5 2.6-.7c.5.4 1.1.7 1.7.9L9 22h6l.2-3.3c.6-.2 1.2-.5 1.7-.9l2.6.7 2-3.5-1.6-1.2z" fill="#111" opacity="0.08"/>
+    </svg>
+  </button>
+
+  <div id="offers-last-updated-badge" style="display:none"></div>
+
   <script>
-  (function(){
-    // Configuráveis
-    const JSON_PATH = '/data/offers.json';
-    const ACCEPT_RATIO = 0.5; // aceita nova lista se newLen >= prevLen * ACCEPT_RATIO (ajuste se quiser)
-    const MIN_KEEP_COUNT = 5;  // se prevLen <= MIN_KEEP_COUNT, não aplica trava
-    const MAX_ITEMS = 60;      // limite de itens a renderizar
-    const KEYS = ['offers','ofertas','offersLocal','ofertasLocal','localOffers','data','products','items','minhas_ofertas','site_offers','site_offers_v1'];
+  /************************************************
+   * Config
+   ************************************************/
+  const REMOTE_JSON_PATH = '/data/offers.json';
+  const LS_KEYS = ['site_offers_v1','offers','ofertas','data','minhas_ofertas'];
+  const ADMIN_HASH = 'f69f04a9c340f2c80896c5adbfe0686369ac3ed9935af596879207ab4cc511c3';
+  const DEFAULT_MIN_OFFERS = 2; // padrão (evita que 1 substitua tudo)
+  const DEFAULT_MAX_RENDER = 120;
 
-    // Utilidades
-    const sanitize = s => (s||'').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const now = () => new Date().toISOString();
+  /************************************************
+   * Helpers
+   ************************************************/
+  const sanitize = s => (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function pick(obj, list){
+    for(const k of list) if(obj && obj[k]!==undefined) return obj[k];
+    return undefined;
+  }
+  function formatPriceVal(v){
+    if(v===undefined || v===null || v==='') return '';
+    const n = Number(v);
+    if(isNaN(n)) return String(v);
+    return 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2});
+  }
+  function humanNumber(n){
+    if(!n && n!==0) return '';
+    n = Number(n);
+    if(isNaN(n)) return '';
+    if(n >= 1000) return (n/1000).toFixed(n>=10000?0:1) + 'k';
+    return String(n);
+  }
 
-    // Render de cards (mantém layout original)
-    function renderCards(list) {
-      const wrapper = document.getElementById('injected-offers-wrapper');
-      const placeholder = document.getElementById('offers-placeholder');
-      if (!list || list.length === 0) {
-        wrapper.style.display = 'none';
-        placeholder.style.display = 'block';
-        placeholder.textContent = 'Nenhuma oferta encontrada.';
+  function parseMinOffers(){
+    const v = localStorage.getItem('site_min_offers');
+    if(!v) return null;
+    const n = Number(v);
+    return (isNaN(n) || n <= 0) ? null : Math.floor(n);
+  }
+
+  function showStatus(msg, ms = 4000){
+    const b = document.getElementById('offers-last-updated-badge');
+    if(!b) return;
+    b.textContent = msg;
+    b.style.opacity = '1';
+    b.style.display = 'block';
+    clearTimeout(b._hide_t);
+    b._hide_t = setTimeout(()=>{ b.style.opacity='0'; setTimeout(()=>{ b.style.display='none'; },250); }, ms);
+  }
+
+  /************************************************
+   * Stars & ratings
+   ************************************************/
+  function starSVG(type='full'){ 
+    if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
+    if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
+    return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
+  }
+  function extractRatingInfo(o){
+    const reviewsField = pick(o, ['reviews','avaliacoes','ratings','comments']);
+    if(Array.isArray(reviewsField) && reviewsField.length){
+      let total = 0, count = 0;
+      for(const r of reviewsField){
+        const s = pick(r, ['score','rating','nota','stars','value']);
+        if(s!==undefined && s!==null && !isNaN(Number(s))){ total += Number(s); count++; }
+      }
+      if(count>0) return { avg: +(total/count).toFixed(2), count: reviewsField.length };
+      return { avg: null, count: reviewsField.length };
+    }
+    const rating = pick(o, ['rating','rating_value','ratingAverage','averageRating','avaliacao','nota','stars','rating_score']);
+    const reviewsCount = pick(o, ['reviews','review_count','reviews_count','avaliacoes','totalReviews','ratings']);
+    const rNum = (rating!==undefined && rating!==null && !isNaN(Number(rating))) ? Number(rating) : null;
+    const cNum = (reviewsCount!==undefined && reviewsCount!==null && !isNaN(Number(reviewsCount))) ? Number(reviewsCount) : null;
+    if(rNum !== null || cNum !== null) return { avg: rNum, count: cNum };
+    return { avg: null, count: null };
+  }
+  function renderStarsInline(avg, count){
+    if(avg === null && count === null) return '';
+    const r = (avg===null) ? 0 : Math.max(0, Math.min(5, Number(avg)));
+    const full = Math.floor(r);
+    const half = (r - full) >= 0.5 ? 1 : 0;
+    const empty = 5 - full - half;
+    let html = `<span class="stars" aria-hidden="true">`;
+    for(let i=0;i<full;i++) html += starSVG('full');
+    if(half) html += starSVG('half');
+    for(let i=0;i<empty;i++) html += starSVG('empty');
+    html += `</span>`;
+    if(avg !== null) html += `<span class="score" aria-label="Avaliação ${avg}"> ${avg}</span>`;
+    if(count !== null) html += `<span class="count"> (${humanNumber(count)})</span>`;
+    return html;
+  }
+
+  /************************************************
+   * Load & render (com proteção de mínimo)
+   ************************************************/
+  let currentOffers = null; // última lista válida exibida (memória)
+
+  async function loadAndRender(){
+    try{
+      const resp = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache: 'no-store'});
+      if(!resp.ok) throw new Error('remote_not_found');
+      const data = await resp.json();
+      const arr = Array.isArray(data) ? data : (data.offers || data.items || data.products || []);
+      if(!Array.isArray(arr) || arr.length === 0){
+        // se remoto vazio, tenta local
+        const local = tryLoadLocal();
+        if(local && local.length){ currentOffers = local; renderList(local); showStatus('Usando cache local (remoto vazio).'); }
+        else showEmpty();
         return;
       }
-      placeholder.style.display = 'none';
-      wrapper.style.display = 'flex';
-      const arr = list.slice(0, MAX_ITEMS);
-      wrapper.innerHTML = arr.map(o => {
-        const title = sanitize(o.title || o.name || o.nome || o['título'] || 'Sem título');
-        const desc  = sanitize(o.description || o['descrição'] || '');
-        const img   = sanitize(o.image_url || o.imagem_url || o.imagemProduto || '');
-        const link  = sanitize(o.affiliate_link || o.link_de_afiliado || o.urlAfiliado || '#');
-        const priceNum = (o.price_number || o['número_do_preço']);
-        const priceText = sanitize(o.price || o.price_text || o['preço'] || '');
-        const priceHtml = (priceNum || priceNum === 0) ? ('R$ ' + Number(priceNum).toLocaleString('pt-BR',{minimumFractionDigits:2})) : priceText;
-        return `
-          <div class="card" role="article" aria-label="${title}">
-            <div style="width:100%;height:150px;display:flex;align-items:center;justify-content:center;background:#f8f8f8;border-radius:4px;overflow:hidden;">
-              <img src="${img}" alt="${title}" loading="lazy">
-            </div>
-            <h3>${title}</h3>
-            <div class="price">${priceHtml}</div>
-            <p>${desc}</p>
-            <a href="${link}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
-          </div>`;
-      }).join('');
-      // smooth scroll para as ofertas (apenas se estava no topo)
-      try { document.getElementById('injected-offers-wrapper').scrollIntoView({behavior:'smooth'}); } catch(e){}
-    }
 
-    // Status badge
-    function showStatus(msg, timeout = 5000) {
-      let b = document.getElementById('offers-last-updated-badge');
-      if (!b) {
-        b = document.createElement('div');
-        b.id = 'offers-last-updated-badge';
-        b.className = 'status-badge';
-        document.body.appendChild(b);
-      }
-      b.textContent = msg;
-      if (timeout) setTimeout(()=>{ try{ b.remove(); }catch(e){} }, timeout);
-    }
-
-    // Segurança: compara tamanho anterior vs novo
-    function shouldAcceptUpdate(prevLen, newLen) {
-      if (!prevLen) return true;
-      if (prevLen <= MIN_KEEP_COUNT) return true;
-      // Rejeita se newLen for muito menor
-      if (newLen < Math.max(1, Math.round(prevLen * ACCEPT_RATIO))) return false;
-      return true;
-    }
-
-    // Carrega JSON com cache-bust
-    async function fetchOffers() {
-      try {
-        const url = JSON_PATH + '?t=' + Date.now();
-        const resp = await fetch(url, { cache: 'no-cache' });
-        if (!resp.ok) {
-          console.warn('offers.json não disponível (status ' + resp.status + ')');
-          return null;
+      const minOffers = parseMinOffers() || DEFAULT_MIN_OFFERS;
+      // Se remoto tem menos que o minimo e já temos currentOffers com >= minimo, IGNORA atualização
+      if(arr.length < minOffers){
+        if(currentOffers && Array.isArray(currentOffers) && currentOffers.length >= minOffers){
+          console.warn(`Atualização remota ignorada: ${arr.length} < min ${minOffers}`);
+          showStatus(`Atualização ignorada: apenas ${arr.length} ofertas (mínimo ${minOffers}). Mantendo última lista válida.`, 5000);
+          renderList(currentOffers);
+          return;
         }
-        const data = await resp.json();
-        return Array.isArray(data) ? data : (data.offers || []);
-      } catch (e) {
-        console.warn('Falha ao buscar offers.json', e);
-        return null;
+        // se não temos currentOffers suficiente, mas localStorage tem, usa localStorage
+        const local = tryLoadLocal();
+        if(local && local.length >= minOffers){
+          currentOffers = local;
+          showStatus(`Atualização remota pequena (${arr.length}) — usando cache local com ${local.length} ofertas.`, 5000);
+          renderList(local);
+          return;
+        }
+        // senão (primeira carga), aceita a remota mesmo menor que o min para não deixar site vazio
+        console.warn(`Atualização remota aceita (primeira carga) apesar de ${arr.length} < min ${minOffers}`);
+        showStatus(`Atualização remota aceita (${arr.length} ofertas) — atenção: abaixo do mínimo configurado (${minOffers}).`, 5000);
+      }
+
+      // aceitável — atualiza cache e renderiza
+      try{ LS_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(arr))); }catch(e){}
+      currentOffers = arr;
+      renderList(arr);
+      showUpdatedBadge();
+    }catch(err){
+      const local = tryLoadLocal();
+      if(local && local.length) { currentOffers = local; renderList(local); showStatus('Erro ao buscar remoto — usando cache local.'); }
+      else showEmpty();
+      console.warn('loadAndRender:', err);
+    }
+  }
+
+  function tryLoadLocal(){
+    for(const k of LS_KEYS){
+      const v = localStorage.getItem(k);
+      if(v){
+        try{ const a = JSON.parse(v); if(Array.isArray(a)) return a; }catch(e){}
       }
     }
+    return null;
+  }
 
-    // Inicial: renderiza o que já existe no local (se houver)
-    function loadLocalAndRender() {
-      let found = null;
-      for (const k of KEYS) {
-        try {
-          const v = localStorage.getItem(k);
-          if (v) {
-            const parsed = JSON.parse(v);
-            if (Array.isArray(parsed) && parsed.length > 0) {
-              found = parsed;
-              break;
-            }
-          }
-        } catch(e){}
+  function showEmpty(){
+    document.getElementById('offers-list').innerHTML = '';
+    document.getElementById('empty').style.display = 'block';
+    document.getElementById('offers-last-updated-badge').style.display='none';
+  }
+
+  function renderList(list){
+    document.getElementById('empty').style.display = 'none';
+    const cont = document.getElementById('offers-list');
+    cont.innerHTML = '';
+    const max = Math.min(list.length, DEFAULT_MAX_RENDER);
+    for(let i=0;i<max;i++){
+      const o = list[i];
+      const title = pick(o, ['title','name','nome','título','produto']) || pick(o, ['product_name','produto_nome']) || '';
+      const desc = pick(o, ['description','descrição','desc','detalhes']) || '';
+      const img = pick(o, ['image_url','img','image','imagem','images','pictures']) || '';
+      let imageUrl = '';
+      if(Array.isArray(img) && img.length) imageUrl = img[0];
+      else if(typeof img === 'string') imageUrl = img;
+      else if(o.pictures && Array.isArray(o.pictures) && o.pictures.length) imageUrl = o.pictures[0];
+      else imageUrl = '';
+      const link = pick(o, ['affiliate_link','link','url','urlAfiliado','link_de_afiliado','aff_link']) || '#';
+      const oldPrice = pick(o, ['original_price','price_old','preco_antigo','price_original']) || pick(o,['price','price_value']) || '';
+      const promoPrice = pick(o, ['promotional_price','price_promotional','preco_promocional','promo_price']) || pick(o,['promo','sale_price']) || '';
+      const numericOld = Number(oldPrice) || null;
+      const numericPromo = Number(promoPrice) || null;
+      const displayOld = numericOld ? formatPriceVal(numericOld) : (oldPrice || '');
+      const displayPromo = numericPromo ? formatPriceVal(numericPromo) : (promoPrice || '');
+      let discountHtml = '';
+      if(numericOld && numericPromo && numericOld > numericPromo){
+        const p = Math.round((1 - (numericPromo / numericOld)) * 100);
+        discountHtml = `<span class="badge-discount">-${p}%</span>`;
       }
-      if (found) {
-        renderCards(found);
-      } else {
-        // show placeholder
-        document.getElementById('offers-placeholder').textContent = 'Carregando melhores ofertas...';
-      }
-      return found || [];
+
+      const ratingInfo = extractRatingInfo(o); // {avg, count}
+      const ratingHtml = (ratingInfo.avg !== null || ratingInfo.count !== null) ? `<div class="rating" aria-hidden="false">${renderStarsInline(ratingInfo.avg, ratingInfo.count)}</div>` : '';
+
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="media"><img src="${sanitize(imageUrl) || 'https://via.placeholder.com/320x240?text=Sem+imagem'}" alt="${sanitize(title)}" loading="lazy"></div>
+        <div class="body">
+          <div class="title">${sanitize(title)}</div>
+          <div class="meta">${discountHtml}${ratingHtml}</div>
+          <div class="desc">${sanitize(desc)}</div>
+          <div style="margin-top:auto">
+            <div class="price-row">
+              <div>
+                <div class="price">${displayPromo || displayOld || 'R$ 0,00'}</div>
+                ${displayOld && displayPromo ? `<div class="old-price">${displayOld}</div>` : ''}
+              </div>
+              <div>
+                <a class="buy" href="${sanitize(link)}" target="_blank" rel="noopener">Ver oferta</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      cont.appendChild(card);
     }
+  }
 
-    // Main flow
-    (async function mainFlow(){
-      const prev = loadLocalAndRender();
-      const prevLen = Array.isArray(prev) ? prev.length : 0;
+  function showUpdatedBadge(){
+    const b = document.getElementById('offers-last-updated-badge');
+    if(!b) return;
+    b.style.display='block';
+    b.textContent = 'Ofertas atualizadas: ' + new Date().toLocaleString();
+    setTimeout(()=>{ b.style.display='none'; }, 8000);
+  }
 
-      const fresh = await fetchOffers();
-      if (!fresh) {
-        // sem fresh, mantemos o prev
-        showStatus('Sem atualização (offers.json indisponível)', 3000);
-        return;
-      }
-      const freshLen = Array.isArray(fresh) ? fresh.length : 0;
+  async function sha256Hex(text){
+    const enc = new TextEncoder().encode(text);
+    const hash = await crypto.subtle.digest('SHA-256', enc);
+    return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join('');
+  }
 
-      if (!shouldAcceptUpdate(prevLen, freshLen)) {
-        console.warn('Atualização ignorada: novo offers.json tem menos itens que o atual', {prevLen, freshLen});
-        // salva candidate para inspeção
-        try { localStorage.setItem('offers_candidate_' + Date.now(), JSON.stringify(fresh)); } catch(e){}
-        showStatus('Atualização ignorada (arquivo incompleto no servidor)', 6000);
-        return;
-      }
-
-      // grava nas chaves compatíveis
-      try {
-        for (const k of KEYS) localStorage.setItem(k, JSON.stringify(fresh));
-        localStorage.setItem('offers_last_updated', now());
-      } catch(e){ console.warn('Falha ao gravar localStorage', e); }
-
-      renderCards(fresh);
-      showStatus('Ofertas atualizadas: ' + freshLen + ' itens', 4500);
-    })();
-
-    // Admin buttons
-    document.getElementById('clear-local').addEventListener('click', function(){
-      const toRemove = [...KEYS, 'offers_last_updated'];
-      toRemove.forEach(k => localStorage.removeItem(k));
-      alert('LocalStorage de ofertas limpo.');
-      location.reload();
-    });
-
-    document.getElementById('export-json').addEventListener('click', function(){
-      const data = localStorage.getItem('offers') || localStorage.getItem('ofertas') || localStorage.getItem('data') || '[]';
-      const blob = new Blob([data], {type:'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
-      URL.revokeObjectURL(url);
-    });
-
-    document.getElementById('save-local').addEventListener('click', function(){
-      const data = localStorage.getItem('offers') || localStorage.getItem('ofertas') || localStorage.getItem('data') || '[]';
-      localStorage.setItem('offers_backup_' + Date.now(), data);
-      alert('Backup das ofertas salvo no localStorage.');
-    });
-
-    // Expor link WhatsApp (opcional: configure)
-    const waBtn = document.getElementById('link-whatsapp');
-    if (waBtn) {
-      // substitua pelo link do seu grupo se quiser
-      waBtn.href = '#';
-      waBtn.addEventListener('click', (e)=> { e.preventDefault(); alert('Configurar link do WhatsApp no index.html se desejar.'); });
+  /************************************************
+   * Admin interactions (inclui min-offers)
+   ************************************************/
+  document.getElementById('gear').addEventListener('click', async () => {
+    const pwd = prompt('Senha do painel administrativo:');
+    if(!pwd) return;
+    const h = await sha256Hex(pwd);
+    if(h === ADMIN_HASH){
+      const panel = document.getElementById('admin-panel');
+      panel.classList.add('active');
+      panel.setAttribute('aria-hidden','false');
+      document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
+      document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
+      document.getElementById('f-min-offers').value = localStorage.getItem('site_min_offers') || '';
+    } else {
+      alert('Senha incorreta');
     }
+  });
+  document.getElementById('close-admin').addEventListener('click', () => {
+    const panel = document.getElementById('admin-panel');
+    panel.classList.remove('active');
+    panel.setAttribute('aria-hidden','true');
+  });
 
-    // Monitor simples: loga mudanças no localStorage (opcional)
-    // setInterval(()=> {
-    //   try {
-    //     const v = localStorage.getItem('offers');
-    //     if (v) console.log('offers len=', JSON.parse(v).length);
-    //   } catch(e){}
-    // }, 10000);
+  document.getElementById('btn-save-local').addEventListener('click', () => {
+    const name = document.getElementById('f-name').value.trim();
+    if(!name){ alert('Informe o nome'); return; }
+    const image = document.getElementById('f-image').value.trim();
+    const oldP = document.getElementById('f-original').value.trim();
+    const promoP = document.getElementById('f-promo').value.trim();
+    const link = document.getElementById('f-link').value.trim() || '#';
+    const rating = document.getElementById('f-rating').value.trim();
+    const obj = { title: name, image_url: image, original_price: oldP || '', promotional_price: promoP || '', affiliate_link: link, rating: rating || undefined };
+    const existing = tryLoadLocal() || [];
+    existing.unshift(obj);
+    try{ localStorage.setItem('site_offers_v1', JSON.stringify(existing)); }catch(e){}
+    currentOffers = existing;
+    renderList(existing);
+    alert('Oferta adicionada localmente.');
+  });
 
+  document.getElementById('btn-export').addEventListener('click', () => {
+    const data = tryLoadLocal() || [];
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', () => {
+    if(!confirm('Limpar ofertas locais?')) return;
+    LS_KEYS.forEach(k => localStorage.removeItem(k));
+    location.reload();
+  });
+
+  function updateVipButtons(){
+    const wa = localStorage.getItem('site_wa') || '#';
+    const tg = localStorage.getItem('site_tg') || '#';
+    document.getElementById('vip-wa').href = wa;
+    document.getElementById('vip-tg').href = tg;
+  }
+  document.getElementById('f-wa-link').addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
+  document.getElementById('f-tg-link').addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
+
+  document.getElementById('btn-apply-min').addEventListener('click', () => {
+    const v = document.getElementById('f-min-offers').value.trim();
+    if(!v){ localStorage.removeItem('site_min_offers'); alert('Mínimo removido.'); return; }
+    const n = Number(v);
+    if(isNaN(n) || n <= 0){ alert('Informe um número válido.'); return; }
+    localStorage.setItem('site_min_offers', String(Math.floor(n)));
+    alert('Mínimo salvo: ' + Math.floor(n));
+  });
+
+  document.getElementById('btn-clear-min').addEventListener('click', () => {
+    localStorage.removeItem('site_min_offers');
+    document.getElementById('f-min-offers').value = '';
+    alert('Mínimo removido (voltando ao padrão).');
+  });
+
+  /************************************************
+   * Init
+   ************************************************/
+  (function init(){
+    updateVipButtons();
+    // carrega o cache local para ter currentOffers se existir
+    currentOffers = tryLoadLocal() || null;
+    loadAndRender();
+    setInterval(loadAndRender, 180000);
   })();
   </script>
+
 </body>
 </html>
