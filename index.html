@@ -4,129 +4,44 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>OfertasVip — Central de Ofertas</title>
+  <meta name="description" content="As melhores promoções atualizadas automaticamente." />
   <style>
     :root { --accent:#0b72ff; --bg:#fafafa; --card-bg:#fff; --muted:#666; --border:#e6e6e6; }
-    body { margin:0; font-family: system-ui, -apple-system, sans-serif; background: #fff; color:#111; }
-    header { background: #ffea3d; padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom: 2px solid #e6d32e; }
-    header h1 { margin:0; font-size:20px; color:#111; }
+     { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #fff; color:#111; }
+    header { background: #ffea3d; padding:14px 18px; display:flex; align-items:center; gap:12px; border-bottom:1px solid #f0d93a; }
+    header img { height:34px; }
+    header h1 { margin:0; font-size:18px; color:#111; }
     main { padding:18px; max-width:1200px; margin:0 auto; }
-    #offers-area { padding:12px 0; min-height:300px; }
-    #injected-offers-wrapper { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-    .card { border:1px solid var(--border); border-radius:8px; padding:12px; width:260px; background:var(--card-bg); box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s; }
-    .card:hover { transform: translateY(-3px); }
-    .card-img-container { width:100%; height:180px; display:flex; align-items:center; justify-content:center; background:#f9f9f9; border-radius: 4px; overflow: hidden; }
-    .card img { max-width:100%; max-height:180px; object-fit:contain; }
-    .card h3 { font-size:15px; margin:12px 0 6px; height:40px; overflow:hidden; color:#333; line-height: 1.3; }
-    .card .price { font-size:18px; font-weight:800; color:#e43137; margin-bottom:10px; }
-    .card a { display:block; text-align:center; padding:10px; background:var(--accent); color:#fff; border-radius:5px; text-decoration:none; font-weight: bold; }
-    .admin-bar { margin-top:30px; padding:15px; border-top: 1px solid #eee; display:flex; gap:10px; flex-wrap:wrap; align-items: center; }
-    .btn { padding:7px 12px; border-radius:4px; border:1px solid #ccc; background:#fff; cursor:pointer; font-size:12px; }
-    .status-badge { position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #fff; padding: 5px 10px; border-radius: 20px; font-size: 11px; z-index: 9999; }
-    @media (max-width:600px){ .card { width: 100%; } }
+    .hero { margin-bottom:12px; }
+    .hero h2 { margin:6px 0 0; font-size:20px; }
+    .hero p { margin:6px 0 0; color:var(--muted); }
+    #offers-area { padding:12px 0; min-height:220px; }
+    #offers-placeholder { color:var(--muted); text-align:center; padding:40px 0; }
+    #injected-offers-wrapper { display:flex; flex-wrap:wrap; gap:12px; justify-content:flex-start; align-items:flex-start; }
+    .card { border:1px solid var(--border); border-radius:6px; padding:10px; width:240px; background:var(--card-bg); box-sizing:border-box; box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+    .card img { width:100%; height:150px; object-fit:contain; background:#f7f7f7; display:block; }
+    .card h3 { font-size:14px; margin:8px 0 4px; min-height:38px; color:#111; line-height:1.2; }
+    .card .price { font-weight:700; color:#222; margin-bottom:6px; }
+    .card p { font-size:12px; color:var(--muted); min-height:36px; margin:0 0 8px; }
+    .card a { display:inline-block; padding:8px 10px; background:var(--accent); color:#fff; border-radius:4px; text-decoration:none; font-size:13px; }
+    .admin { margin-top:18px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .btn { padding:8px 10px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer; }
+    .muted { color:var(--muted); font-size:13px; }
+    .status-badge { position: fixed; right: 12px; bottom: 12px; padding:6px 10px; background: rgba(0,0,0,0.75); color:#fff; font-size:12px; border-radius:6px; z-index:9999; }
+    @media (max-width:600px) { .card { width: calc(50% - 12px); } }
+    @media (max-width:420px) { .card { width: 100%; } }
   </style>
 </head>
 <body>
-
-<header>
-  <div style="background:#000; color:#fff; padding:5px 8px; border-radius:4px; font-weight:bold;">%</div>
-  <h1>OfertasVip</h1>
-</header>
-
-<main>
-  <div id="offers-area">
-    <div id="injected-offers-wrapper">
-       <p style="color:#999; margin-top:50px;">Carregando melhores ofertas...</p>
+  <header>
+    <img src="https://via.placeholder.com/120x34?text=logo" alt="logo">
+    <div>
+      <h1>OfertasVip</h1>
+      <div class="muted">Central de Ofertas</div>
     </div>
-  </div>
+  </header>
 
-  <div class="admin-bar">
-    <span style="font-size:12px; color:#999; font-weight:bold;">ADMIN:</span>
-    <button class="btn" onclick="localStorage.clear(); location.reload();">Limpar Tudo</button>
-    <button class="btn" onclick="location.reload();">Forçar Atualização</button>
-  </div>
-</main>
-
-<script>
-/**
- * SISTEMA AUTO-LOAD COM TRAVA DE SEGURANÇA (ANTI-PERDA DE DADOS)
- */
-(async function initOffers() {
-  const JSON_URL = '/data/offers.json?t=' + Date.now();
-  const KEYS = ['offers','ofertas','data','products'];
-
-  async function loadData() {
-    try {
-      const resp = await fetch(JSON_URL, { cache: 'no-cache' });
-      if (!resp.ok) return null;
-      const data = await resp.json();
-      return Array.isArray(data) ? data : (data.offers || []);
-    } catch (e) { return null; }
-  }
-
-  function render(list) {
-    const wrapper = document.getElementById('injected-offers-wrapper');
-    if (!list || list.length === 0) {
-      wrapper.innerHTML = '<p>Nenhuma oferta encontrada no momento.</p>';
-      return;
-    }
-
-    wrapper.innerHTML = list.map(o => {
-      const title = o.title || o.nome || o.name || "Produto";
-      const price = o.price || o.preço || "Ver preço";
-      const img = o.image_url || o.imagem_url || o.imagemProduto || "";
-      const link = o.affiliate_link || o.link_de_afiliado || "#";
-      return `
-        <div class="card">
-          <div class="card-img-container"><img src="${img}" alt="${title}" loading="lazy"></div>
-          <h3>${title}</h3>
-          <div class="price">${price}</div>
-          <a href="${link}" target="_blank" rel="noopener">Ver Oferta</a>
-        </div>
-      `;
-    }).join('');
-  }
-
-  // 1. Tenta carregar o que já está salvo no celular do usuário
-  let localData = null;
-  try { localData = JSON.parse(localStorage.getItem('offers') || '[]'); } catch(e){}
-  
-  if (localData && localData.length > 0) {
-    render(localData); // Mostra logo o que tem guardado para ser rápido
-  }
-
-  // 2. Busca o arquivo novo no servidor
-  const freshData = await loadData();
-
-  if (freshData && freshData.length > 0) {
-    const freshLen = freshData.length;
-    const localLen = localData ? localData.length : 0;
-
-    // --- TRAVA DE SEGURANÇA ---
-    // Se o novo arquivo tiver apenas 1 item e a gente já tinha muitos itens antes,
-    // a gente IGNORE a atualização (protege contra erro do n8n)
-    if (localLen > 5 && freshLen === 1) {
-      console.warn("TRAVA ATIVADA: O arquivo vindo do n8n parece estar incompleto (apenas 1 item). Mantendo os itens anteriores.");
-      showStatus("Aviso: Mantendo ofertas anteriores (Incompletas no servidor)");
-      return;
-    }
-
-    // Se estiver tudo ok, salva e atualiza a tela
-    KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(freshData)));
-    render(freshData);
-    showStatus("Ofertas atualizadas: " + freshLen + " itens");
-  }
-})();
-
-function showStatus(msg) {
-  let b = document.getElementById('status-msg');
-  if(!b) {
-    b = document.createElement('div'); b.id = 'status-msg'; b.className = 'status-badge';
-    document.body.appendChild(b);
-  }
-  b.textContent = msg;
-  setTimeout(() => b.remove(), 5000);
-}
-</script>
-
-</body>
-</html>
+  <main>
+    <section class="hero">
+      <h2>As melhores prom
