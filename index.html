@@ -68,6 +68,8 @@
     .review-meta{font-size:12px;color:var(--muted);margin-bottom:6px}
     .review-text{font-size:13px;color:#111;white-space:pre-wrap}
     .no-reviews{font-size:13px;color:var(--muted);padding:8px}
+    /* local offers list in admin */
+    #localOffersList .edit-offer, #localOffersList .delete-offer { padding:6px 8px; border-radius:6px; border:1px solid #e6e8ef; background:#fff; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -106,6 +108,7 @@
     </section>
   </main>
 
+  <!-- ADMIN PANEL (mantive id/admin flow original, substituí o conteúdo interno para incluir botão "Salvar Links" e área de ofertas) -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
     <div class="card">
       <div style="padding:16px;border-bottom:1px solid #f0f2f6;display:flex;justify-content:space-between;align-items:center">
@@ -117,6 +120,8 @@
         <div class="form-row" style="margin-top:8px">
           <input id="f-wa-link" placeholder="Link do grupo WhatsApp (https://chat.whatsapp.com/...)">
           <input id="f-tg-link" placeholder="Link do Telegram (https://t.me/...)">
+          <!-- botão Salvar Links adicionado visualmente -->
+          <!-- será criado dinamicamente pelo script suplementar -->
         </div>
 
         <hr style="margin:12px 0">
@@ -140,6 +145,9 @@
           <button id="btn-export" class="btn-ghost">Exportar JSON</button>
           <button id="btn-clear" class="btn-ghost">Limpar ofertas locais</button>
         </div>
+
+        <!-- Local Offers list será inserida aqui dinamicamente pelo script suplementar -->
+        <div id="localOffersContainer" style="margin-top:12px"></div>
 
         <hr style="margin:14px 0">
 
@@ -176,7 +184,7 @@
   const DEFAULT_MAX_RENDER = 120;
 
   /************************************************
-   * Helpers
+   * Helpers (mesmos do seu código original)
    ************************************************/
   const sanitize = s => (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   function pick(obj, list){
@@ -218,40 +226,32 @@
    * Reviews normalization: tenta extrair avaliações detalhadas
    ************************************************/
   function getReviews(item){
-    // tenta campos comumente usados
     const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
     for(const k of candidates){
       if(item[k] && Array.isArray(item[k]) && item[k].length) return normalizeReviewsArray(item[k]);
     }
-    // às vezes reviews vem como objeto com key 'items' ou 'data'
     for(const k of candidates){
       if(item[k] && typeof item[k] === 'object'){
         if(Array.isArray(item[k].items) && item[k].items.length) return normalizeReviewsArray(item[k].items);
         if(Array.isArray(item[k].data) && item[k].data.length) return normalizeReviewsArray(item[k].data);
       }
     }
-    // sem array detalhada: retornar vazio (renderizar apenas média/contagem)
     return [];
   }
 
   function normalizeReviewsArray(arr){
-    // converte cada entrada para {author, score, text, date}
     const out = [];
     for(const r of arr){
       if(r === null || r === undefined) continue;
-      // se for string simples (apenas texto)
       if(typeof r === 'string'){
         out.push({ author: null, score: null, text: r, date: null });
         continue;
       }
-      // procura campos possíveis
       const text = pick(r, ['text','comment','body','review','message','descricao','conteudo']) || pick(r, ['textContent','content']) || null;
       const score = pick(r, ['score','rating','nota','value','stars','rating_value']) || null;
       const author = pick(r, ['author','user','usuario','name','nome','reviewer','userName']) || pick(r, ['owner']) || null;
       const date = pick(r, ['date','created_at','updated_at','data','timestamp']) || null;
-      // se objeto inteiro tem chaves pequenas, stringify fallback
       if(!text && !score && !author){
-        // tenta pegar propriedades que pareçam texto
         const possible = Object.values(r).filter(v => typeof v === 'string' && v.length < 300 && v.length > 5);
         if(possible.length) out.push({ author: null, score: null, text: possible[0], date: null });
         else out.push({ author: null, score: null, text: JSON.stringify(r), date: null });
@@ -265,7 +265,7 @@
   /************************************************
    * Stars & ratings (unchanged)
    ************************************************/
-  function starSVG(type='full'){ 
+  function starSVG(type='full'){
     if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
     if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
     return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
@@ -316,7 +316,6 @@
       const data = await resp.json();
       const arr = Array.isArray(data) ? data : (data.offers || data.items || data.products || []);
       if(!Array.isArray(arr) || arr.length === 0){
-        // se remoto vazio, tenta local
         const local = tryLoadLocal();
         if(local && local.length){ currentOffers = local; renderList(local); showStatus('Usando cache local (remoto vazio).'); }
         else showEmpty();
@@ -324,7 +323,6 @@
       }
 
       const minOffers = parseMinOffers() || DEFAULT_MIN_OFFERS;
-      // Se remoto tem menos que o minimo e já temos currentOffers com >= minimo, IGNORA atualização
       if(arr.length < minOffers){
         if(currentOffers && Array.isArray(currentOffers) && currentOffers.length >= minOffers){
           console.warn(`Atualização remota ignorada: ${arr.length} < min ${minOffers}`);
@@ -332,7 +330,6 @@
           renderList(currentOffers);
           return;
         }
-        // se não temos currentOffers suficiente, mas localStorage tem, usa localStorage
         const local = tryLoadLocal();
         if(local && local.length >= minOffers){
           currentOffers = local;
@@ -340,12 +337,10 @@
           renderList(local);
           return;
         }
-        // senão (primeira carga), aceita a remota mesmo menor que o min para não deixar site vazio
         console.warn(`Atualização remota aceita (primeira carga) apesar de ${arr.length} < min ${minOffers}`);
         showStatus(`Atualização remota aceita (${arr.length} ofertas) — atenção: abaixo do mínimo configurado (${minOffers}).`, 5000);
       }
 
-      // aceitável — atualiza cache e renderiza
       try{ LS_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(arr))); }catch(e){}
       currentOffers = arr;
       renderList(arr);
@@ -405,12 +400,10 @@
       const ratingInfo = extractRatingInfo(o); // {avg, count}
       const ratingHtml = (ratingInfo.avg !== null || ratingInfo.count !== null) ? `<div class="rating" aria-hidden="false">${renderStarsInline(ratingInfo.avg, ratingInfo.count)}</div>` : '';
 
-      // extrai reviews detalhadas
       const reviewsArr = getReviews(o); // array de {author, score, text, date}
 
       const card = document.createElement('article');
       card.className = 'card';
-      // montar html do bloco de reviews (se houver)
       let reviewsHtml = '';
       if(Array.isArray(reviewsArr) && reviewsArr.length){
         let itemsHtml = '';
@@ -422,8 +415,6 @@
           itemsHtml += `<div class="review-item"><div class="review-meta">${author}${scoreText}${dateText}</div>${textHtml}</div>`;
         }
         reviewsHtml = `<details class="reviews"><summary>Ver avaliações (${reviewsArr.length})</summary><div class="reviews-list">${itemsHtml}</div></details>`;
-      } else {
-        // sem reviews detalhadas: nada extra (ratingHtml já mostra média/contagem quando disponível)
       }
 
       card.innerHTML = `
@@ -465,7 +456,7 @@
   }
 
   /************************************************
-   * Admin interactions (inclui min-offers)
+   * Admin interactions (mantive seu flow e acrescentei melhorias)
    ************************************************/
   document.getElementById('gear').addEventListener('click', async () => {
     const pwd = prompt('Senha do painel administrativo:');
@@ -478,6 +469,8 @@
       document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
       document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
       document.getElementById('f-min-offers').value = localStorage.getItem('site_min_offers') || '';
+      // abrir/renderizar lista local (o script suplementar cuida disso)
+      if(typeof window.__adminSupplementInit === 'function') window.__adminSupplementInit();
     } else {
       alert('Senha incorreta');
     }
@@ -489,6 +482,9 @@
   });
 
   document.getElementById('btn-save-local').addEventListener('click', () => {
+    // este handler é apenas um fallback — o script suplementar substitui esse comportamento
+    // para evitar duplicidade, deixamos este handler leve.
+    // Se o suplementar não estiver presente, seguimos com o comportamento antigo:
     const name = document.getElementById('f-name').value.trim();
     if(!name){ alert('Informe o nome'); return; }
     const image = document.getElementById('f-image').value.trim();
@@ -525,6 +521,7 @@
     document.getElementById('vip-wa').href = wa;
     document.getElementById('vip-tg').href = tg;
   }
+  // mantive os event listeners existentes para salvar ao mudar; o suplementar adiciona botão "Salvar Links"
   document.getElementById('f-wa-link').addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
   document.getElementById('f-tg-link').addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
 
@@ -548,68 +545,259 @@
    ************************************************/
   (function init(){
     updateVipButtons();
-    // carrega o cache local para ter currentOffers se existir
     currentOffers = tryLoadLocal() || null;
     loadAndRender();
     setInterval(loadAndRender, 180000);
   })();
   </script>
 
-<!-- Painel Admin (substitua o modal atual pelo bloco abaixo) -->
-<div id="adminModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3>Painel Admin</h3>
-      <button id="closeAdmin" class="btn">Fechar</button>
-    </div>
+  <!-- SCRIPT SUPLEMENTAR: adiciona botão "Salvar Links" e gerência local completo (salvar/editar/excluir) -->
+  <script>
+  (function(){
+    // chaves e elementos (compatíveis com seu HTML existente)
+    const LINKS_KEY = 'site_links_v1'; // usado internamente pelo suplementar
+    const STORAGE_OFFERS_KEY = 'site_offers_v1'; // mantém compatibilidade com o seu uso anterior
+    let offers = []; // lista local gerenciada aqui (salva em STORAGE_OFFERS_KEY)
+    let editingId = null;
 
-    <div class="modal-body">
-      <label>Links de grupo (WhatsApp / Telegram)</label>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input id="input-whatsapp" type="text" placeholder="https://chat.whatsapp.com/..." style="flex:1" />
-        <input id="input-telegram" type="text" placeholder="https://t.me/..." style="flex:1" />
-        <button id="save-links-btn" class="btn">Salvar Links</button>
-      </div>
-      <small>Depois de salvar, os botões do site serão atualizados automaticamente.</small>
+    // utilidades
+    function qs(sel, root=document){ return root.querySelector(sel); }
+    function qsa(sel, root=document){ return Array.from((root||document).querySelectorAll(sel)); }
+    function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-      <hr/>
+    // criar botão Salvar Links ao lado do input de tg se não existir
+    const tgInput = qs('#f-tg-link');
+    if(tgInput){
+      const saveBtn = document.createElement('button');
+      saveBtn.id = 'btn-save-links';
+      saveBtn.className = 'btn-ghost';
+      saveBtn.textContent = 'Salvar Links';
+      saveBtn.style.minWidth = '110px';
+      // inserir após o input tg dentro da mesma linha (.form-row)
+      const parentRow = tgInput.parentNode;
+      parentRow.appendChild(saveBtn);
+      saveBtn.addEventListener('click', () => {
+        const wa = (qs('#f-wa-link')?.value || '').trim();
+        const tg = (qs('#f-tg-link')?.value || '').trim();
+        localStorage.setItem('site_wa', wa);
+        localStorage.setItem('site_tg', tg);
+        // armazena também em uma chave consolidada para possível uso futuro
+        localStorage.setItem(LINKS_KEY, JSON.stringify({ whatsapp: wa, telegram: tg }));
+        // atualiza os botões VIP
+        if(typeof updateVipButtons === 'function') updateVipButtons();
+        alert('Links salvos!');
+      });
+    }
 
-      <label>Adicionar/Editar oferta manual (salva localmente no navegador)</label>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <input id="input-title" placeholder="Nome do produto" />
-        <input id="input-image" placeholder="URL da imagem" />
-        <input id="input-price" placeholder="Preço original (ex: 199.90)" />
-        <input id="input-promo" placeholder="Preço promocional (ex: 89.90)" />
-        <input id="input-aff" placeholder="Link de afiliado" style="grid-column:1 / -1;" />
-        <input id="input-rating" placeholder="Avaliação (ex: 4.5) ou vazio" />
-      </div>
-      <div style="margin-top:8px;display:flex;gap:8px;">
-        <button id="save-product-btn" class="btn">Salvar Produto</button>
-        <button id="add-local-btn" class="btn">Adicionar (novo)</button>
-        <button id="export-json-btn" class="btn">Exportar JSON</button>
-        <button id="clear-local-btn" class="btn">Limpar ofertas locais</button>
-      </div>
+    // criar container de lista local de ofertas abaixo dos botões (localOffersContainer)
+    const localOffersContainer = qs('#localOffersContainer');
+    if(localOffersContainer){
+      const listDiv = document.createElement('div');
+      listDiv.id = 'localOffersList';
+      listDiv.style.maxHeight = '220px';
+      listDiv.style.overflow = 'auto';
+      listDiv.style.marginTop = '8px';
+      listDiv.style.border = '1px solid #f0f2f6';
+      listDiv.style.padding = '8px';
+      listDiv.style.borderRadius = '8px';
+      localOffersContainer.appendChild(listDiv);
+    }
 
-      <hr/>
+    // carregar ofertas da storage
+    function loadOffers(){
+      try{
+        const raw = localStorage.getItem(STORAGE_OFFERS_KEY);
+        if(!raw){ offers = []; return; }
+        offers = JSON.parse(raw) || [];
+      }catch(e){ offers = []; }
+    }
+    function saveOffers(){
+      try{
+        localStorage.setItem(STORAGE_OFFERS_KEY, JSON.stringify(offers));
+      }catch(e){
+        console.error('Erro ao salvar ofertas locais', e);
+      }
+      // atualizar a exibição principal do site
+      if(typeof renderList === 'function'){
+        // renderList espera um array
+        renderList(offers);
+      }
+      renderOffersList();
+    }
 
-      <label>Ofertas locais (salvas no navegador)</label>
-      <div id="localOffersList" style="max-height:200px;overflow:auto;margin-top:8px;border:1px solid #eee;padding:8px;border-radius:6px;">
-        <!-- Lista será gerada dinamicamente -->
-      </div>
+    function renderOffersList(){
+      const root = qs('#localOffersList');
+      if(!root) return;
+      root.innerHTML = '';
+      if(!offers.length){
+        root.innerHTML = '<div style="color:#666;padding:6px">Nenhuma oferta local salva.</div>';
+        return;
+      }
+      offers.forEach(o=>{
+        const row = document.createElement('div');
+        row.style.display='flex';
+        row.style.justifyContent='space-between';
+        row.style.alignItems='center';
+        row.style.padding='6px 4px';
+        row.style.borderBottom='1px solid #f7f8fb';
+        row.innerHTML = `
+          <div style="flex:1">
+            <div style="font-weight:700;font-size:13px">${escapeHtml(o.title || o.name || '(sem título)')}</div>
+            <div style="font-size:12px;color:#666">${escapeHtml(o.price || o.preço || '')} ${o.promo ? '→ ' + escapeHtml(o.promo) : ''}</div>
+          </div>
+          <div style="display:flex;gap:6px;margin-left:8px">
+            <button class="edit-offer btn-ghost" data-id="${escapeHtml(o.id)}">Editar</button>
+            <button class="delete-offer btn-ghost" data-id="${escapeHtml(o.id)}">Excluir</button>
+          </div>
+        `;
+        root.appendChild(row);
+      });
+      // attach events
+      qsa('.edit-offer', root).forEach(b => b.addEventListener('click', e => {
+        const id = e.currentTarget.getAttribute('data-id');
+        startEditOffer(id);
+      }));
+      qsa('.delete-offer', root).forEach(b => b.addEventListener('click', e => {
+        const id = e.currentTarget.getAttribute('data-id');
+        if(confirm('Excluir esta oferta local?')) {
+          offers = offers.filter(x => String(x.id) !== String(id));
+          saveOffers();
+          alert('Oferta excluída.');
+        }
+      }));
+    }
 
-      <hr/>
-      <label>Mínimo de ofertas para aceitar atualização remota</label>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <input id="input-min-remote" placeholder="Número mínimo (ex: 2)" style="width:140px;" />
-        <button id="apply-min-btn" class="btn">Aplicar</button>
-        <button id="remove-min-btn" class="btn">Remover</button>
-      </div>
+    function startEditOffer(id){
+      const o = offers.find(x => String(x.id) === String(id));
+      if(!o) return;
+      editingId = String(id);
+      qs('#f-name').value = o.title || o.name || '';
+      qs('#f-image').value = o.image_url || o.imagem_url || '';
+      qs('#f-original').value = o.original_price || o.price || o.preço || '';
+      qs('#f-promo').value = o.promotional_price || o.promo || o.sale_price || '';
+      qs('#f-link').value = o.affiliate_link || o.link_de_afiliado || o.link || '';
+      qs('#f-rating').value = o.rating || o.avaliacao || '';
+      const addBtn = qs('#btn-save-local');
+      if(addBtn) addBtn.textContent = 'Salvar Alteração';
+    }
 
-      <p style="font-size:12px;color:#666;margin-top:10px;">
-        Observação: para publicar globalmente, configure seu fluxo n8n para atualizar /data/offers.json no repositório.
-      </p>
-    </div>
-  </div>
-</div>
+    function clearProductForm(){
+      editingId = null;
+      qs('#f-name').value = '';
+      qs('#f-image').value = '';
+      qs('#f-original').value = '';
+      qs('#f-promo').value = '';
+      qs('#f-link').value = '';
+      qs('#f-rating').value = '';
+      const addBtn = qs('#btn-save-local');
+      if(addBtn) addBtn.textContent = 'Adicionar local';
+    }
+
+    function addOrUpdateProduct(){
+      const name = (qs('#f-name').value || '').trim();
+      if(!name){ alert('Preencha ao menos o nome do produto.'); return; }
+      const image = (qs('#f-image').value || '').trim();
+      const original = (qs('#f-original').value || '').trim();
+      const promo = (qs('#f-promo').value || '').trim();
+      const link = (qs('#f-link').value || '').trim() || '#';
+      const rating = (qs('#f-rating').value || '').trim();
+
+      if(editingId){
+        offers = offers.map(o => {
+          if(String(o.id) === String(editingId)){
+            return Object.assign({}, o, {
+              title: name, image_url: image, original_price: original, promotional_price: promo, affiliate_link: link, rating: rating || undefined
+            });
+          }
+          return o;
+        });
+        alert('Oferta atualizada.');
+      } else {
+        const newObj = {
+          id: 'local-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+          title: name,
+          image_url: image,
+          original_price: original,
+          promotional_price: promo,
+          affiliate_link: link,
+          rating: rating || undefined
+        };
+        offers.unshift(newObj); // add on top
+        alert('Oferta adicionada.');
+      }
+      saveOffers();
+      clearProductForm();
+    }
+
+    // botão salvar links já criado; agora substituímos o comportamento do btn-save-local para usar addOrUpdateProduct
+    const btnSaveLocal = qs('#btn-save-local');
+    if(btnSaveLocal){
+      // remover listeners anteriores (se existirem) substituindo por clone (safer)
+      const newBtn = btnSaveLocal.cloneNode(true);
+      btnSaveLocal.parentNode.replaceChild(newBtn, btnSaveLocal);
+      newBtn.addEventListener('click', addOrUpdateProduct);
+    }
+
+    // aplicar função export/clear já presentes no seu código — mas garantimos que render list seja atualizada
+    const btnExport = qs('#btn-export');
+    if(btnExport){
+      btnExport.addEventListener('click', () => {
+        const data = offers || [];
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'offers-local.json'; a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+    const btnClear = qs('#btn-clear');
+    if(btnClear){
+      btnClear.addEventListener('click', () => {
+        if(!confirm('Remover todas as ofertas locais?')) return;
+        offers = [];
+        saveOffers();
+      });
+    }
+
+    // Quando o admin fecha, limpamos o formulário (comportamento amigável)
+    const closeAdmin = qs('#close-admin');
+    if(closeAdmin) closeAdmin.addEventListener('click', () => clearProductForm());
+
+    // Expor uma função para inicializar (chamada pelo código principal ao abrir o painel)
+    window.__adminSupplementInit = function(){
+      loadOffers();
+      renderOffersList();
+      // preencher inputs de links a partir das chaves existentes (site_wa/site_tg)
+      try{
+        const wa = localStorage.getItem('site_wa') || '';
+        const tg = localStorage.getItem('site_tg') || '';
+        if(qs('#f-wa-link')) qs('#f-wa-link').value = wa;
+        if(qs('#f-tg-link')) qs('#f-tg-link').value = tg;
+      }catch(e){}
+    };
+
+    // inicializa ao carregar a página (para caso admin já aberto)
+    loadOffers();
+    renderOffersList();
+
+    // permitir abrir admin pelo link superior se quiser (compat)
+    const openAdminTop = qs('#open-admin-top');
+    if(openAdminTop){
+      openAdminTop.addEventListener('click', () => {
+        document.getElementById('gear').click();
+      });
+    }
+
+    // segurança: intercepta cliques em links de chat.whatsapp e garante target/_blank
+    document.addEventListener('click', function(e){
+      const a = e.target.closest && e.target.closest('a[href*="chat.whatsapp.com"], a[href*="wa.me"], a[href*="t.me"]');
+      if(a){
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+      }
+    }, true);
+
+  })();
+  </script>
+
 </body>
 </html>
