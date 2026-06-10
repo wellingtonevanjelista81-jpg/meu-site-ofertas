@@ -102,7 +102,11 @@
   <div class="topbar" role="banner">
     <div class="top-left">
       <div class="logo" aria-hidden="true">
-        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='44'><rect width='100%' height='100%' fill='%23ffe600'/><text x='14' y='28' font-family='Arial' font-size='16' fill='%23000'>Via Mais Store</text></svg>" alt="Via Mais Store Logo">
+        <!-- Primeiro tenta /assets/logo.png (coloque seu arquivo em assets/logo.png).
+             Se não existir, usa SVG inline como fallback. -->
+        <img id="site-logo" src="/assets/logo.png"
+             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; width=&quot;180&quot; height=&quot;44&quot;><rect width=&quot;100%&quot; height=&quot;100%&quot; fill=&quot;%23ffe600&quot;/><text x=&quot;14&quot; y=&quot;28&quot; font-family=&quot;Arial&quot; font-size=&quot;16&quot; fill=&quot;%23000&quot;>Via Mais Store</text></svg>'"
+             alt="Via Mais Store Logo">
       </div>
     </div>
 
@@ -152,7 +156,6 @@
     <div class="card" style="max-height:84vh;overflow:auto;position:relative;padding:16px;">
       <button id="close-admin" class="btn-ghost" style="position:absolute;top:12px;right:12px">Fechar</button>
       <h3>Painel Admin</h3>
-
       <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
           <div class="small">Links de grupo (WhatsApp / Telegram)</div>
@@ -232,7 +235,7 @@
     if(a2){ a2.href = tg; a2.onclick = e => { e.preventDefault(); window.open(tg,'_blank'); } }
   }
 
-  // Data handling
+  // Data handling & rendering (mantido — sem alterações)
   async function fetchRemoteOffers(){
     try{
       const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache:'no-store'});
@@ -258,7 +261,6 @@
   function loadLocalOffers(){ try{ const raw = localStorage.getItem('offers'); if(!raw) return []; const parsed = JSON.parse(raw); if(!Array.isArray(parsed)) return []; return parsed.map(normalizeOffer); }catch(e){ console.warn('local parse fail', e); return []; } }
   function saveLocalOffers(arr){ localStorage.setItem('offers', JSON.stringify(arr)); }
 
-  // Rendering + state
   let ALL_OFFERS = []; let FILTERED = []; let state = { q:'', category:'', sort:'relevance', page:1, pageSize:12 };
 
   function applyFilters(){
@@ -357,7 +359,7 @@
     const next = document.createElement('button'); next.textContent = 'Próximo »'; next.disabled = state.page >= pages; next.addEventListener('click', ()=> { state.page++; renderPage(); }); pager.appendChild(next);
   }
 
-  // Load sequence
+  // Load sequence + admin handlers (mantidos)
   async function loadOffers(){
     document.getElementById('last-updated').textContent = 'Carregando...';
     const remote = await fetchRemoteOffers();
@@ -375,7 +377,6 @@
     applyFilters();
   }
 
-  // Admin
   async function openAdmin(){
     const pwd = prompt('Senha:');
     if(!pwd) return;
@@ -389,7 +390,6 @@
   function closeAdmin(){ document.getElementById('admin-panel').classList.remove('active'); document.getElementById('admin-panel').setAttribute('aria-hidden','true'); }
 
   document.getElementById('gear').addEventListener('click', ()=> openAdmin());
-  // top yellow admin button removed on purpose (no open-admin-top)
   document.getElementById('close-admin').addEventListener('click', ()=> closeAdmin());
   document.getElementById('open-admin').addEventListener('click', ()=> openAdmin());
 
@@ -439,7 +439,7 @@
     });
   };
 
-  // Import/Export
+  // Import/Export bindings
   document.getElementById('btn-export').addEventListener('click', ()=>{
     const data = JSON.stringify(ALL_OFFERS, null, 2);
     const blob = new Blob([data], {type:'application/json'});
