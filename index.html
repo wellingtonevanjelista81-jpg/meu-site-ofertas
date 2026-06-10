@@ -108,7 +108,7 @@
     </section>
   </main>
 
-  <!-- ADMIN PANEL SIMPLIFICADO: substituir o bloco existente com id="admin-panel" -->
+  <!-- ADMIN PANEL SIMPLIFICADO -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
     <div class="card" style="max-height:78vh;overflow:auto;position:relative;padding-bottom:12px;">
       <button id="close-admin" class="btn-ghost" aria-label="Fechar painel" style="position:absolute;top:10px;right:10px;">Fechar</button>
@@ -172,7 +172,7 @@
   const REMOTE_JSON_PATH = '/data/offers.json';
   const LS_KEYS = ['site_offers_v1','offers','ofertas','data','minhas_ofertas'];
   const ADMIN_HASH = 'f69f04a9c340f2c80896c5adbfe0686369ac3ed9935af596879207ab4cc511c3';
-  const DEFAULT_MIN_OFFERS = 2; // padrão (evita que 1 substitua tudo)
+  const DEFAULT_MIN_OFFERS = 2;
   const DEFAULT_MAX_RENDER = 120;
 
   /************************************************
@@ -215,7 +215,7 @@
   }
 
   /************************************************
-   * Reviews normalization
+   * Reviews normalization & stars
    ************************************************/
   function getReviews(item){
     const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
@@ -254,9 +254,6 @@
     return out;
   }
 
-  /************************************************
-   * Stars & ratings
-   ************************************************/
   function starSVG(type='full'){
     if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
     if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
@@ -299,7 +296,7 @@
   /************************************************
    * Load & render (com proteção de mínimo)
    ************************************************/
-  let currentOffers = null; // última lista válida exibida (memória)
+  let currentOffers = null;
 
   async function loadAndRender(){
     try{
@@ -450,6 +447,23 @@
   /************************************************
    * Admin interactions
    ************************************************/
+  function updateVipButtons(){
+    const wa = localStorage.getItem('site_wa') || '#';
+    const tg = localStorage.getItem('site_tg') || '#';
+    const a1 = document.getElementById('vip-wa');
+    const a2 = document.getElementById('vip-tg');
+    if(a1){
+      a1.href = wa;
+      a1.setAttribute('target','_blank');
+      a1.setAttribute('rel','noopener noreferrer');
+    }
+    if(a2){
+      a2.href = tg;
+      a2.setAttribute('target','_blank');
+      a2.setAttribute('rel','noopener noreferrer');
+    }
+  }
+
   document.getElementById('gear').addEventListener('click', async () => {
     const pwd = prompt('Senha do painel administrativo:');
     if(!pwd) return;
@@ -460,7 +474,6 @@
       panel.setAttribute('aria-hidden','false');
       document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
       document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
-      document.getElementById('f-min-offers').value = localStorage.getItem('site_min_offers') || '';
       if(typeof window.__adminSupplementInit === 'function') window.__adminSupplementInit();
     } else {
       alert('Senha incorreta');
@@ -473,7 +486,6 @@
   });
 
   document.getElementById('btn-save-local')?.addEventListener('click', () => {
-    // fallback: mantém compatibilidade, mas o script suplementar principal faz o trabalho
     const name = document.getElementById('f-name')?.value?.trim();
     if(!name){ alert('Informe o nome'); return; }
     const image = document.getElementById('f-image')?.value?.trim();
@@ -506,30 +518,8 @@
     location.reload();
   });
 
-  function updateVipButtons(){
-    const wa = localStorage.getItem('site_wa') || '#';
-    const tg = localStorage.getItem('site_tg') || '#';
-    document.getElementById('vip-wa').href = wa;
-    document.getElementById('vip-tg').href = tg;
-  }
   document.getElementById('f-wa-link')?.addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
   document.getElementById('f-tg-link')?.addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
-
-  document.getElementById('btn-apply-min')?.addEventListener('click', () => {
-    const v = document.getElementById('f-min-offers')?.value?.trim();
-    if(!v){ localStorage.removeItem('site_min_offers'); alert('Mínimo removido.'); return; }
-    const n = Number(v);
-    if(isNaN(n) || n <= 0){ alert('Informe um número válido.'); return; }
-    localStorage.setItem('site_min_offers', String(Math.floor(n)));
-    alert('Mínimo salvo: ' + Math.floor(n));
-  });
-
-  document.getElementById('btn-clear-min')?.addEventListener('click', () => {
-    localStorage.removeItem('site_min_offers');
-    const el = document.getElementById('f-min-offers');
-    if(el) el.value = '';
-    alert('Mínimo removido (voltando ao padrão).');
-  });
 
   /************************************************
    * Init
@@ -542,7 +532,7 @@
   })();
   </script>
 
-  <!-- SCRIPT SUPLEMENTAR SIMPLIFICADO -->
+  <!-- SCRIPT SUPLEMENTAR SIMPLIFICADO (com normalizeLink) -->
   <script>
   (function(){
     const STORAGE_OFFERS_KEY = 'site_offers_v1';
@@ -550,6 +540,20 @@
 
     function qs(sel){ return document.querySelector(sel); }
     function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    // normaliza links: adiciona protocolo quando necessário
+    function normalizeLink(url){
+      if(!url) return '#';
+      url = String(url).trim();
+      // já tem protocolo (http(s):// ou whatsapp: etc)
+      if(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//.test(url)) return url;
+      // alguns formatos comuns: chat.whatsapp.com, wa.me, t.me, www.
+      if(/^chat\.whatsapp\.com/i.test(url) || /^wa\.me/i.test(url) || /^t\.me/i.test(url) || /^www\./i.test(url)){
+        return 'https://' + url;
+      }
+      // fallback: adiciona https://
+      return 'https://' + url;
+    }
 
     function loadOffers(){ try{ const raw = localStorage.getItem(STORAGE_OFFERS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; } }
     function saveOffers(arr){ try{ localStorage.setItem(STORAGE_OFFERS_KEY, JSON.stringify(arr)); }catch(e){} if(typeof renderList === 'function') renderList(arr); renderOffersList(); }
@@ -569,12 +573,14 @@
       });
     }
 
-    // salvar links
+    // salvar links (usa normalizeLink)
     const btnSaveLinks = qs('#btn-save-links');
     if(btnSaveLinks){
       btnSaveLinks.addEventListener('click', ()=>{
-        const wa = (qs('#f-wa-link')?.value || '').trim();
-        const tg = (qs('#f-tg-link')?.value || '').trim();
+        const waRaw = (qs('#f-wa-link')?.value || '').trim();
+        const tgRaw = (qs('#f-tg-link')?.value || '').trim();
+        const wa = normalizeLink(waRaw);
+        const tg = normalizeLink(tgRaw);
         localStorage.setItem('site_wa', wa);
         localStorage.setItem('site_tg', tg);
         localStorage.setItem(LINKS_KEY, JSON.stringify({ whatsapp: wa, telegram: tg }));
