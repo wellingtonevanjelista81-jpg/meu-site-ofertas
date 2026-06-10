@@ -195,7 +195,7 @@
   }
 
   // Normalize URL: add https:// when missing (handles chat.whatsapp.com, wa.me, t.me, www.)
-  // CORREÇÃO: não transformar '#' em 'https://#'
+  // PROTEÇÃO: não transformar '#' em 'https://#'
   function normalizeUrlMaybe(u){
     if(!u) return '#';
     u = String(u).trim();
@@ -208,7 +208,7 @@
   }
 
   /************************************************
-   * Reviews & Stars (kept)
+   * Reviews & Stars
    ************************************************/
   function getReviews(item){
     const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
@@ -250,7 +250,7 @@
     if(Array.isArray(reviewsField) && reviewsField.length){
       let total=0, count=0;
       for(const r of reviewsField){ const s = pick(r, ['score','rating','nota','stars','value']); if(s!==undefined && s!==null && !isNaN(Number(s))){ total+=Number(s); count++; } }
-      if(count>0) return { avg: +(total/count).toFixed(02), count: reviewsField.length };
+      if(count>0) return { avg: +(total/count).toFixed(2), count: reviewsField.length };
       return { avg: null, count: reviewsField.length };
     }
     const rating = pick(o, ['rating','rating_value','ratingAverage','averageRating','avaliacao','nota','stars','rating_score']);
@@ -453,7 +453,7 @@
 
   /************************************************
    * Admin interactions: Vip buttons, painel, salvar/descarregar
-   * (Robusto: tenta abrir app, fallback para copiar para clipboard)
+   * Robust vip handler: removes old listeners, intent fallback, copy-to-clipboard
    ************************************************/
   function copyToClipboard(text){
     if(!text) return Promise.reject();
@@ -480,10 +480,23 @@
   }
 
   function updateVipButtons(){
-    const a1 = document.getElementById('vip-wa');
-    const a2 = document.getElementById('vip-tg');
+    // get elements (may be replaced to clear old listeners)
+    let a1 = document.getElementById('vip-wa');
+    let a2 = document.getElementById('vip-tg');
 
-    // prioriza localStorage, senão usa o href (que normalmente é '#')
+    // if element exists, replace with clone to remove any previous listeners attached inline or otherwise
+    if(a1){
+      const n = a1.cloneNode(true);
+      a1.parentNode.replaceChild(n, a1);
+      a1 = n;
+    }
+    if(a2){
+      const n2 = a2.cloneNode(true);
+      a2.parentNode.replaceChild(n2, a2);
+      a2 = n2;
+    }
+
+    // priority: localStorage value, fallback to attribute href
     const rawWa = (localStorage.getItem('site_wa') || (a1 ? a1.getAttribute('href') : '#')||'#').trim();
     const rawTg = (localStorage.getItem('site_tg') || (a2 ? a2.getAttribute('href') : '#')||'#').trim();
     const wa = normalizeUrlMaybe(rawWa);
@@ -499,11 +512,13 @@
         if(w) return;
       }catch(e){}
       try{
-        // tenta intent ou esquema nativo para chat.whatsapp.com/wa.me
+        // tenta intent / esquema nativo para chat.whatsapp.com ou wa.me
         if(/chat\.whatsapp\.com|wa\.me/i.test(u)){
           const cleaned = u.replace(/^https?:\/\//,'');
           const intent = 'intent://' + cleaned + '#Intent;package=com.whatsapp;scheme=https;end';
+          // tentativa de abrir via intent
           window.location.href = intent;
+          // se não abrir em 1.2s, copia link para clipboard e avisa
           setTimeout(()=>{ copyToClipboard(u).then(()=> showToast('Não abriu o app — link copiado para colar no navegador/WhatsApp.')); }, 1200);
           return;
         }
@@ -529,16 +544,16 @@
     }
 
     if(a1){
-      a1.onclick = function(ev){
+      a1.addEventListener('click', function(ev){
         ev.preventDefault();
         openWhatsAppInvite(wa);
-      };
+      }, { passive: false });
     }
     if(a2){
-      a2.onclick = function(ev){
+      a2.addEventListener('click', function(ev){
         ev.preventDefault();
         openTelegram(tg);
-      };
+      }, { passive: false });
     }
   }
 
