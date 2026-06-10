@@ -7,12 +7,12 @@
   <meta name="description" content="Ofertas e descontos atualizados automaticamente." />
   <style>
     :root{
-      --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#0b72ff; --wa:#25D366; --tg:#0088CC;
-      --price:#ef4444; --old-price:#9ca3af; --card-radius:12px;
+      --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#ff3a2f; --wa:#25D366; --tg:#0088CC;
+      --price:#ef4444; --old-price:#9ca3af; --card-radius:12px; --gap:14px;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111}
-    header{background:#fff;padding:12px 18px;border-bottom:1px solid #e6e8ef;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:60}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111;-webkit-font-smoothing:antialiased}
+    header{background:#fff;padding:12px 18px;border-bottom:1px solid #e6e8ef;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:80}
     header img{height:38px}
     header .brand{display:flex;flex-direction:column}
     header h1{margin:0;font-size:18px;color:#111}
@@ -25,41 +25,50 @@
     .vip-actions a{padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
     .vip-actions .wa{background:var(--wa)}
     .vip-actions .tg{background:var(--tg)}
-    .hero{max-width:1200px;margin:18px auto;padding:18px}
-    .hero h2{margin:0;font-size:20px}
-    .hero p{color:var(--muted);margin:6px 0 0}
-    main .container{max-width:1200px;margin:0 auto;padding:0 18px 80px}
-    #offers-list{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:12px}
-    @media (max-width:1100px){ #offers-list{grid-template-columns:repeat(3,1fr)} }
-    @media (max-width:780px){ #offers-list{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:420px){ #offers-list{grid-template-columns:repeat(1,1fr)} }
+    .page{max-width:1280px;margin:18px auto;padding:0 18px 80px}
+    .hero{display:flex;gap:18px;align-items:flex-start}
+    .hero-left{flex:1}
+    .hero-right{width:360px}
+    .hero .search{display:flex;gap:8px;margin-bottom:12px}
+    .search input{flex:1;padding:12px;border-radius:8px;border:1px solid #e6e8ef}
+    .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+    .filters select, .filters button, .filters input{padding:8px;border-radius:8px;border:1px solid #e6e8ef;background:#fff}
+    .filters .btn{background:#111;color:#fff;border:none;padding:9px 12px}
+    .grid-controls{display:flex;justify-content:space-between;align-items:center;margin:12px 0}
+    .carousel{background:#fff;border-radius:12px;padding:12px;border:1px solid #e6e8ef;overflow:hidden}
+    .carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:6px}
+    .carousel .card{min-width:220px;flex:0 0 220px}
+    .offers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    @media (max-width:1100px){ .offers-grid{grid-template-columns:repeat(3,1fr)} .hero-right{display:none} }
+    @media (max-width:780px){ .offers-grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:420px){ .offers-grid{grid-template-columns:repeat(1,1fr)} header .brand h1{font-size:16px} }
     .card{background:var(--card);border-radius:var(--card-radius);overflow:hidden;border:1px solid #e8eaf2;box-shadow:0 6px 18px rgba(12,14,20,0.04);display:flex;flex-direction:column}
-    .media{height:200px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px}
+    .media{height:180px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px}
     .media img{max-width:100%;max-height:100%;object-fit:contain}
     .body{padding:12px;flex:1;display:flex;flex-direction:column}
     .title{font-size:14px;font-weight:600;min-height:44px;margin-bottom:6px;color:#111}
     .desc{font-size:12px;color:var(--muted);min-height:36px;margin-bottom:8px}
     .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
     .badge-discount{background:linear-gradient(90deg,#ffbaba,#ff8a8a);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
-    .rating{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:#111}
-    .stars{display:inline-flex;gap:2px;align-items:center}
-    .rating .score{font-weight:700;font-size:14px;color:#111}
-    .rating .count{color:var(--muted);font-size:13px}
-    .price-row{display:flex;align-items:center;gap:8px;justify-content:space-between}
+    .price-row{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:auto}
     .price {font-weight:800;color:var(--price);font-size:18px}
     .old-price{color:var(--old-price);text-decoration:line-through;font-size:13px}
-    .buy{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:10px;background:#111;color:#fff;text-decoration:none;text-align:center;font-weight:700}
+    .buy{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;text-align:center;font-weight:700}
     .muted{color:var(--muted)}
     .admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;z-index:120}
-    .admin-panel .card{width:720px;max-width:100%}
+    .admin-panel .card{width:760px;max-width:100%}
     .admin-panel.active{display:flex}
     .form-row{display:flex;gap:8px;margin-bottom:8px}
-    .form-row input{flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef}
+    .form-row input, .form-row select, .form-row textarea{flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef}
     .small{font-size:13px;color:var(--muted)}
     .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
     .gear-btn svg{width:20px;height:20px;color:#111}
     #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60;transition:opacity .25s}
     .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .pager{display:flex;gap:6px;align-items:center;justify-content:center;margin-top:18px}
+    .pager button{padding:8px 10px;border-radius:8px;border:1px solid #e6e8ef;background:#fff;cursor:pointer}
+    .chip{padding:6px 10px;border-radius:999px;border:1px solid #e6e8ef;background:#fff;cursor:pointer}
+    .hidden{display:none}
   </style>
 </head>
 <body>
@@ -77,23 +86,72 @@
       <div class="vip-text">Entre no nosso Grupo Vip! Receba ofertas exclusivas em primeira mão.</div>
     </div>
     <div class="vip-actions">
-      <!-- Links hardcoded como fallback principal -->
+      <!-- fallback hrefs (serão substituídos pelo admin/localStorage se configurado) -->
       <a id="vip-wa" class="wa" href="https://chat.whatsapp.com/CqO1WYQbzuKGrpWBqBGOp2" target="_blank" rel="noopener noreferrer">WhatsApp</a>
       <a id="vip-tg" class="tg" href="https://t.me/VIAMAISSTORE" target="_blank" rel="noopener noreferrer">Telegram</a>
     </div>
   </div>
 
-  <main>
-    <section class="hero container">
-      <h2>Via Mais Store!</h2>
-      <p class="muted">As melhores ofertas e descontos selecionados para você.</p>
-    </section>
+  <div class="page">
+    <div class="hero">
+      <div class="hero-left">
+        <div class="carousel" aria-label="Destaques">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <strong>Destaques</strong>
+            <div style="display:flex;gap:8px">
+              <button id="carousel-prev" class="chip">&larr;</button>
+              <button id="carousel-next" class="chip">&rarr;</button>
+            </div>
+          </div>
+          <div id="carousel-track" class="carousel-track" tabindex="0" role="list"></div>
+        </div>
 
-    <section class="container">
-      <div id="offers-list" aria-live="polite"></div>
-      <div id="empty" class="muted" style="text-align:center;padding:36px;display:none">Nenhuma oferta encontrada.</div>
-    </section>
-  </main>
+        <div style="margin-top:12px" class="grid-controls">
+          <div class="filters" role="region" aria-label="Filtros">
+            <input id="q" placeholder="Pesquisar título..." />
+            <select id="category-filter"><option value="">Todas as categorias</option></select>
+            <select id="sort-select">
+              <option value="relevance">Relevância</option>
+              <option value="price-asc">Preço ↑</option>
+              <option value="price-desc">Preço ↓</option>
+              <option value="discount">Maior desconto</option>
+              <option value="newest">Mais recentes</option>
+            </select>
+            <select id="page-size">
+              <option value="8">8 por página</option>
+              <option value="12" selected>12 por página</option>
+              <option value="24">24 por página</option>
+            </select>
+            <button id="clear-filters" class="btn-ghost">Limpar</button>
+          </div>
+
+          <div>
+            <button id="open-admin" class="btn-ghost">Admin</button>
+          </div>
+        </div>
+
+        <section aria-live="polite">
+          <div id="offers-list" class="offers-grid"></div>
+          <div id="empty" class="muted" style="text-align:center;padding:36px;display:none">Nenhuma oferta encontrada.</div>
+        </section>
+
+        <div class="pager" id="pager"></div>
+      </div>
+
+      <aside class="hero-right">
+        <div class="card" style="padding:12px">
+          <h3 style="margin:0 0 8px">Favoritos e Ações</h3>
+          <p class="small">Gerencie links de grupo e exporte/importe ofertas.</p>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
+            <button id="btn-export" class="btn-ghost">Exportar ofertas (JSON)</button>
+            <button id="btn-import" class="btn-ghost">Importar JSON</button>
+            <input id="file-import" type="file" accept="application/json" class="hidden" />
+            <div style="margin-top:6px" class="small">Última atualização: <span id="last-updated">—</span></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
 
   <!-- ADMIN PANEL -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
@@ -107,8 +165,8 @@
         <div style="margin-bottom:10px">
           <div class="small">Links de grupo (WhatsApp / Telegram)</div>
           <div style="display:flex;gap:8px;margin-top:8px;">
-            <input id="f-wa-link" placeholder="Link do WhatsApp" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
-            <input id="f-tg-link" placeholder="Link do Telegram" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-wa-link" placeholder="Link do WhatsApp" />
+            <input id="f-tg-link" placeholder="Link do Telegram" />
             <button id="btn-save-links" class="btn-ghost">Salvar Links</button>
           </div>
         </div>
@@ -118,13 +176,24 @@
         <div style="margin-bottom:10px">
           <div class="small">Adicionar oferta manual</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-            <input id="f-name" placeholder="Nome do produto" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
-            <input id="f-link" placeholder="Link de afiliado" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-name" placeholder="Nome do produto" />
+            <input id="f-category" placeholder="Categoria (ex: Eletrônicos)" />
+            <input id="f-price" placeholder="Preço (ex: 19.90)" />
+            <input id="f-promotional" placeholder="Preço promocional (opcional)" />
+            <input id="f-link" placeholder="Link de afiliado" style="grid-column:1/3" />
+            <input id="f-image" placeholder="URL da imagem (opcional)" style="grid-column:1/3" />
+            <label style="display:flex;gap:8px;align-items:center"><input id="f-featured" type="checkbox"/> Destacar como destaque</label>
           </div>
           <div style="margin-top:10px;display:flex;gap:8px;">
             <button id="btn-save-product" class="btn-ghost">Salvar Produto</button>
-            <button id="btn-export" class="btn-ghost">Exportar JSON</button>
+            <button id="btn-clear-local" class="btn-ghost">Limpar ofertas locais</button>
           </div>
+        </div>
+
+        <hr style="margin:12px 0">
+
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <div class="small">Senha admin protegida. Para editar, informe a senha.</div>
         </div>
       </div>
     </div>
@@ -137,12 +206,13 @@
   <div id="offers-last-updated-badge" style="display:none"></div>
 
   <script>
+  // CONFIG
   const REMOTE_JSON_PATH = '/data/offers.json';
   const ADMIN_HASH = 'f69f04a9c340f2c80896c5adbfe0686369ac3ed9935af596879207ab4cc511c3';
 
+  // Utils
   function sanitize(s){ return (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  
-  // CORREÇÃO: Função melhorada para não gerar "https://#"
+  function toNumber(v){ const n = parseFloat(String(v).replace(/[^0-9\.,-]/g,'')); return isNaN(n) ? 0 : Math.round((n + Number.EPSILON) * 100) / 100; }
   function normalizeUrl(u){
     if(!u) return '#';
     u = String(u).trim();
@@ -150,101 +220,510 @@
     if(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//.test(u)) return u;
     return 'https://' + u;
   }
-
   function copyToClipboard(text){
     if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
     const ta = document.createElement('textarea'); ta.value = text;
     document.body.appendChild(ta); ta.select();
     try{ document.execCommand('copy'); document.body.removeChild(ta); return Promise.resolve(); }catch(e){ document.body.removeChild(ta); return Promise.reject(); }
   }
-
   function showToast(msg){
     let t = document.getElementById('__toast');
     if(!t){ t = document.createElement('div'); t.id = '__toast'; Object.assign(t.style, {position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#333',color:'#fff',padding:'12px',borderRadius:'8px',zIndex:10000}); document.body.appendChild(t); }
-    t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 4000);
+    t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 3500);
   }
-
-  function applyRobustOpeners(){
-    const aWa = document.getElementById('vip-wa');
-    const aTg = document.getElementById('vip-tg');
-
-    // Prioriza localStorage, senão usa o href que está no HTML
-    const waUrl = normalizeUrl(localStorage.getItem('site_wa') || aWa.getAttribute('href'));
-    const tgUrl = normalizeUrl(localStorage.getItem('site_tg') || aTg.getAttribute('href'));
-
-    aWa.href = waUrl; aTg.href = tgUrl;
-
-    aWa.onclick = (e) => {
-      e.preventDefault();
-      if(waUrl === '#') return showToast('Link do WhatsApp não configurado.');
-      const w = window.open(waUrl, '_blank');
-      if(!w){
-        window.location.href = waUrl;
-        setTimeout(() => {
-          copyToClipboard(waUrl).then(() => showToast('Não foi possível abrir o app. Link copiado para colar no WhatsApp.'));
-        }, 1000);
-      }
-    };
-
-    aTg.onclick = (e) => {
-      e.preventDefault();
-      if(tgUrl === '#') return showToast('Link do Telegram não configurado.');
-      const w = window.open(tgUrl, '_blank');
-      if(!w) window.location.href = tgUrl;
-    };
-  }
-
   async function sha256Hex(text){
     const enc = new TextEncoder().encode(text);
     const hash = await crypto.subtle.digest('SHA-256', enc);
     return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  // Admin Setup
-  document.getElementById('gear').addEventListener('click', async () => {
-    const pwd = prompt('Senha:'); if(!pwd) return;
-    if(await sha256Hex(pwd) === ADMIN_HASH){
-      document.getElementById('admin-panel').classList.add('active');
-      document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
-      document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
-    }
-  });
+  // VIP buttons robust opener (the aggressive handler you validated)
+  function applyVipHandlers(){
+    let a1 = document.getElementById('vip-wa');
+    let a2 = document.getElementById('vip-tg');
 
-  document.getElementById('btn-save-links').onclick = () => {
+    if(a1){
+      const n = a1.cloneNode(true);
+      a1.parentNode.replaceChild(n, a1);
+      a1 = n;
+    }
+    if(a2){
+      const n2 = a2.cloneNode(true);
+      a2.parentNode.replaceChild(n2, a2);
+      a2 = n2;
+    }
+
+    const rawWa = (localStorage.getItem('site_wa') || (a1 ? a1.getAttribute('href') : '#')||'#').trim();
+    const rawTg = (localStorage.getItem('site_tg') || (a2 ? a2.getAttribute('href') : '#')||'#').trim();
+    const wa = normalizeUrl(rawWa);
+    const tg = normalizeUrl(rawTg);
+
+    if(a1){ a1.href = wa; a1.setAttribute('rel','noopener noreferrer'); a1.setAttribute('target','_blank'); }
+    if(a2){ a2.href = tg; a2.setAttribute('rel','noopener noreferrer'); a2.setAttribute('target','_blank'); }
+
+    async function openWhatsAppInvite(u){
+      if(!u || u === '#'){ showToast('Link inválido'); return; }
+      // 1) execCommand copy (synchronous)
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = u;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Link copiado para a área de transferência');
+      }catch(e){}
+      // 2) clipboard API
+      try{ if(navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(u); }catch(e){}
+      // 3) share API
+      try{
+        if(navigator.share){
+          await navigator.share({ title: 'Link do grupo', text: 'Participe do grupo:', url: u });
+          return;
+        }
+      }catch(e){}
+      // 4) intent / universal link
+      try{
+        if(/chat\.whatsapp\.com|wa\.me/i.test(u)){
+          try{
+            const cleaned = u.replace(/^https?:\/\//,'');
+            const intent = 'intent://' + cleaned + '#Intent;package=com.whatsapp;scheme=https;end';
+            window.location.href = intent;
+            setTimeout(()=>{ window.location.href = u; }, 900);
+            return;
+          }catch(e){}
+        }
+        window.location.href = u;
+        return;
+      }catch(e){}
+      // 5) fallback open new tab
+      try{ const w = window.open(u, '_blank'); if(w) return; }catch(e){}
+      // 6) last attempt: copy again
+      try{ await copyToClipboard(u); showToast('Link copiado — cole no WhatsApp'); }catch(e){ alert('Não foi possível abrir o link automaticamente. Copie manualmente: ' + u); }
+    }
+
+    function openTelegram(u){
+      if(!u || u === '#'){ showToast('Link inválido'); return; }
+      try{
+        const ta = document.createElement('textarea');
+        ta.value = u;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Link copiado para a área de transferência');
+      }catch(e){}
+      try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).catch(()=>{}); }catch(e){}
+      try{
+        if(navigator.share){
+          navigator.share({ title: 'Link do grupo', text: 'Participe do grupo:', url: u });
+          return;
+        }
+      }catch(e){}
+      try{
+        if(/^https?:\/\/(t\.me|telegram\.me)/i.test(u)){
+          const user = u.replace(/^https?:\/\/(t\.me|telegram\.me)\/?/i,'');
+          window.location.href = 'tg://resolve?domain=' + encodeURIComponent(user);
+          setTimeout(()=>{ window.location.href = u; }, 800);
+          return;
+        }
+        const w = window.open(u, '_blank');
+        if(w) return;
+        window.location.href = u;
+      }catch(e){
+        copyToClipboard(u).then(()=> showToast('Link copiado.')).catch(()=> alert('Abra o link manualmente: ' + u));
+      }
+    }
+
+    if(a1){
+      a1.addEventListener('click', function(ev){
+        ev.preventDefault();
+        openWhatsAppInvite(wa);
+      }, { passive:false });
+    }
+    if(a2){
+      a2.addEventListener('click', function(ev){
+        ev.preventDefault();
+        openTelegram(tg);
+      }, { passive:false });
+    }
+  }
+
+  // Data handling: try remote JSON, fallback to localStorage 'offers'
+  async function fetchRemoteOffers(){
+    try{
+      const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache: 'no-store'});
+      if(!r.ok) throw new Error('remote not ok');
+      const data = await r.json();
+      const arr = Array.isArray(data) ? data : (data.offers || []);
+      // Normalize fields
+      return arr.map(normalizeOffer);
+    }catch(e){
+      console.warn('remote fetch failed', e);
+      return null;
+    }
+  }
+
+  function normalizeOffer(o){
+    return {
+      id: o.id || ('local_'+(Date.now()+Math.floor(Math.random()*9999))),
+      title: sanitize(o.title || o.name || ''),
+      category: sanitize(o.category || (o.tags && o.tags[0]) || 'Geral'),
+      price: toNumber(o.price || o.price_raw || o.price_value || 0),
+      promotional_price: o.promotional_price ? toNumber(o.promotional_price) : (o.promo ? toNumber(o.promo) : null),
+      image_url: o.image_url || o.image || o.img || '',
+      link: normalizeUrl(o.link || o.affiliate_link || '#'),
+      featured: !!o.featured,
+      created_at: o.created_at || (new Date().toISOString())
+    };
+  }
+
+  function loadLocalOffers(){
+    try{
+      const raw = localStorage.getItem('offers');
+      if(!raw) return [];
+      const parsed = JSON.parse(raw);
+      if(!Array.isArray(parsed)) return [];
+      return parsed.map(normalizeOffer);
+    }catch(e){
+      console.warn('local parse fail', e);
+      return [];
+    }
+  }
+
+  function saveLocalOffers(arr){
+    localStorage.setItem('offers', JSON.stringify(arr));
+  }
+
+  // Render logic with filters / sort / pagination
+  let ALL_OFFERS = [];
+  let FILTERED = [];
+  let state = { q:'', category:'', sort:'relevance', page:1, pageSize:12 };
+
+  function buildCategoryOptions(){
+    const cats = Array.from(new Set(ALL_OFFERS.map(o => o.category || 'Geral'))).sort();
+    const sel = document.getElementById('category-filter');
+    sel.innerHTML = '<option value="">Todas as categorias</option>';
+    cats.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c;
+      sel.appendChild(opt);
+    });
+  }
+
+  function applyFilters(){
+    const q = state.q.trim().toLowerCase();
+    FILTERED = ALL_OFFERS.filter(o => {
+      if(state.category && o.category !== state.category) return false;
+      if(q){
+        return (o.title && o.title.toLowerCase().includes(q)) || (o.category && o.category.toLowerCase().includes(q));
+      }
+      return true;
+    });
+    applySort();
+  }
+
+  function applySort(){
+    switch(state.sort){
+      case 'price-asc':
+        FILTERED.sort((a,b)=> (a.promotional_price || a.price) - (b.promotional_price || b.price));
+        break;
+      case 'price-desc':
+        FILTERED.sort((a,b)=> (b.promotional_price || b.price) - (a.promotional_price || a.price));
+        break;
+      case 'discount':
+        FILTERED.sort((a,b)=> {
+          const da = (a.price && a.promotional_price) ? ((a.price - a.promotional_price)/a.price) : 0;
+          const db = (b.price && b.promotional_price) ? ((b.price - b.promotional_price)/b.price) : 0;
+          return db - da;
+        });
+        break;
+      case 'newest':
+        FILTERED.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
+        break;
+      default:
+        // relevance: keep original order
+        break;
+    }
+    renderPage();
+  }
+
+  function renderPage(){
+    const cont = document.getElementById('offers-list');
+    const empty = document.getElementById('empty');
+    const pageSize = parseInt(state.pageSize,10) || 12;
+    const total = FILTERED.length;
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    if(state.page > pages) state.page = pages;
+    const start = (state.page - 1) * pageSize;
+    const slice = FILTERED.slice(start, start + pageSize);
+
+    cont.innerHTML = '';
+    if(slice.length === 0){
+      empty.style.display = 'block';
+    } else {
+      empty.style.display = 'none';
+    }
+
+    slice.forEach(o => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const promo = o.promotional_price && o.promotional_price < o.price;
+      const priceText = promo ? (o.promotional_price.toFixed(2).replace('.',',')) : (o.price.toFixed(2).replace('.',','));
+      const oldPriceText = promo ? (o.price.toFixed(2).replace('.',',')) : '';
+
+      card.innerHTML = `
+        <div class="media"><img src="${sanitize(o.image_url) || '/assets/placeholder.png'}" alt="${sanitize(o.title)}"></div>
+        <div class="body">
+          <div class="title">${sanitize(o.title)}</div>
+          <div class="desc">${sanitize(o.category)}</div>
+          <div class="meta">
+            ${promo ? '<div class="badge-discount">Promo</div>' : ''}
+          </div>
+          <div class="price-row">
+            <div>
+              <div class="price">R$ ${priceText}</div>
+              ${promo ? `<div class="old-price">R$ ${oldPriceText}</div>` : ''}
+            </div>
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+              <a class="buy" href="${sanitize(o.link)}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
+              <button class="btn-ghost" data-id="${o.id}" style="font-size:12px">Salvar</button>
+            </div>
+          </div>
+        </div>
+      `;
+      cont.appendChild(card);
+      // salvar favorito demo
+      const btn = card.querySelector('.btn-ghost[data-id]');
+      btn.addEventListener('click', ()=> {
+        const favs = JSON.parse(localStorage.getItem('favs') || '[]');
+        if(!favs.includes(o.id)){ favs.push(o.id); localStorage.setItem('favs', JSON.stringify(favs)); showToast('Salvo nos favoritos'); }
+        else { showToast('Já salvo'); }
+      });
+    });
+
+    renderPager(pages, total);
+  }
+
+  function renderPager(pages, total){
+    const pager = document.getElementById('pager');
+    pager.innerHTML = '';
+    const info = document.createElement('div');
+    info.textContent = `${total} resultado(s)`;
+    pager.appendChild(info);
+
+    const prev = document.createElement('button');
+    prev.textContent = '« Anterior';
+    prev.disabled = state.page <= 1;
+    prev.addEventListener('click', ()=> { state.page--; renderPage(); });
+    pager.appendChild(prev);
+
+    // show up to 7 pages
+    const start = Math.max(1, state.page - 3);
+    const end = Math.min(pages, start + 6);
+    for(let i=start;i<=end;i++){
+      const b = document.createElement('button');
+      b.textContent = i;
+      b.style.fontWeight = (i===state.page) ? '700' : '400';
+      b.addEventListener('click', ()=> { state.page = i; renderPage(); });
+      pager.appendChild(b);
+    }
+
+    const next = document.createElement('button');
+    next.textContent = 'Próximo »';
+    next.disabled = state.page >= pages;
+    next.addEventListener('click', ()=> { state.page++; renderPage(); });
+    pager.appendChild(next);
+  }
+
+  // Carousel (destaques)
+  function renderCarousel(){
+    const track = document.getElementById('carousel-track');
+    track.innerHTML = '';
+    const featured = ALL_OFFERS.filter(o=>o.featured).slice(0,12);
+    const items = featured.length ? featured : ALL_OFFERS.slice(0,12);
+    items.forEach(o=>{
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.style.minWidth = '220px';
+      card.innerHTML = `<div class="media"><img src="${sanitize(o.image_url) || '/assets/placeholder.png'}" alt="${sanitize(o.title)}"></div>
+                        <div style="padding:8px">
+                          <div style="font-weight:700;font-size:13px">${sanitize(o.title)}</div>
+                          <div style="color:var(--muted);font-size:12px;margin-top:6px">R$ ${(o.promotional_price || o.price).toFixed(2).replace('.',',')}</div>
+                        </div>`;
+      card.addEventListener('click', ()=> window.open(o.link,'_blank'));
+      track.appendChild(card);
+    });
+  }
+
+  function initCarouselControls(){
+    const track = document.getElementById('carousel-track');
+    const next = document.getElementById('carousel-next');
+    const prev = document.getElementById('carousel-prev');
+    next.addEventListener('click', ()=> { track.scrollBy({left: 240, behavior:'smooth'}); });
+    prev.addEventListener('click', ()=> { track.scrollBy({left: -240, behavior:'smooth'}); });
+  }
+
+  // Load sequence: remote -> local fallback -> empty
+  async function loadOffers(){
+    document.getElementById('last-updated').textContent = 'Carregando...';
+    const remote = await fetchRemoteOffers();
+    const local = loadLocalOffers();
+    if(remote && remote.length){
+      // merge: remote primary, local supplemental (local offers that don't exist in remote)
+      const remoteIds = new Set(remote.map(r=>r.id));
+      const merged = remote.concat(local.filter(l=>!remoteIds.has(l.id)));
+      ALL_OFFERS = merged;
+      document.getElementById('last-updated').textContent = 'Remoto';
+    } else if(local && local.length){
+      ALL_OFFERS = local;
+      document.getElementById('last-updated').textContent = 'Local';
+    } else {
+      ALL_OFFERS = [];
+      document.getElementById('last-updated').textContent = '—';
+    }
+    // Save local copy so admin edits persist
+    saveLocalOffers(ALL_OFFERS);
+    buildCategoryOptions();
+    applyFilters();
+    renderCarousel();
+  }
+
+  // Admin behaviors
+  async function openAdmin(){
+    const pwd = prompt('Senha:');
+    if(!pwd) return;
+    const h = await sha256Hex(pwd);
+    if(h !== ADMIN_HASH){ alert('Senha incorreta'); return; }
+    document.getElementById('admin-panel').classList.add('active');
+    document.getElementById('admin-panel').setAttribute('aria-hidden','false');
+    document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
+    document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
+    // prefill product fields empty
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-category').value = '';
+    document.getElementById('f-price').value = '';
+    document.getElementById('f-promotional').value = '';
+    document.getElementById('f-link').value = '';
+    document.getElementById('f-image').value = '';
+    document.getElementById('f-featured').checked = false;
+  }
+
+  function closeAdmin(){ document.getElementById('admin-panel').classList.remove('active'); document.getElementById('admin-panel').setAttribute('aria-hidden','true'); }
+
+  document.getElementById('gear').addEventListener('click', ()=> openAdmin());
+  document.getElementById('open-admin').addEventListener('click', ()=> openAdmin());
+  document.getElementById('close-admin').addEventListener('click', ()=> closeAdmin());
+
+  document.getElementById('btn-save-links').onclick = ()=> {
     const wa = normalizeUrl(document.getElementById('f-wa-link').value);
     const tg = normalizeUrl(document.getElementById('f-tg-link').value);
     localStorage.setItem('site_wa', wa);
     localStorage.setItem('site_tg', tg);
-    applyRobustOpeners();
+    applyVipHandlers();
     alert('Links salvos!');
   };
 
-  document.getElementById('close-admin').onclick = () => document.getElementById('admin-panel').classList.remove('active');
+  document.getElementById('btn-save-product').onclick = ()=> {
+    const t = document.getElementById('f-name').value.trim();
+    if(!t){ alert('Informe nome'); return; }
+    const cat = document.getElementById('f-category').value.trim() || 'Geral';
+    const price = toNumber(document.getElementById('f-price').value || 0);
+    const promo = document.getElementById('f-promotional').value ? toNumber(document.getElementById('f-promotional').value) : null;
+    const link = normalizeUrl(document.getElementById('f-link').value || '#');
+    const image = document.getElementById('f-image').value.trim();
+    const featured = document.getElementById('f-featured').checked;
+    const item = normalizeOffer({
+      id: 'local_' + (Date.now() + Math.floor(Math.random()*9999)),
+      title: t,
+      category: cat,
+      price: price,
+      promotional_price: promo,
+      link: link,
+      image_url: image,
+      featured: featured,
+      created_at: new Date().toISOString()
+    });
+    ALL_OFFERS.unshift(item);
+    saveLocalOffers(ALL_OFFERS);
+    buildCategoryOptions();
+    applyFilters();
+    renderCarousel();
+    showToast('Oferta adicionada');
+  };
 
-  // Load Remote Data Simplificado
-  async function loadOffers(){
-    try {
-      const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now());
-      const data = await r.json();
-      const list = Array.isArray(data) ? data : (data.offers || []);
-      const cont = document.getElementById('offers-list');
-      cont.innerHTML = '';
-      list.forEach(o => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `<div class="media"><img src="${o.image_url || ''}"></div>
-                          <div class="body">
-                            <div class="title">${sanitize(o.title)}</div>
-                            <div class="price">R$ ${o.promotional_price || o.price || '0,00'}</div>
-                            <a class="buy" href="${normalizeUrl(o.link || o.affiliate_link)}" target="_blank">Ver oferta</a>
-                          </div>`;
-        cont.appendChild(card);
-      });
-    } catch(e) { console.error(e); }
-  }
+  document.getElementById('btn-clear-local').onclick = ()=> {
+    if(!confirm('Remover todas as ofertas locais? (não remove o remoto)')) return;
+    const remotePromise = fetchRemoteOffers();
+    // keep only remote ones if any
+    remotePromise.then(remote=>{
+      if(remote && remote.length){ ALL_OFFERS = remote; } else { ALL_OFFERS = []; }
+      saveLocalOffers(ALL_OFFERS);
+      buildCategoryOptions();
+      applyFilters();
+      renderCarousel();
+      showToast('Ofertas locais removidas');
+    });
+  };
 
-  applyRobustOpeners();
+  // Export / Import
+  document.getElementById('btn-export').addEventListener('click', ()=>{
+    const data = JSON.stringify(ALL_OFFERS, null, 2);
+    const blob = new Blob([data], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'offers.json'; a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  document.getElementById('btn-import').addEventListener('click', ()=> document.getElementById('file-import').click());
+  document.getElementById('file-import').addEventListener('change', function(){
+    const f = this.files[0];
+    if(!f) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const parsed = JSON.parse(ev.target.result);
+        if(!Array.isArray(parsed)) throw new Error('Formato inválido');
+        const normalized = parsed.map(normalizeOffer);
+        // merge: prepend imported items
+        ALL_OFFERS = normalized.concat(ALL_OFFERS);
+        saveLocalOffers(ALL_OFFERS);
+        buildCategoryOptions();
+        applyFilters();
+        renderCarousel();
+        showToast('Importação concluída');
+      }catch(e){ alert('Erro ao importar JSON: ' + (e.message || e)); }
+    };
+    reader.readAsText(f);
+    this.value = '';
+  });
+
+  // UI bindings for filters
+  document.getElementById('q').addEventListener('input', (e)=>{ state.q = e.target.value; state.page = 1; applyFilters(); });
+  document.getElementById('category-filter').addEventListener('change', (e)=>{ state.category = e.target.value; state.page = 1; applyFilters(); });
+  document.getElementById('sort-select').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page = 1; applySort(); });
+  document.getElementById('page-size').addEventListener('change', (e)=>{ state.pageSize = e.target.value; state.page = 1; renderPage(); });
+  document.getElementById('clear-filters').addEventListener('click', ()=>{
+    state = { q:'', category:'', sort:'relevance', page:1, pageSize: state.pageSize || 12 };
+    document.getElementById('q').value = '';
+    document.getElementById('category-filter').value = '';
+    document.getElementById('sort-select').value = 'relevance';
+    applyFilters();
+  });
+
+  // init
+  applyVipHandlers();
+  initCarouselControls();
   loadOffers();
+
+  // Reapply VIP handlers after admin changes
+  window.addEventListener('storage', ()=> applyVipHandlers());
   </script>
 </body>
 </html>
