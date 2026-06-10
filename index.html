@@ -7,24 +7,28 @@
   <meta name="description" content="Ofertas e descontos atualizados automaticamente." />
   <style>
     :root{
-      --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#ff3a2f; --wa:#25D366; --tg:#0088CC;
+      /* AliExpress-like palette */
+      --bg:#fafafa; --card:#ffffff; --muted:#6b7280;
+      --accent:#ff3a2f; /* primary red */
+      --accent-dark:#c32b22; --accent-yellow:#ffd54d;
+      --wa:#25D366; --tg:#0088CC;
       --price:#ef4444; --old-price:#9ca3af; --card-radius:12px; --gap:14px;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111;-webkit-font-smoothing:antialiased}
-    header{background:#fff;padding:12px 18px;border-bottom:1px solid #e6e8ef;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:80}
-    header img{height:38px}
+    header{background:#fff;padding:12px 18px;border-bottom:3px solid var(--accent);display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:80}
+    header img{height:40px}
     header .brand{display:flex;flex-direction:column}
     header h1{margin:0;font-size:18px;color:#111}
     header p{margin:0;color:var(--muted);font-size:13px}
-    .vip-bar{background:#111;color:#fff;padding:10px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+    .vip-bar{background:var(--accent);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
     .vip-left{display:flex;align-items:center;gap:12px}
-    .vip-badge{background:#ffd54d;color:#111;padding:6px 10px;border-radius:999px;font-weight:800}
+    .vip-badge{background:var(--accent-yellow);color:#111;padding:6px 10px;border-radius:999px;font-weight:800}
     .vip-text{font-weight:700}
     .vip-actions{display:flex;gap:8px}
     .vip-actions a{padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
-    .vip-actions .wa{background:var(--wa)}
-    .vip-actions .tg{background:var(--tg)}
+    .vip-actions .wa{background:var(--wa);}
+    .vip-actions .tg{background:var(--tg);}
     .page{max-width:1280px;margin:18px auto;padding:0 18px 80px}
     .hero{display:flex;gap:18px;align-items:flex-start}
     .hero-left{flex:1}
@@ -33,11 +37,11 @@
     .search input{flex:1;padding:12px;border-radius:8px;border:1px solid #e6e8ef}
     .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
     .filters select, .filters button, .filters input{padding:8px;border-radius:8px;border:1px solid #e6e8ef;background:#fff}
-    .filters .btn{background:#111;color:#fff;border:none;padding:9px 12px}
+    .filters .btn{background:var(--accent);color:#fff;border:none;padding:9px 12px}
     .grid-controls{display:flex;justify-content:space-between;align-items:center;margin:12px 0}
-    .carousel{background:#fff;border-radius:12px;padding:12px;border:1px solid #e6e8ef;overflow:hidden}
-    .carousel-track{display:flex;gap:12px;overflow-x:auto;scroll-behavior:smooth;padding-bottom:6px}
-    .carousel .card{min-width:220px;flex:0 0 220px}
+    /* Carousel converted to grid of featured items (vertical flow) */
+    .carousel{background:#fff;border-radius:12px;padding:12px;border:1px solid #e6e8ef;overflow:hidden;margin-bottom:12px}
+    .carousel-track{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
     .offers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
     @media (max-width:1100px){ .offers-grid{grid-template-columns:repeat(3,1fr)} .hero-right{display:none} }
     @media (max-width:780px){ .offers-grid{grid-template-columns:repeat(2,1fr)} }
@@ -49,7 +53,7 @@
     .title{font-size:14px;font-weight:600;min-height:44px;margin-bottom:6px;color:#111}
     .desc{font-size:12px;color:var(--muted);min-height:36px;margin-bottom:8px}
     .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-    .badge-discount{background:linear-gradient(90deg,#ffbaba,#ff8a8a);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
+    .badge-discount{background:linear-gradient(90deg,#fff0b2,#ffd54d);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
     .price-row{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:auto}
     .price {font-weight:800;color:var(--price);font-size:18px}
     .old-price{color:var(--old-price);text-decoration:line-through;font-size:13px}
@@ -86,7 +90,6 @@
       <div class="vip-text">Entre no nosso Grupo Vip! Receba ofertas exclusivas em primeira mão.</div>
     </div>
     <div class="vip-actions">
-      <!-- fallback hrefs (serão substituídos pelo admin/localStorage se configurado) -->
       <a id="vip-wa" class="wa" href="https://chat.whatsapp.com/CqO1WYQbzuKGrpWBqBGOp2" target="_blank" rel="noopener noreferrer">WhatsApp</a>
       <a id="vip-tg" class="tg" href="https://t.me/VIAMAISSTORE" target="_blank" rel="noopener noreferrer">Telegram</a>
     </div>
@@ -99,8 +102,7 @@
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
             <strong>Destaques</strong>
             <div style="display:flex;gap:8px">
-              <button id="carousel-prev" class="chip">&larr;</button>
-              <button id="carousel-next" class="chip">&rarr;</button>
+              <!-- preserved structure but no horizontal controls needed -->
             </div>
           </div>
           <div id="carousel-track" class="carousel-track" tabindex="0" role="list"></div>
@@ -108,10 +110,8 @@
 
         <div style="margin-top:12px" class="grid-controls">
           <div class="filters" role="region" aria-label="Filtros">
-            <input id="q" placeholder="Pesquisar título..." />
-            <select id="category-filter"><option value="">Todas as categorias</option></select>
-            <select id="sort-select">
-              <option value="relevance">Relevância</option>
+            <!-- removed search, categories and clear as requested -->
+            <select id="sort-select" title="Ordenar por">
               <option value="price-asc">Preço ↑</option>
               <option value="price-desc">Preço ↓</option>
               <option value="discount">Maior desconto</option>
@@ -120,9 +120,7 @@
             <select id="page-size">
               <option value="8">8 por página</option>
               <option value="12" selected>12 por página</option>
-              <option value="24">24 por página</option>
             </select>
-            <button id="clear-filters" class="btn-ghost">Limpar</button>
           </div>
 
           <div>
@@ -140,20 +138,18 @@
 
       <aside class="hero-right">
         <div class="card" style="padding:12px">
-          <h3 style="margin:0 0 8px">Favoritos e Ações</h3>
-          <p class="small">Gerencie links de grupo e exporte/importe ofertas.</p>
+          <h3 style="margin:0 0 8px">Atualizações</h3>
+          <p class="small">Última atualização das ofertas</p>
           <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
-            <button id="btn-export" class="btn-ghost">Exportar ofertas (JSON)</button>
-            <button id="btn-import" class="btn-ghost">Importar JSON</button>
-            <input id="file-import" type="file" accept="application/json" class="hidden" />
-            <div style="margin-top:6px" class="small">Última atualização: <span id="last-updated">—</span></div>
+            <div style="margin-top:6px" class="small">Fonte: <span id="last-updated">—</span></div>
+            <a href="#" class="btn-ghost" style="text-decoration:none;color:inherit">Ver políticas</a>
           </div>
         </div>
       </aside>
     </div>
   </div>
 
-  <!-- ADMIN PANEL -->
+  <!-- ADMIN PANEL (agora contém Import/Export) -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
     <div class="card" style="max-height:78vh;overflow:auto;position:relative;padding-bottom:12px;">
       <button id="close-admin" class="btn-ghost" style="position:absolute;top:10px;right:10px;">Fechar</button>
@@ -187,6 +183,17 @@
           <div style="margin-top:10px;display:flex;gap:8px;">
             <button id="btn-save-product" class="btn-ghost">Salvar Produto</button>
             <button id="btn-clear-local" class="btn-ghost">Limpar ofertas locais</button>
+          </div>
+        </div>
+
+        <hr style="margin:12px 0">
+
+        <div style="margin-bottom:10px">
+          <div class="small">Importar / Exportar</div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="btn-export" class="btn-ghost">Exportar ofertas (JSON)</button>
+            <button id="btn-import" class="btn-ghost">Importar JSON</button>
+            <input id="file-import" type="file" accept="application/json" class="hidden" />
           </div>
         </div>
 
@@ -228,7 +235,7 @@
   }
   function showToast(msg){
     let t = document.getElementById('__toast');
-    if(!t){ t = document.createElement('div'); t.id = '__toast'; Object.assign(t.style, {position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#333',color:'#fff',padding:'12px',borderRadius:'8px',zIndex:10000}); document.body.appendChild(t); }
+    if(!t){ t = document.createElement('div'); t.id = '__toast'; Object.assign(t.style, {position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#222',color:'#fff',padding:'12px',borderRadius:'8px',zIndex:10000}); document.body.appendChild(t); }
     t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 3500);
   }
   async function sha256Hex(text){
@@ -237,7 +244,7 @@
     return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  // VIP buttons robust opener (the aggressive handler you validated)
+  // VIP buttons robust opener (aggressive handler)
   function applyVipHandlers(){
     let a1 = document.getElementById('vip-wa');
     let a2 = document.getElementById('vip-tg');
@@ -263,7 +270,6 @@
 
     async function openWhatsAppInvite(u){
       if(!u || u === '#'){ showToast('Link inválido'); return; }
-      // 1) execCommand copy (synchronous)
       try{
         const ta = document.createElement('textarea');
         ta.value = u;
@@ -275,16 +281,13 @@
         document.body.removeChild(ta);
         showToast('Link copiado para a área de transferência');
       }catch(e){}
-      // 2) clipboard API
       try{ if(navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(u); }catch(e){}
-      // 3) share API
       try{
         if(navigator.share){
           await navigator.share({ title: 'Link do grupo', text: 'Participe do grupo:', url: u });
           return;
         }
       }catch(e){}
-      // 4) intent / universal link
       try{
         if(/chat\.whatsapp\.com|wa\.me/i.test(u)){
           try{
@@ -298,9 +301,7 @@
         window.location.href = u;
         return;
       }catch(e){}
-      // 5) fallback open new tab
       try{ const w = window.open(u, '_blank'); if(w) return; }catch(e){}
-      // 6) last attempt: copy again
       try{ await copyToClipboard(u); showToast('Link copiado — cole no WhatsApp'); }catch(e){ alert('Não foi possível abrir o link automaticamente. Copie manualmente: ' + u); }
     }
 
@@ -353,14 +354,13 @@
     }
   }
 
-  // Data handling: try remote JSON, fallback to localStorage 'offers'
+  // Data handling
   async function fetchRemoteOffers(){
     try{
       const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache: 'no-store'});
       if(!r.ok) throw new Error('remote not ok');
       const data = await r.json();
       const arr = Array.isArray(data) ? data : (data.offers || []);
-      // Normalize fields
       return arr.map(normalizeOffer);
     }catch(e){
       console.warn('remote fetch failed', e);
@@ -399,32 +399,14 @@
     localStorage.setItem('offers', JSON.stringify(arr));
   }
 
-  // Render logic with filters / sort / pagination
+  // Render logic with sort & pagination (no search / no category filter UI)
   let ALL_OFFERS = [];
   let FILTERED = [];
-  let state = { q:'', category:'', sort:'relevance', page:1, pageSize:12 };
-
-  function buildCategoryOptions(){
-    const cats = Array.from(new Set(ALL_OFFERS.map(o => o.category || 'Geral'))).sort();
-    const sel = document.getElementById('category-filter');
-    sel.innerHTML = '<option value="">Todas as categorias</option>';
-    cats.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c;
-      opt.textContent = c;
-      sel.appendChild(opt);
-    });
-  }
+  let state = { sort:'price-asc', page:1, pageSize:12 };
 
   function applyFilters(){
-    const q = state.q.trim().toLowerCase();
-    FILTERED = ALL_OFFERS.filter(o => {
-      if(state.category && o.category !== state.category) return false;
-      if(q){
-        return (o.title && o.title.toLowerCase().includes(q)) || (o.category && o.category.toLowerCase().includes(q));
-      }
-      return true;
-    });
+    // No search/category UI -> simply copy all offers
+    FILTERED = ALL_OFFERS.slice();
     applySort();
   }
 
@@ -447,7 +429,6 @@
         FILTERED.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
         break;
       default:
-        // relevance: keep original order
         break;
     }
     renderPage();
@@ -498,7 +479,6 @@
         </div>
       `;
       cont.appendChild(card);
-      // salvar favorito demo
       const btn = card.querySelector('.btn-ghost[data-id]');
       btn.addEventListener('click', ()=> {
         const favs = JSON.parse(localStorage.getItem('favs') || '[]');
@@ -523,7 +503,6 @@
     prev.addEventListener('click', ()=> { state.page--; renderPage(); });
     pager.appendChild(prev);
 
-    // show up to 7 pages
     const start = Math.max(1, state.page - 3);
     const end = Math.min(pages, start + 6);
     for(let i=start;i<=end;i++){
@@ -541,7 +520,7 @@
     pager.appendChild(next);
   }
 
-  // Carousel (destaques)
+  // Carousel -> now grid of featured items (vertical flow)
   function renderCarousel(){
     const track = document.getElementById('carousel-track');
     track.innerHTML = '';
@@ -550,7 +529,6 @@
     items.forEach(o=>{
       const card = document.createElement('div');
       card.className = 'card';
-      card.style.minWidth = '220px';
       card.innerHTML = `<div class="media"><img src="${sanitize(o.image_url) || '/assets/placeholder.png'}" alt="${sanitize(o.title)}"></div>
                         <div style="padding:8px">
                           <div style="font-weight:700;font-size:13px">${sanitize(o.title)}</div>
@@ -561,21 +539,12 @@
     });
   }
 
-  function initCarouselControls(){
-    const track = document.getElementById('carousel-track');
-    const next = document.getElementById('carousel-next');
-    const prev = document.getElementById('carousel-prev');
-    next.addEventListener('click', ()=> { track.scrollBy({left: 240, behavior:'smooth'}); });
-    prev.addEventListener('click', ()=> { track.scrollBy({left: -240, behavior:'smooth'}); });
-  }
-
-  // Load sequence: remote -> local fallback -> empty
+  // Load sequence
   async function loadOffers(){
     document.getElementById('last-updated').textContent = 'Carregando...';
     const remote = await fetchRemoteOffers();
     const local = loadLocalOffers();
     if(remote && remote.length){
-      // merge: remote primary, local supplemental (local offers that don't exist in remote)
       const remoteIds = new Set(remote.map(r=>r.id));
       const merged = remote.concat(local.filter(l=>!remoteIds.has(l.id)));
       ALL_OFFERS = merged;
@@ -587,9 +556,7 @@
       ALL_OFFERS = [];
       document.getElementById('last-updated').textContent = '—';
     }
-    // Save local copy so admin edits persist
     saveLocalOffers(ALL_OFFERS);
-    buildCategoryOptions();
     applyFilters();
     renderCarousel();
   }
@@ -604,7 +571,6 @@
     document.getElementById('admin-panel').setAttribute('aria-hidden','false');
     document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
     document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
-    // prefill product fields empty
     document.getElementById('f-name').value = '';
     document.getElementById('f-category').value = '';
     document.getElementById('f-price').value = '';
@@ -651,7 +617,6 @@
     });
     ALL_OFFERS.unshift(item);
     saveLocalOffers(ALL_OFFERS);
-    buildCategoryOptions();
     applyFilters();
     renderCarousel();
     showToast('Oferta adicionada');
@@ -659,19 +624,16 @@
 
   document.getElementById('btn-clear-local').onclick = ()=> {
     if(!confirm('Remover todas as ofertas locais? (não remove o remoto)')) return;
-    const remotePromise = fetchRemoteOffers();
-    // keep only remote ones if any
-    remotePromise.then(remote=>{
+    fetchRemoteOffers().then(remote=>{
       if(remote && remote.length){ ALL_OFFERS = remote; } else { ALL_OFFERS = []; }
       saveLocalOffers(ALL_OFFERS);
-      buildCategoryOptions();
       applyFilters();
       renderCarousel();
       showToast('Ofertas locais removidas');
     });
   };
 
-  // Export / Import
+  // Export / Import inside admin
   document.getElementById('btn-export').addEventListener('click', ()=>{
     const data = JSON.stringify(ALL_OFFERS, null, 2);
     const blob = new Blob([data], {type:'application/json'});
@@ -691,10 +653,8 @@
         const parsed = JSON.parse(ev.target.result);
         if(!Array.isArray(parsed)) throw new Error('Formato inválido');
         const normalized = parsed.map(normalizeOffer);
-        // merge: prepend imported items
         ALL_OFFERS = normalized.concat(ALL_OFFERS);
         saveLocalOffers(ALL_OFFERS);
-        buildCategoryOptions();
         applyFilters();
         renderCarousel();
         showToast('Importação concluída');
@@ -704,22 +664,12 @@
     this.value = '';
   });
 
-  // UI bindings for filters
-  document.getElementById('q').addEventListener('input', (e)=>{ state.q = e.target.value; state.page = 1; applyFilters(); });
-  document.getElementById('category-filter').addEventListener('change', (e)=>{ state.category = e.target.value; state.page = 1; applyFilters(); });
+  // UI bindings (only those remaining)
   document.getElementById('sort-select').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page = 1; applySort(); });
   document.getElementById('page-size').addEventListener('change', (e)=>{ state.pageSize = e.target.value; state.page = 1; renderPage(); });
-  document.getElementById('clear-filters').addEventListener('click', ()=>{
-    state = { q:'', category:'', sort:'relevance', page:1, pageSize: state.pageSize || 12 };
-    document.getElementById('q').value = '';
-    document.getElementById('category-filter').value = '';
-    document.getElementById('sort-select').value = 'relevance';
-    applyFilters();
-  });
 
   // init
   applyVipHandlers();
-  initCarouselControls();
   loadOffers();
 
   // Reapply VIP handlers after admin changes
