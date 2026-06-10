@@ -17,25 +17,36 @@
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111;-webkit-font-smoothing:antialiased}
-    /* Top bar */
-    .topbar{background:var(--ml-yellow);border-bottom:3px solid var(--ml-yellow-dark);padding:10px 18px;position:sticky;top:0;z-index:95;display:flex;align-items:center;gap:14px}
-    .logo{display:flex;align-items:center;gap:12px}
-    .logo img{height:44px}
-    .searchbar{flex:1;display:flex;align-items:center;gap:8px;max-width:920px}
-    .searchbar input{flex:1;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);}
+    /* Top bar: logo left, search center, store name right */
+    .topbar{
+      background:var(--ml-yellow);
+      border-bottom:3px solid var(--ml-yellow-dark);
+      padding:10px 18px;
+      position:sticky;
+      top:0;
+      z-index:95;
+      display:flex;
+      align-items:center;
+      gap:14px;
+      justify-content:space-between;
+    }
+    .top-left{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo img{height:44px;display:block}
+    .search-wrap{flex:1;display:flex;justify-content:center;padding:0 12px;min-width:200px}
+    .searchbar{width:100%;max-width:920px;display:flex;align-items:center;gap:8px}
+    .searchbar input{flex:1;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);min-width:0}
     .searchbar button{padding:10px 14px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer}
-    .top-actions{display:flex;gap:10px;align-items:center}
+    .store-name{font-weight:900;font-size:18px;color:#000;margin-left:12px;white-space:nowrap}
 
     /* black strip below yellow for VIP */
     .vip-black{background:#000;color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
     .vip-left{display:flex;align-items:center;gap:12px}
-    .vip-title{font-weight:800}
-    .vip-desc{opacity:0.9}
-    .vip-actions{display:flex;gap:8px}
+    .vip-title{font-weight:800; display:inline-block; background:var(--vip-gold); color:#000; padding:6px 12px; border-radius:8px}
+    .vip-desc{opacity:0.95;color:#fff;margin-left:8px}
+    .vip-actions{display:flex;gap:8px;align-items:center}
     .vip-actions a{padding:8px 12px;border-radius:8px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
     .vip-actions .wa{background:var(--wa);color:#fff}
     .vip-actions .tg{background:var(--tg);color:#fff}
-    .vip-actions .gold{background:var(--vip-gold);color:#000}
 
     /* layout main */
     .container{max-width:1280px;margin:18px auto;padding:0 18px 80px}
@@ -75,6 +86,7 @@
     @media (max-width:780px){
       .searchbar input{padding:10px}
       .hero-banner{flex-direction:column;align-items:flex-start;gap:8px}
+      .store-name{font-size:16px}
     }
     @media (max-width:520px){
       .topbar{padding:8px}
@@ -82,20 +94,27 @@
       .price{font-size:16px}
       .vip-actions a{padding:8px}
       .searchbar button{padding:8px}
+      .store-name{display:none} /* simplify small screens */
     }
   </style>
 </head>
 <body>
   <div class="topbar" role="banner">
-    <div class="logo">
-      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='44'><rect width='100%' height='100%' fill='%23ffe600'/><text x='14' y='28' font-family='Arial' font-size='16' fill='%23000'>Via Mais Store</text></svg>" alt="Via Mais Store">
+    <div class="top-left">
+      <div class="logo" aria-hidden="true">
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='44'><rect width='100%' height='100%' fill='%23ffe600'/><text x='14' y='28' font-family='Arial' font-size='16' fill='%23000'>Via Mais Store</text></svg>" alt="Via Mais Store Logo">
+      </div>
     </div>
-    <div class="searchbar" role="search" aria-label="Busca">
-      <input id="q" placeholder="Buscar produtos, marcas e muito mais..." />
-      <button id="btn-search">Buscar</button>
+
+    <div class="search-wrap" role="search" aria-label="Busca">
+      <div class="searchbar">
+        <input id="q" placeholder="Buscar produtos, marcas e muito mais..." />
+        <button id="btn-search">Buscar</button>
+      </div>
     </div>
-    <div class="top-actions">
-      <div><button id="open-admin-top" class="btn-ghost">Admin</button></div>
+
+    <div class="top-right" style="display:flex;align-items:center;gap:12px;">
+      <div class="store-name" aria-hidden="true">VIA MAIS STORE</div>
     </div>
   </div>
 
@@ -107,7 +126,6 @@
     <div class="vip-actions">
       <a id="vip-wa" class="wa" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
       <a id="vip-tg" class="tg" href="#" target="_blank" rel="noopener noreferrer">Telegram</a>
-      <a id="vip-join" class="gold" href="#" target="_blank" rel="noopener noreferrer">Participar</a>
     </div>
   </div>
 
@@ -202,18 +220,16 @@
   function showToast(msg){ let t = document.getElementById('__toast'); if(!t){ t = document.createElement('div'); t.id = '__toast'; Object.assign(t.style, {position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#222',color:'#fff',padding:'12px',borderRadius:'8px',zIndex:10000}); document.body.appendChild(t); } t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 3000); }
   async function sha256Hex(text){ const enc = new TextEncoder().encode(text); const hash = await crypto.subtle.digest('SHA-256', enc); return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join(''); }
 
-  // VIP handlers
+  // VIP handlers (sem o botão "Participar")
   function applyVipHandlers(){
     const a1 = document.getElementById('vip-wa');
     const a2 = document.getElementById('vip-tg');
-    const a3 = document.getElementById('vip-join');
     const rawWa = (localStorage.getItem('site_wa') || '#').trim();
     const rawTg = (localStorage.getItem('site_tg') || '#').trim();
     const wa = normalizeUrl(rawWa);
     const tg = normalizeUrl(rawTg);
     if(a1){ a1.href = wa; a1.onclick = e => { e.preventDefault(); window.open(wa,'_blank'); } }
     if(a2){ a2.href = tg; a2.onclick = e => { e.preventDefault(); window.open(tg,'_blank'); } }
-    if(a3){ a3.href = wa; a3.onclick = e => { e.preventDefault(); window.open(wa,'_blank'); } }
   }
 
   // Data handling
@@ -373,7 +389,7 @@
   function closeAdmin(){ document.getElementById('admin-panel').classList.remove('active'); document.getElementById('admin-panel').setAttribute('aria-hidden','true'); }
 
   document.getElementById('gear').addEventListener('click', ()=> openAdmin());
-  document.getElementById('open-admin-top').addEventListener('click', ()=> openAdmin());
+  // top yellow admin button removed on purpose (no open-admin-top)
   document.getElementById('close-admin').addEventListener('click', ()=> closeAdmin());
   document.getElementById('open-admin').addEventListener('click', ()=> openAdmin());
 
