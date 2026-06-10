@@ -7,87 +7,78 @@
   <meta name="description" content="Ofertas e descontos atualizados automaticamente." />
   <style>
     :root{
-      /* AliExpress-like palette */
-      --bg:#fafafa; --card:#ffffff; --muted:#6b7280;
-      --accent:#ff3a2f; /* primary red */
-      --accent-dark:#c32b22; --accent-yellow:#ffd54d;
-      --wa:#25D366; --tg:#0088CC;
-      --price:#ef4444; --old-price:#9ca3af; --card-radius:12px; --gap:14px;
+      --ml-yellow: #ffe600;
+      --ml-yellow-dark: #f5d400;
+      --bg:#f6f7fb; --card:#fff; --muted:#5b6168;
+      --accent:#ff3a2f; --wa:#25D366; --tg:#0088CC;
+      --price:#ef4444; --old-price:#9ca3af; --card-radius:10px;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111;-webkit-font-smoothing:antialiased}
-    header{background:#fff;padding:12px 18px;border-bottom:3px solid var(--accent);display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:80}
-    header img{height:40px}
-    header .brand{display:flex;flex-direction:column}
-    header h1{margin:0;font-size:18px;color:#111}
-    header p{margin:0;color:var(--muted);font-size:13px}
-    .vip-bar{background:var(--accent);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:12px;justify-content:space-between}
+    /* Top bar like Mercado Livre */
+    .topbar{background:var(--ml-yellow);border-bottom:3px solid var(--ml-yellow-dark);padding:10px 18px;position:sticky;top:0;z-index:90;display:flex;align-items:center;gap:14px}
+    .logo{display:flex;align-items:center;gap:12px}
+    .logo img{height:44px}
+    .searchbar{flex:1;display:flex;align-items:center;gap:8px;max-width:920px}
+    .searchbar input{flex:1;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);}
+    .searchbar button{padding:10px 14px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer}
+    .top-actions{display:flex;gap:10px;align-items:center}
+    /* VIP notice under topbar */
+    .vip-bar{background:#fff;color:#111;padding:10px 18px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:12px;justify-content:space-between}
     .vip-left{display:flex;align-items:center;gap:12px}
-    .vip-badge{background:var(--accent-yellow);color:#111;padding:6px 10px;border-radius:999px;font-weight:800}
-    .vip-text{font-weight:700}
-    .vip-actions{display:flex;gap:8px}
-    .vip-actions a{padding:8px 12px;border-radius:10px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
-    .vip-actions .wa{background:var(--wa);}
-    .vip-actions .tg{background:var(--tg);}
-    .page{max-width:1280px;margin:18px auto;padding:0 18px 80px}
-    .hero{display:flex;gap:18px;align-items:flex-start}
-    .hero-left{flex:1}
-    .hero-right{width:360px}
-    .hero .search{display:flex;gap:8px;margin-bottom:12px}
-    .search input{flex:1;padding:12px;border-radius:8px;border:1px solid #e6e8ef}
-    .filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-    .filters select, .filters button, .filters input{padding:8px;border-radius:8px;border:1px solid #e6e8ef;background:#fff}
-    .filters .btn{background:var(--accent);color:#fff;border:none;padding:9px 12px}
-    .grid-controls{display:flex;justify-content:space-between;align-items:center;margin:12px 0}
-    /* Carousel converted to grid of featured items (vertical flow) */
-    .carousel{background:#fff;border-radius:12px;padding:12px;border:1px solid #e6e8ef;overflow:hidden;margin-bottom:12px}
-    .carousel-track{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+    .vip-badge{background:var(--accent);color:#fff;padding:6px 10px;border-radius:999px;font-weight:800}
+    .vip-actions a{padding:8px 12px;border-radius:8px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
+    .vip-actions .wa{background:var(--wa)}
+    .vip-actions .tg{background:var(--tg)}
+    /* page layout */
+    .page{max-width:1280px;margin:18px auto;padding:0 18px 80px;display:flex;gap:18px}
+    .sidebar{width:280px}
+    .content{flex:1}
+    .hero-banner{background:linear-gradient(90deg,#fff 0%,#fff 60%, rgba(255,230,0,0.08) 60%);border-radius:10px;padding:18px;margin-bottom:12px;border:1px solid #eee}
+    .filters .section{background:#fff;border-radius:10px;padding:12px;border:1px solid #eee;margin-bottom:12px}
+    .filters .section h4{margin:0 0 8px;font-size:14px}
     .offers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-    @media (max-width:1100px){ .offers-grid{grid-template-columns:repeat(3,1fr)} .hero-right{display:none} }
+    @media (max-width:1100px){ .offers-grid{grid-template-columns:repeat(3,1fr)} .sidebar{display:none} }
     @media (max-width:780px){ .offers-grid{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:420px){ .offers-grid{grid-template-columns:repeat(1,1fr)} header .brand h1{font-size:16px} }
-    .card{background:var(--card);border-radius:var(--card-radius);overflow:hidden;border:1px solid #e8eaf2;box-shadow:0 6px 18px rgba(12,14,20,0.04);display:flex;flex-direction:column}
-    .media{height:180px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px}
+    @media (max-width:420px){ .offers-grid{grid-template-columns:repeat(1,1fr)} .searchbar{max-width:unset} }
+    .card{background:var(--card);border-radius:10px;overflow:hidden;border:1px solid #e9edf2;display:flex;flex-direction:column;height:100%}
+    .media{height:220px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px}
     .media img{max-width:100%;max-height:100%;object-fit:contain}
     .body{padding:12px;flex:1;display:flex;flex-direction:column}
-    .title{font-size:14px;font-weight:600;min-height:44px;margin-bottom:6px;color:#111}
-    .desc{font-size:12px;color:var(--muted);min-height:36px;margin-bottom:8px}
-    .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-    .badge-discount{background:linear-gradient(90deg,#fff0b2,#ffd54d);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
-    .price-row{display:flex;align-items:center;gap:8px;justify-content:space-between;margin-top:auto}
+    .title{font-size:14px;font-weight:600;color:#111;min-height:44px;margin-bottom:6px}
+    .shop{font-size:12px;color:var(--muted);margin-bottom:8px}
+    .price-row{display:flex;align-items:flex-end;gap:8px;justify-content:space-between;margin-top:auto}
     .price {font-weight:800;color:var(--price);font-size:18px}
     .old-price{color:var(--old-price);text-decoration:line-through;font-size:13px}
-    .buy{display:inline-block;margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;text-align:center;font-weight:700}
-    .muted{color:var(--muted)}
-    .admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;z-index:120}
-    .admin-panel .card{width:760px;max-width:100%}
-    .admin-panel.active{display:flex}
-    .form-row{display:flex;gap:8px;margin-bottom:8px}
-    .form-row input, .form-row select, .form-row textarea{flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef}
-    .small{font-size:13px;color:var(--muted)}
-    .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
-    .gear-btn svg{width:20px;height:20px;color:#111}
-    #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60;transition:opacity .25s}
-    .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
-    .pager{display:flex;gap:6px;align-items:center;justify-content:center;margin-top:18px}
+    .buy{display:inline-block;padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;text-align:center;font-weight:700}
+    .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:18px}
     .pager button{padding:8px 10px;border-radius:8px;border:1px solid #e6e8ef;background:#fff;cursor:pointer}
-    .chip{padding:6px 10px;border-radius:999px;border:1px solid #e6e8ef;background:#fff;cursor:pointer}
-    .hidden{display:none}
+    .admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;z-index:120}
+    .admin-panel .card{width:820px;max-width:100%}
+    .admin-panel.active{display:flex}
+    .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
+    .small{font-size:13px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <header>
-    <img src="/assets/logo.png" alt="Via Mais Store" id="site-logo">
-    <div class="brand">
-      <h1>Via Mais Store!</h1>
-      <p class="small">Central de Ofertas</p>
+  <div class="topbar" role="banner">
+    <div class="logo">
+      <img src="/assets/logo.png" alt="Via Mais Store">
     </div>
-  </header>
+    <div class="searchbar" role="search" aria-label="Busca">
+      <input id="q" placeholder="Buscar produtos, marcas e muito mais..." />
+      <button id="btn-search">Buscar</button>
+    </div>
+    <div class="top-actions">
+      <div><button id="open-admin-top" class="btn-ghost">Admin</button></div>
+    </div>
+  </div>
 
   <div class="vip-bar" role="region" aria-label="Grupo Vip">
     <div class="vip-left">
-      <div class="vip-badge">GRUPO VIP!</div>
-      <div class="vip-text">Entre no nosso Grupo Vip! Receba ofertas exclusivas em primeira mão.</div>
+      <div class="vip-badge">GRUPO VIP</div>
+      <div class="vip-text">Entre no nosso Grupo Vip! Receba ofertas exclusivas.</div>
     </div>
     <div class="vip-actions">
       <a id="vip-wa" class="wa" href="https://chat.whatsapp.com/CqO1WYQbzuKGrpWBqBGOp2" target="_blank" rel="noopener noreferrer">WhatsApp</a>
@@ -96,130 +87,125 @@
   </div>
 
   <div class="page">
-    <div class="hero">
-      <div class="hero-left">
-        <div class="carousel" aria-label="Destaques">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-            <strong>Destaques</strong>
-            <div style="display:flex;gap:8px">
-              <!-- preserved structure but no horizontal controls needed -->
-            </div>
-          </div>
-          <div id="carousel-track" class="carousel-track" tabindex="0" role="list"></div>
-        </div>
-
-        <div style="margin-top:12px" class="grid-controls">
-          <div class="filters" role="region" aria-label="Filtros">
-            <!-- removed search, categories and clear as requested -->
-            <select id="sort-select" title="Ordenar por">
-              <option value="price-asc">Preço ↑</option>
-              <option value="price-desc">Preço ↓</option>
-              <option value="discount">Maior desconto</option>
-              <option value="newest">Mais recentes</option>
-            </select>
-            <select id="page-size">
-              <option value="8">8 por página</option>
-              <option value="12" selected>12 por página</option>
-            </select>
-          </div>
-
-          <div>
-            <button id="open-admin" class="btn-ghost">Admin</button>
-          </div>
-        </div>
-
-        <section aria-live="polite">
-          <div id="offers-list" class="offers-grid"></div>
-          <div id="empty" class="muted" style="text-align:center;padding:36px;display:none">Nenhuma oferta encontrada.</div>
-        </section>
-
-        <div class="pager" id="pager"></div>
+    <aside class="sidebar">
+      <div class="hero-banner">
+        <strong style="font-size:18px">Ofertas do Dia</strong>
+        <div class="small">Confira os melhores descontos selecionados.</div>
       </div>
 
-      <aside class="hero-right">
-        <div class="card" style="padding:12px">
-          <h3 style="margin:0 0 8px">Atualizações</h3>
-          <p class="small">Última atualização das ofertas</p>
-          <div style="display:flex;flex-direction:column;gap:8px;margin-top:12px">
-            <div style="margin-top:6px" class="small">Fonte: <span id="last-updated">—</span></div>
-            <a href="#" class="btn-ghost" style="text-decoration:none;color:inherit">Ver políticas</a>
-          </div>
+      <div class="filters">
+        <div class="section">
+          <h4>Categoria</h4>
+          <select id="category-filter"><option value="">Todas as categorias</option></select>
         </div>
-      </aside>
-    </div>
+        <div class="section">
+          <h4>Ordenar por</h4>
+          <select id="sort-select">
+            <option value="relevance">Relevância</option>
+            <option value="price-asc">Preço: Menor → Maior</option>
+            <option value="price-desc">Preço: Maior → Menor</option>
+            <option value="discount">Maior desconto</option>
+            <option value="newest">Mais recentes</option>
+          </select>
+        </div>
+        <div class="section">
+          <h4>Exibir</h4>
+          <select id="page-size">
+            <option value="8">8 por página</option>
+            <option value="12" selected>12 por página</option>
+            <option value="24">24 por página</option>
+          </select>
+        </div>
+      </div>
+    </aside>
+
+    <main class="content" id="main-content">
+      <div id="offers-list" class="offers-grid" aria-live="polite"></div>
+      <div id="empty" class="small" style="text-align:center;padding:36px;display:none">Nenhuma oferta encontrada.</div>
+      <div class="pager" id="pager"></div>
+    </main>
   </div>
 
-  <!-- ADMIN PANEL (agora contém Import/Export) -->
+  <!-- ADMIN PANEL -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
-    <div class="card" style="max-height:78vh;overflow:auto;position:relative;padding-bottom:12px;">
-      <button id="close-admin" class="btn-ghost" style="position:absolute;top:10px;right:10px;">Fechar</button>
-      <div style="padding:18px 18px 8px 18px;border-bottom:1px solid #f0f2f6">
-        <strong style="font-size:16px">Painel Admin</strong>
-      </div>
+    <div class="card" style="max-height:84vh;overflow:auto;position:relative;padding:16px;">
+      <button id="close-admin" class="btn-ghost" style="position:absolute;top:12px;right:12px">Fechar</button>
+      <h3>Painel Admin</h3>
 
-      <div style="padding:12px 18px;">
-        <div style="margin-bottom:10px">
+      <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
           <div class="small">Links de grupo (WhatsApp / Telegram)</div>
-          <div style="display:flex;gap:8px;margin-top:8px;">
-            <input id="f-wa-link" placeholder="Link do WhatsApp" />
-            <input id="f-tg-link" placeholder="Link do Telegram" />
-            <button id="btn-save-links" class="btn-ghost">Salvar Links</button>
-          </div>
+          <input id="f-wa-link" placeholder="Link do WhatsApp" style="margin-top:6px;padding:8px" />
+          <input id="f-tg-link" placeholder="Link do Telegram" style="margin-top:6px;padding:8px" />
+          <div style="margin-top:8px"><button id="btn-save-links" class="btn-ghost">Salvar Links</button></div>
         </div>
 
-        <hr style="margin:12px 0">
-
-        <div style="margin-bottom:10px">
-          <div class="small">Adicionar oferta manual</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-            <input id="f-name" placeholder="Nome do produto" />
-            <input id="f-category" placeholder="Categoria (ex: Eletrônicos)" />
-            <input id="f-price" placeholder="Preço (ex: 19.90)" />
-            <input id="f-promotional" placeholder="Preço promocional (opcional)" />
-            <input id="f-link" placeholder="Link de afiliado" style="grid-column:1/3" />
-            <input id="f-image" placeholder="URL da imagem (opcional)" style="grid-column:1/3" />
-            <label style="display:flex;gap:8px;align-items:center"><input id="f-featured" type="checkbox"/> Destacar como destaque</label>
-          </div>
-          <div style="margin-top:10px;display:flex;gap:8px;">
-            <button id="btn-save-product" class="btn-ghost">Salvar Produto</button>
-            <button id="btn-clear-local" class="btn-ghost">Limpar ofertas locais</button>
-          </div>
-        </div>
-
-        <hr style="margin:12px 0">
-
-        <div style="margin-bottom:10px">
+        <div>
           <div class="small">Importar / Exportar</div>
-          <div style="display:flex;gap:8px;margin-top:8px">
+          <div style="margin-top:6px;display:flex;gap:8px">
             <button id="btn-export" class="btn-ghost">Exportar ofertas (JSON)</button>
             <button id="btn-import" class="btn-ghost">Importar JSON</button>
-            <input id="file-import" type="file" accept="application/json" class="hidden" />
+            <input id="file-import" type="file" accept="application/json" style="display:none" />
           </div>
+          <div style="margin-top:12px" class="small">Última atualização: <span id="last-updated">—</span></div>
         </div>
+      </div>
 
-        <hr style="margin:12px 0">
+      <hr style="margin:12px 0">
 
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <div class="small">Senha admin protegida. Para editar, informe a senha.</div>
+      <div>
+        <div class="small">Adicionar oferta manual</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <input id="f-name" placeholder="Nome do produto" />
+          <input id="f-category" placeholder="Categoria (ex: Eletrônicos)" />
+          <input id="f-price" placeholder="Preço (ex: 199.90)" />
+          <input id="f-promotional" placeholder="Promocional (opcional)" />
+          <input id="f-link" placeholder="Link de afiliado" style="grid-column:1/3" />
+          <input id="f-image" placeholder="URL da imagem (opcional)" style="grid-column:1/3" />
+          <label style="grid-column:1/3;display:flex;align-items:center;gap:8px"><input id="f-featured" type="checkbox"/> Destacar</label>
+        </div>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+          <button id="btn-save-product" class="btn-ghost">Salvar Produto</button>
+          <button id="btn-clear-local" class="btn-ghost">Limpar ofertas locais</button>
         </div>
       </div>
     </div>
   </div>
 
   <button id="gear" class="gear-btn" aria-label="Abrir painel administrativo">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" fill="#111"/><path d="M19.4 13.5v-2.9l2.1-1.6-2-3.5-2.6.7a8.9 8.9 0 0 0-1.7-.9L15 2h-6l-.2 3.3a8.9 8.9 0 0 0-1.7.9l-2.6-.7-2 3.5L4.6 10.6v2.9l-1.6 1.2 2 3.5 2.6-.7c.5.4 1.1.7 1.7.9L9 22h6l.2-3.3c.6-.2 1.2-.5 1.7-.9l2.6.7 2-3.5-1.6-1.2z" fill="#111" opacity="0.08"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" fill="#111"/><path d="M19.4 13.5v-2.9l2.1-1.6-2-3.5-2.6.7a8.9 8.9 0 0 0-1.7-.9L15 2h-6l-.2 3.3a8.9 8.9 0 0 0-1.7.9l-2.6-.7-2 3.5L4.6 10.6v2.9l-1.6 1.2 2 3.5 2.6-.7c.5.4 1.1.7 1.7.9L9 22h6l.2-3.3c.6-.2 1.2-.5 1.7-.9l2.6.7 2-3.5-1.6-1.2z" fill="#111" opacity="0.08"/></svg>
   </button>
-
-  <div id="offers-last-updated-badge" style="display:none"></div>
 
   <script>
   // CONFIG
   const REMOTE_JSON_PATH = '/data/offers.json';
   const ADMIN_HASH = 'f69f04a9c340f2c80896c5adbfe0686369ac3ed9935af596879207ab4cc511c3';
 
-  // Utils
+  // UTILITIES
   function sanitize(s){ return (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function toNumber(v){ const n = parseFloat(String(v).replace(/[^0-9\.,-]/g,'')); return isNaN(n) ? 0 : Math.round((n + Number.EPSILON) * 100) / 100; }
+  function formatBR(value){
+    return Number(value || 0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  // Improved number parsing for BR formats:
+  function toNumber(v){
+    if(v === undefined || v === null) return 0;
+    let s = String(v).trim();
+    // remove currency symbols and spaces
+    s = s.replace(/[^\d\.,-]/g,'').trim();
+    if(!s) return 0;
+    // If contains both '.' and ',', assume '.' is thousands and ',' is decimal (BR style)
+    if(s.indexOf(',') > -1 && s.indexOf('.') > -1){
+      s = s.replace(/\./g,''); // remove thousands
+      s = s.replace(/,/g,'.'); // decimal to dot
+    } else if(s.indexOf(',') > -1 && s.indexOf('.') === -1){
+      // only comma present -> treat as decimal
+      s = s.replace(/,/g,'.');
+    } else {
+      // keep as is (dot decimal or integer)
+    }
+    const n = parseFloat(s);
+    return isNaN(n) ? 0 : Math.round((n + Number.EPSILON) * 100) / 100;
+  }
   function normalizeUrl(u){
     if(!u) return '#';
     u = String(u).trim();
@@ -244,7 +230,7 @@
     return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
-  // VIP buttons robust opener (aggressive handler)
+  // VIP / WhatsApp / Telegram handlers (aggressive)
   function applyVipHandlers(){
     let a1 = document.getElementById('vip-wa');
     let a2 = document.getElementById('vip-tg');
@@ -282,12 +268,7 @@
         showToast('Link copiado para a área de transferência');
       }catch(e){}
       try{ if(navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(u); }catch(e){}
-      try{
-        if(navigator.share){
-          await navigator.share({ title: 'Link do grupo', text: 'Participe do grupo:', url: u });
-          return;
-        }
-      }catch(e){}
+      try{ if(navigator.share){ await navigator.share({ title:'Link do grupo', text:'Participe do grupo:', url:u }); return; } }catch(e){}
       try{
         if(/chat\.whatsapp\.com|wa\.me/i.test(u)){
           try{
@@ -319,12 +300,7 @@
         showToast('Link copiado para a área de transferência');
       }catch(e){}
       try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).catch(()=>{}); }catch(e){}
-      try{
-        if(navigator.share){
-          navigator.share({ title: 'Link do grupo', text: 'Participe do grupo:', url: u });
-          return;
-        }
-      }catch(e){}
+      try{ if(navigator.share){ navigator.share({ title:'Link do grupo', text:'Participe do grupo:', url:u }); return; } }catch(e){}
       try{
         if(/^https?:\/\/(t\.me|telegram\.me)/i.test(u)){
           const user = u.replace(/^https?:\/\/(t\.me|telegram\.me)\/?/i,'');
@@ -332,8 +308,7 @@
           setTimeout(()=>{ window.location.href = u; }, 800);
           return;
         }
-        const w = window.open(u, '_blank');
-        if(w) return;
+        const w = window.open(u, '_blank'); if(w) return;
         window.location.href = u;
       }catch(e){
         copyToClipboard(u).then(()=> showToast('Link copiado.')).catch(()=> alert('Abra o link manualmente: ' + u));
@@ -354,10 +329,10 @@
     }
   }
 
-  // Data handling
+  // Data handling: remote JSON -> local fallback
   async function fetchRemoteOffers(){
     try{
-      const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache: 'no-store'});
+      const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache:'no-store'});
       if(!r.ok) throw new Error('remote not ok');
       const data = await r.json();
       const arr = Array.isArray(data) ? data : (data.offers || []);
@@ -374,8 +349,8 @@
       title: sanitize(o.title || o.name || ''),
       category: sanitize(o.category || (o.tags && o.tags[0]) || 'Geral'),
       price: toNumber(o.price || o.price_raw || o.price_value || 0),
-      promotional_price: o.promotional_price ? toNumber(o.promotional_price) : (o.promo ? toNumber(o.promo) : null),
-      image_url: o.image_url || o.image || o.img || '',
+      promotional_price: (o.promotional_price !== undefined && o.promotional_price !== null) ? toNumber(o.promotional_price) : null,
+      image_url: o.image_url || o.image || o.img || '/assets/placeholder.png',
       link: normalizeUrl(o.link || o.affiliate_link || '#'),
       featured: !!o.featured,
       created_at: o.created_at || (new Date().toISOString())
@@ -399,14 +374,29 @@
     localStorage.setItem('offers', JSON.stringify(arr));
   }
 
-  // Render logic with sort & pagination (no search / no category filter UI)
+  // Rendering + search + filters + sort + pagination
   let ALL_OFFERS = [];
   let FILTERED = [];
-  let state = { sort:'price-asc', page:1, pageSize:12 };
+  let state = { q:'', category:'', sort:'relevance', page:1, pageSize:12 };
+
+  function buildCategoryOptions(){
+    const sel = document.getElementById('category-filter');
+    sel.innerHTML = '<option value="">Todas as categorias</option>';
+    const cats = Array.from(new Set(ALL_OFFERS.map(o => o.category || 'Geral'))).sort();
+    cats.forEach(c => {
+      const opt = document.createElement('option'); opt.value = c; opt.textContent = c; sel.appendChild(opt);
+    });
+  }
 
   function applyFilters(){
-    // No search/category UI -> simply copy all offers
-    FILTERED = ALL_OFFERS.slice();
+    const q = state.q.trim().toLowerCase();
+    FILTERED = ALL_OFFERS.filter(o => {
+      if(state.category && o.category !== state.category) return false;
+      if(q){
+        return (o.title && o.title.toLowerCase().includes(q)) || (o.category && o.category.toLowerCase().includes(q));
+      }
+      return true;
+    });
     applySort();
   }
 
@@ -429,6 +419,7 @@
         FILTERED.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
         break;
       default:
+        // relevance -> keep original order
         break;
     }
     renderPage();
@@ -455,23 +446,20 @@
       const card = document.createElement('div');
       card.className = 'card';
       const promo = o.promotional_price && o.promotional_price < o.price;
-      const priceText = promo ? (o.promotional_price.toFixed(2).replace('.',',')) : (o.price.toFixed(2).replace('.',','));
-      const oldPriceText = promo ? (o.price.toFixed(2).replace('.',',')) : '';
+      const displayed = (promo ? o.promotional_price : o.price) || 0;
+      const old = promo ? o.price : null;
 
       card.innerHTML = `
-        <div class="media"><img src="${sanitize(o.image_url) || '/assets/placeholder.png'}" alt="${sanitize(o.title)}"></div>
+        <div class="media"><img src="${sanitize(o.image_url)}" alt="${sanitize(o.title)}"></div>
         <div class="body">
           <div class="title">${sanitize(o.title)}</div>
-          <div class="desc">${sanitize(o.category)}</div>
-          <div class="meta">
-            ${promo ? '<div class="badge-discount">Promo</div>' : ''}
-          </div>
-          <div class="price-row">
+          <div class="shop small">${sanitize(o.category)}</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:auto">
             <div>
-              <div class="price">R$ ${priceText}</div>
-              ${promo ? `<div class="old-price">R$ ${oldPriceText}</div>` : ''}
+              <div class="price">R$ ${formatBR(displayed)}</div>
+              ${old ? `<div class="old-price">R$ ${formatBR(old)}</div>` : ''}
             </div>
-            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <div style="margin-left:auto;display:flex;flex-direction:column;gap:8px;align-items:flex-end">
               <a class="buy" href="${sanitize(o.link)}" target="_blank" rel="noopener noreferrer">Ver oferta</a>
               <button class="btn-ghost" data-id="${o.id}" style="font-size:12px">Salvar</button>
             </div>
@@ -520,25 +508,6 @@
     pager.appendChild(next);
   }
 
-  // Carousel -> now grid of featured items (vertical flow)
-  function renderCarousel(){
-    const track = document.getElementById('carousel-track');
-    track.innerHTML = '';
-    const featured = ALL_OFFERS.filter(o=>o.featured).slice(0,12);
-    const items = featured.length ? featured : ALL_OFFERS.slice(0,12);
-    items.forEach(o=>{
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `<div class="media"><img src="${sanitize(o.image_url) || '/assets/placeholder.png'}" alt="${sanitize(o.title)}"></div>
-                        <div style="padding:8px">
-                          <div style="font-weight:700;font-size:13px">${sanitize(o.title)}</div>
-                          <div style="color:var(--muted);font-size:12px;margin-top:6px">R$ ${(o.promotional_price || o.price).toFixed(2).replace('.',',')}</div>
-                        </div>`;
-      card.addEventListener('click', ()=> window.open(o.link,'_blank'));
-      track.appendChild(card);
-    });
-  }
-
   // Load sequence
   async function loadOffers(){
     document.getElementById('last-updated').textContent = 'Carregando...';
@@ -557,8 +526,8 @@
       document.getElementById('last-updated').textContent = '—';
     }
     saveLocalOffers(ALL_OFFERS);
+    buildCategoryOptions();
     applyFilters();
-    renderCarousel();
   }
 
   // Admin behaviors
@@ -571,19 +540,11 @@
     document.getElementById('admin-panel').setAttribute('aria-hidden','false');
     document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
     document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
-    document.getElementById('f-name').value = '';
-    document.getElementById('f-category').value = '';
-    document.getElementById('f-price').value = '';
-    document.getElementById('f-promotional').value = '';
-    document.getElementById('f-link').value = '';
-    document.getElementById('f-image').value = '';
-    document.getElementById('f-featured').checked = false;
   }
-
   function closeAdmin(){ document.getElementById('admin-panel').classList.remove('active'); document.getElementById('admin-panel').setAttribute('aria-hidden','true'); }
 
   document.getElementById('gear').addEventListener('click', ()=> openAdmin());
-  document.getElementById('open-admin').addEventListener('click', ()=> openAdmin());
+  document.getElementById('open-admin-top').addEventListener('click', ()=> openAdmin());
   document.getElementById('close-admin').addEventListener('click', ()=> closeAdmin());
 
   document.getElementById('btn-save-links').onclick = ()=> {
@@ -617,8 +578,8 @@
     });
     ALL_OFFERS.unshift(item);
     saveLocalOffers(ALL_OFFERS);
+    buildCategoryOptions();
     applyFilters();
-    renderCarousel();
     showToast('Oferta adicionada');
   };
 
@@ -627,13 +588,13 @@
     fetchRemoteOffers().then(remote=>{
       if(remote && remote.length){ ALL_OFFERS = remote; } else { ALL_OFFERS = []; }
       saveLocalOffers(ALL_OFFERS);
+      buildCategoryOptions();
       applyFilters();
-      renderCarousel();
       showToast('Ofertas locais removidas');
     });
   };
 
-  // Export / Import inside admin
+  // Export / Import in admin
   document.getElementById('btn-export').addEventListener('click', ()=>{
     const data = JSON.stringify(ALL_OFFERS, null, 2);
     const blob = new Blob([data], {type:'application/json'});
@@ -655,8 +616,8 @@
         const normalized = parsed.map(normalizeOffer);
         ALL_OFFERS = normalized.concat(ALL_OFFERS);
         saveLocalOffers(ALL_OFFERS);
+        buildCategoryOptions();
         applyFilters();
-        renderCarousel();
         showToast('Importação concluída');
       }catch(e){ alert('Erro ao importar JSON: ' + (e.message || e)); }
     };
@@ -664,15 +625,18 @@
     this.value = '';
   });
 
-  // UI bindings (only those remaining)
+  // Search + filters bindings
+  document.getElementById('q').addEventListener('input', (e)=>{ state.q = e.target.value; state.page = 1; applyFilters(); });
+  document.getElementById('category-filter').addEventListener('change', (e)=>{ state.category = e.target.value; state.page = 1; applyFilters(); });
   document.getElementById('sort-select').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page = 1; applySort(); });
   document.getElementById('page-size').addEventListener('change', (e)=>{ state.pageSize = e.target.value; state.page = 1; renderPage(); });
+  document.getElementById('btn-search').addEventListener('click', ()=> { state.q = document.getElementById('q').value; state.page = 1; applyFilters(); });
 
   // init
   applyVipHandlers();
   loadOffers();
 
-  // Reapply VIP handlers after admin changes
+  // reapply VIP on storage events
   window.addEventListener('storage', ()=> applyVipHandlers());
   </script>
 </body>
