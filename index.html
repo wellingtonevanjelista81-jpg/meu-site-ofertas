@@ -9,48 +9,59 @@
     :root{
       --ml-yellow: #ffe600;
       --ml-yellow-dark: #f5d400;
+      --vip-gold: #d4af37; /* dourado */
       --bg:#f6f7fb; --card:#fff; --muted:#5b6168;
-      --accent:#ff3a2f; --wa:#25D366; --tg:#0088CC;
-      --price:#ef4444; --old-price:#9ca3af; --card-radius:10px;
+      --btn-blue: #007bff; --btn-blue-dark:#0069d9;
+      --wa:#25D366; --tg:#0088CC;
+      --price-black: #111111; --old-price:#9ca3af; --card-radius:10px;
     }
     *{box-sizing:border-box}
     body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--bg);color:#111;-webkit-font-smoothing:antialiased}
-    /* Top bar like Mercado Livre */
-    .topbar{background:var(--ml-yellow);border-bottom:3px solid var(--ml-yellow-dark);padding:10px 18px;position:sticky;top:0;z-index:90;display:flex;align-items:center;gap:14px}
+    /* Top bar */
+    .topbar{background:var(--ml-yellow);border-bottom:3px solid var(--ml-yellow-dark);padding:10px 18px;position:sticky;top:0;z-index:95;display:flex;align-items:center;gap:14px}
     .logo{display:flex;align-items:center;gap:12px}
     .logo img{height:44px}
     .searchbar{flex:1;display:flex;align-items:center;gap:8px;max-width:920px}
     .searchbar input{flex:1;padding:12px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);}
     .searchbar button{padding:10px 14px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer}
     .top-actions{display:flex;gap:10px;align-items:center}
-    /* VIP notice under topbar */
-    .vip-bar{background:#fff;color:#111;padding:10px 18px;border-bottom:1px solid #eee;display:flex;align-items:center;gap:12px;justify-content:space-between}
+
+    /* black strip below yellow for VIP */
+    .vip-black{background:#000;color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
     .vip-left{display:flex;align-items:center;gap:12px}
-    .vip-badge{background:var(--accent);color:#fff;padding:6px 10px;border-radius:999px;font-weight:800}
+    .vip-title{font-weight:800}
+    .vip-desc{opacity:0.9}
+    .vip-actions{display:flex;gap:8px}
     .vip-actions a{padding:8px 12px;border-radius:8px;color:#fff;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;gap:8px}
-    .vip-actions .wa{background:var(--wa)}
-    .vip-actions .tg{background:var(--tg)}
-    /* page layout */
-    .page{max-width:1280px;margin:18px auto;padding:0 18px 80px;display:flex;gap:18px}
-    .sidebar{width:280px}
-    .content{flex:1}
-    .hero-banner{background:linear-gradient(90deg,#fff 0%,#fff 60%, rgba(255,230,0,0.08) 60%);border-radius:10px;padding:18px;margin-bottom:12px;border:1px solid #eee}
-    .filters .section{background:#fff;border-radius:10px;padding:12px;border:1px solid #eee;margin-bottom:12px}
-    .filters .section h4{margin:0 0 8px;font-size:14px}
-    .offers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-    @media (max-width:1100px){ .offers-grid{grid-template-columns:repeat(3,1fr)} .sidebar{display:none} }
-    @media (max-width:780px){ .offers-grid{grid-template-columns:repeat(2,1fr)} }
-    @media (max-width:420px){ .offers-grid{grid-template-columns:repeat(1,1fr)} .searchbar{max-width:unset} }
+    .vip-actions .wa{background:var(--wa);color:#fff}
+    .vip-actions .tg{background:var(--tg);color:#fff}
+    .vip-actions .gold{background:var(--vip-gold);color:#000}
+
+    /* layout main */
+    .container{max-width:1280px;margin:18px auto;padding:0 18px 80px}
+    .hero-banner{background:#fff;border-radius:10px;padding:18px;margin-bottom:12px;border:1px solid #eee;display:flex;align-items:center;justify-content:space-between}
+    .hero-left{display:flex;flex-direction:column}
+    .hero-left h1{margin:0;font-size:20px}
+    .hero-left p{margin:4px 0 0;color:var(--muted)}
+
+    /* Grid responsive */
+    .offers-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap:16px;
+    }
+
     .card{background:var(--card);border-radius:10px;overflow:hidden;border:1px solid #e9edf2;display:flex;flex-direction:column;height:100%}
-    .media{height:220px;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px}
-    .media img{max-width:100%;max-height:100%;object-fit:contain}
+    .media{aspect-ratio: 4 / 3;background:#fafafa;display:flex;align-items:center;justify-content:center;padding:12px;}
+    .media img{width:100%;height:100%;object-fit:contain;display:block}
     .body{padding:12px;flex:1;display:flex;flex-direction:column}
     .title{font-size:14px;font-weight:600;color:#111;min-height:44px;margin-bottom:6px}
     .shop{font-size:12px;color:var(--muted);margin-bottom:8px}
     .price-row{display:flex;align-items:flex-end;gap:8px;justify-content:space-between;margin-top:auto}
-    .price {font-weight:800;color:var(--price);font-size:18px}
+    .price {font-weight:800;color:var(--price-black);font-size:18px}
     .old-price{color:var(--old-price);text-decoration:line-through;font-size:13px}
-    .buy{display:inline-block;padding:10px 12px;border-radius:8px;background:var(--accent);color:#fff;text-decoration:none;text-align:center;font-weight:700}
+    .buy{display:inline-block;padding:10px 12px;border-radius:10px;background:var(--btn-blue);color:#fff;text-decoration:none;text-align:center;font-weight:700;border:none}
+    .buy:hover{background:var(--btn-blue-dark)}
     .pager{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:18px}
     .pager button{padding:8px 10px;border-radius:8px;border:1px solid #e6e8ef;background:#fff;cursor:pointer}
     .admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;padding:20px;z-index:120}
@@ -59,12 +70,25 @@
     .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
     .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
     .small{font-size:13px;color:var(--muted)}
+
+    /* Mobile tweaks */
+    @media (max-width:780px){
+      .searchbar input{padding:10px}
+      .hero-banner{flex-direction:column;align-items:flex-start;gap:8px}
+    }
+    @media (max-width:520px){
+      .topbar{padding:8px}
+      .title{font-size:13px}
+      .price{font-size:16px}
+      .vip-actions a{padding:8px}
+      .searchbar button{padding:8px}
+    }
   </style>
 </head>
 <body>
   <div class="topbar" role="banner">
     <div class="logo">
-      <img src="/assets/logo.png" alt="Via Mais Store">
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='44'><rect width='100%' height='100%' fill='%23ffe600'/><text x='14' y='28' font-family='Arial' font-size='16' fill='%23000'>Via Mais Store</text></svg>" alt="Via Mais Store">
     </div>
     <div class="searchbar" role="search" aria-label="Busca">
       <input id="q" placeholder="Buscar produtos, marcas e muito mais..." />
@@ -75,49 +99,28 @@
     </div>
   </div>
 
-  <div class="vip-bar" role="region" aria-label="Grupo Vip">
+  <div class="vip-black" role="region" aria-label="Grupo VIP">
     <div class="vip-left">
-      <div class="vip-badge">GRUPO VIP</div>
-      <div class="vip-text">Entre no nosso Grupo Vip! Receba ofertas exclusivas.</div>
+      <div class="vip-title">GRUPO VIP</div>
+      <div class="vip-desc">Entre no nosso Grupo Vip! Receba ofertas exclusivas.</div>
     </div>
     <div class="vip-actions">
-      <a id="vip-wa" class="wa" href="https://chat.whatsapp.com/CqO1WYQbzuKGrpWBqBGOp2" target="_blank" rel="noopener noreferrer">WhatsApp</a>
-      <a id="vip-tg" class="tg" href="https://t.me/VIAMAISSTORE" target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a id="vip-wa" class="wa" href="#" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+      <a id="vip-tg" class="tg" href="#" target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a id="vip-join" class="gold" href="#" target="_blank" rel="noopener noreferrer">Participar</a>
     </div>
   </div>
 
-  <div class="page">
-    <aside class="sidebar">
-      <div class="hero-banner">
-        <strong style="font-size:18px">Ofertas do Dia</strong>
-        <div class="small">Confira os melhores descontos selecionados.</div>
+  <div class="container">
+    <div class="hero-banner" role="region" aria-label="Ofertas do Dia">
+      <div class="hero-left">
+        <h1>Ofertas do Dia</h1>
+        <p>Confira os melhores descontos selecionados.</p>
       </div>
-
-      <div class="filters">
-        <div class="section">
-          <h4>Categoria</h4>
-          <select id="category-filter"><option value="">Todas as categorias</option></select>
-        </div>
-        <div class="section">
-          <h4>Ordenar por</h4>
-          <select id="sort-select">
-            <option value="relevance">Relevância</option>
-            <option value="price-asc">Preço: Menor → Maior</option>
-            <option value="price-desc">Preço: Maior → Menor</option>
-            <option value="discount">Maior desconto</option>
-            <option value="newest">Mais recentes</option>
-          </select>
-        </div>
-        <div class="section">
-          <h4>Exibir</h4>
-          <select id="page-size">
-            <option value="8">8 por página</option>
-            <option value="12" selected>12 por página</option>
-            <option value="24">24 por página</option>
-          </select>
-        </div>
+      <div>
+        <button id="open-admin" class="btn-ghost">Abrir Admin</button>
       </div>
-    </aside>
+    </div>
 
     <main class="content" id="main-content">
       <div id="offers-list" class="offers-grid" aria-live="polite"></div>
@@ -126,7 +129,7 @@
     </main>
   </div>
 
-  <!-- ADMIN PANEL -->
+  <!-- ADMIN PANEL (mantido) -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
     <div class="card" style="max-height:84vh;overflow:auto;position:relative;padding:16px;">
       <button id="close-admin" class="btn-ghost" style="position:absolute;top:12px;right:12px">Fechar</button>
@@ -147,7 +150,7 @@
             <button id="btn-import" class="btn-ghost">Importar JSON</button>
             <input id="file-import" type="file" accept="application/json" style="display:none" />
           </div>
-          <div style="margin-top:12px" class="small">Última atualização: <span id="last-updated">—</span></div>
+          <div style="margin-top:12px" class="small">Fonte: <span id="last-updated">—</span></div>
         </div>
       </div>
 
@@ -172,164 +175,48 @@
     </div>
   </div>
 
-  <button id="gear" class="gear-btn" aria-label="Abrir painel administrativo">
-    <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 15.5A3.5 3.5 0 1 0 12 8.5a3.5 3.5 0 0 0 0 7z" fill="#111"/><path d="M19.4 13.5v-2.9l2.1-1.6-2-3.5-2.6.7a8.9 8.9 0 0 0-1.7-.9L15 2h-6l-.2 3.3a8.9 8.9 0 0 0-1.7.9l-2.6-.7-2 3.5L4.6 10.6v2.9l-1.6 1.2 2 3.5 2.6-.7c.5.4 1.1.7 1.7.9L9 22h6l.2-3.3c.6-.2 1.2-.5 1.7-.9l2.6.7 2-3.5-1.6-1.2z" fill="#111" opacity="0.08"/></svg>
-  </button>
+  <button id="gear" class="gear-btn" aria-label="Abrir painel administrativo">⚙</button>
 
   <script>
-  // CONFIG
+  // CONFIG (mantive a lógica já testada)
   const REMOTE_JSON_PATH = '/data/offers.json';
   const ADMIN_HASH = 'f69f04a9c340f2c80896c5adbfe0686369ac3ed9935af596879207ab4cc511c3';
+  const PLACEHOLDER = "data:image/svg+xml;utf8," + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="#f3f4f6" width="100%" height="100%"/><text x="50%" y="54%" font-family="Arial" font-size="28" fill="#9ca3af" text-anchor="middle">Imagem indisponível</text></svg>'
+  );
 
   // UTILITIES
   function sanitize(s){ return (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function formatBR(value){
-    return Number(value || 0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-  }
-  // Improved number parsing for BR formats:
+  function formatBR(value){ return Number(value || 0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
   function toNumber(v){
     if(v === undefined || v === null) return 0;
     let s = String(v).trim();
-    // remove currency symbols and spaces
     s = s.replace(/[^\d\.,-]/g,'').trim();
     if(!s) return 0;
-    // If contains both '.' and ',', assume '.' is thousands and ',' is decimal (BR style)
-    if(s.indexOf(',') > -1 && s.indexOf('.') > -1){
-      s = s.replace(/\./g,''); // remove thousands
-      s = s.replace(/,/g,'.'); // decimal to dot
-    } else if(s.indexOf(',') > -1 && s.indexOf('.') === -1){
-      // only comma present -> treat as decimal
-      s = s.replace(/,/g,'.');
-    } else {
-      // keep as is (dot decimal or integer)
-    }
+    if(s.indexOf(',') > -1 && s.indexOf('.') > -1){ s = s.replace(/\./g,''); s = s.replace(/,/g,'.'); }
+    else if(s.indexOf(',') > -1 && s.indexOf('.') === -1){ s = s.replace(/,/g,'.'); }
     const n = parseFloat(s);
     return isNaN(n) ? 0 : Math.round((n + Number.EPSILON) * 100) / 100;
   }
-  function normalizeUrl(u){
-    if(!u) return '#';
-    u = String(u).trim();
-    if(u === '#' || u === '' || u === 'https://#') return '#';
-    if(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//.test(u)) return u;
-    return 'https://' + u;
-  }
-  function copyToClipboard(text){
-    if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
-    const ta = document.createElement('textarea'); ta.value = text;
-    document.body.appendChild(ta); ta.select();
-    try{ document.execCommand('copy'); document.body.removeChild(ta); return Promise.resolve(); }catch(e){ document.body.removeChild(ta); return Promise.reject(); }
-  }
-  function showToast(msg){
-    let t = document.getElementById('__toast');
-    if(!t){ t = document.createElement('div'); t.id = '__toast'; Object.assign(t.style, {position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#222',color:'#fff',padding:'12px',borderRadius:'8px',zIndex:10000}); document.body.appendChild(t); }
-    t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 3500);
-  }
-  async function sha256Hex(text){
-    const enc = new TextEncoder().encode(text);
-    const hash = await crypto.subtle.digest('SHA-256', enc);
-    return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join('');
-  }
+  function normalizeUrl(u){ if(!u) return '#'; u = String(u).trim(); if(u === '#' || u === '' || u === 'https://#') return '#'; if(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//.test(u)) return u; return 'https://' + u; }
+  function showToast(msg){ let t = document.getElementById('__toast'); if(!t){ t = document.createElement('div'); t.id = '__toast'; Object.assign(t.style, {position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#222',color:'#fff',padding:'12px',borderRadius:'8px',zIndex:10000}); document.body.appendChild(t); } t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 3000); }
+  async function sha256Hex(text){ const enc = new TextEncoder().encode(text); const hash = await crypto.subtle.digest('SHA-256', enc); return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join(''); }
 
-  // VIP / WhatsApp / Telegram handlers (aggressive)
+  // VIP handlers
   function applyVipHandlers(){
-    let a1 = document.getElementById('vip-wa');
-    let a2 = document.getElementById('vip-tg');
-
-    if(a1){
-      const n = a1.cloneNode(true);
-      a1.parentNode.replaceChild(n, a1);
-      a1 = n;
-    }
-    if(a2){
-      const n2 = a2.cloneNode(true);
-      a2.parentNode.replaceChild(n2, a2);
-      a2 = n2;
-    }
-
-    const rawWa = (localStorage.getItem('site_wa') || (a1 ? a1.getAttribute('href') : '#')||'#').trim();
-    const rawTg = (localStorage.getItem('site_tg') || (a2 ? a2.getAttribute('href') : '#')||'#').trim();
+    const a1 = document.getElementById('vip-wa');
+    const a2 = document.getElementById('vip-tg');
+    const a3 = document.getElementById('vip-join');
+    const rawWa = (localStorage.getItem('site_wa') || '#').trim();
+    const rawTg = (localStorage.getItem('site_tg') || '#').trim();
     const wa = normalizeUrl(rawWa);
     const tg = normalizeUrl(rawTg);
-
-    if(a1){ a1.href = wa; a1.setAttribute('rel','noopener noreferrer'); a1.setAttribute('target','_blank'); }
-    if(a2){ a2.href = tg; a2.setAttribute('rel','noopener noreferrer'); a2.setAttribute('target','_blank'); }
-
-    async function openWhatsAppInvite(u){
-      if(!u || u === '#'){ showToast('Link inválido'); return; }
-      try{
-        const ta = document.createElement('textarea');
-        ta.value = u;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showToast('Link copiado para a área de transferência');
-      }catch(e){}
-      try{ if(navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(u); }catch(e){}
-      try{ if(navigator.share){ await navigator.share({ title:'Link do grupo', text:'Participe do grupo:', url:u }); return; } }catch(e){}
-      try{
-        if(/chat\.whatsapp\.com|wa\.me/i.test(u)){
-          try{
-            const cleaned = u.replace(/^https?:\/\//,'');
-            const intent = 'intent://' + cleaned + '#Intent;package=com.whatsapp;scheme=https;end';
-            window.location.href = intent;
-            setTimeout(()=>{ window.location.href = u; }, 900);
-            return;
-          }catch(e){}
-        }
-        window.location.href = u;
-        return;
-      }catch(e){}
-      try{ const w = window.open(u, '_blank'); if(w) return; }catch(e){}
-      try{ await copyToClipboard(u); showToast('Link copiado — cole no WhatsApp'); }catch(e){ alert('Não foi possível abrir o link automaticamente. Copie manualmente: ' + u); }
-    }
-
-    function openTelegram(u){
-      if(!u || u === '#'){ showToast('Link inválido'); return; }
-      try{
-        const ta = document.createElement('textarea');
-        ta.value = u;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        showToast('Link copiado para a área de transferência');
-      }catch(e){}
-      try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).catch(()=>{}); }catch(e){}
-      try{ if(navigator.share){ navigator.share({ title:'Link do grupo', text:'Participe do grupo:', url:u }); return; } }catch(e){}
-      try{
-        if(/^https?:\/\/(t\.me|telegram\.me)/i.test(u)){
-          const user = u.replace(/^https?:\/\/(t\.me|telegram\.me)\/?/i,'');
-          window.location.href = 'tg://resolve?domain=' + encodeURIComponent(user);
-          setTimeout(()=>{ window.location.href = u; }, 800);
-          return;
-        }
-        const w = window.open(u, '_blank'); if(w) return;
-        window.location.href = u;
-      }catch(e){
-        copyToClipboard(u).then(()=> showToast('Link copiado.')).catch(()=> alert('Abra o link manualmente: ' + u));
-      }
-    }
-
-    if(a1){
-      a1.addEventListener('click', function(ev){
-        ev.preventDefault();
-        openWhatsAppInvite(wa);
-      }, { passive:false });
-    }
-    if(a2){
-      a2.addEventListener('click', function(ev){
-        ev.preventDefault();
-        openTelegram(tg);
-      }, { passive:false });
-    }
+    if(a1){ a1.href = wa; a1.onclick = e => { e.preventDefault(); window.open(wa,'_blank'); } }
+    if(a2){ a2.href = tg; a2.onclick = e => { e.preventDefault(); window.open(tg,'_blank'); } }
+    if(a3){ a3.href = wa; a3.onclick = e => { e.preventDefault(); window.open(wa,'_blank'); } }
   }
 
-  // Data handling: remote JSON -> local fallback
+  // Data handling
   async function fetchRemoteOffers(){
     try{
       const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache:'no-store'});
@@ -337,12 +224,8 @@
       const data = await r.json();
       const arr = Array.isArray(data) ? data : (data.offers || []);
       return arr.map(normalizeOffer);
-    }catch(e){
-      console.warn('remote fetch failed', e);
-      return null;
-    }
+    }catch(e){ console.warn('remote fetch failed', e); return null; }
   }
-
   function normalizeOffer(o){
     return {
       id: o.id || ('local_'+(Date.now()+Math.floor(Math.random()*9999))),
@@ -350,48 +233,21 @@
       category: sanitize(o.category || (o.tags && o.tags[0]) || 'Geral'),
       price: toNumber(o.price || o.price_raw || o.price_value || 0),
       promotional_price: (o.promotional_price !== undefined && o.promotional_price !== null) ? toNumber(o.promotional_price) : null,
-      image_url: o.image_url || o.image || o.img || '/assets/placeholder.png',
+      image_url: o.image_url || o.image || o.img || PLACEHOLDER,
       link: normalizeUrl(o.link || o.affiliate_link || '#'),
       featured: !!o.featured,
       created_at: o.created_at || (new Date().toISOString())
     };
   }
+  function loadLocalOffers(){ try{ const raw = localStorage.getItem('offers'); if(!raw) return []; const parsed = JSON.parse(raw); if(!Array.isArray(parsed)) return []; return parsed.map(normalizeOffer); }catch(e){ console.warn('local parse fail', e); return []; } }
+  function saveLocalOffers(arr){ localStorage.setItem('offers', JSON.stringify(arr)); }
 
-  function loadLocalOffers(){
-    try{
-      const raw = localStorage.getItem('offers');
-      if(!raw) return [];
-      const parsed = JSON.parse(raw);
-      if(!Array.isArray(parsed)) return [];
-      return parsed.map(normalizeOffer);
-    }catch(e){
-      console.warn('local parse fail', e);
-      return [];
-    }
-  }
-
-  function saveLocalOffers(arr){
-    localStorage.setItem('offers', JSON.stringify(arr));
-  }
-
-  // Rendering + search + filters + sort + pagination
-  let ALL_OFFERS = [];
-  let FILTERED = [];
-  let state = { q:'', category:'', sort:'relevance', page:1, pageSize:12 };
-
-  function buildCategoryOptions(){
-    const sel = document.getElementById('category-filter');
-    sel.innerHTML = '<option value="">Todas as categorias</option>';
-    const cats = Array.from(new Set(ALL_OFFERS.map(o => o.category || 'Geral'))).sort();
-    cats.forEach(c => {
-      const opt = document.createElement('option'); opt.value = c; opt.textContent = c; sel.appendChild(opt);
-    });
-  }
+  // Rendering + state
+  let ALL_OFFERS = []; let FILTERED = []; let state = { q:'', category:'', sort:'relevance', page:1, pageSize:12 };
 
   function applyFilters(){
     const q = state.q.trim().toLowerCase();
     FILTERED = ALL_OFFERS.filter(o => {
-      if(state.category && o.category !== state.category) return false;
       if(q){
         return (o.title && o.title.toLowerCase().includes(q)) || (o.category && o.category.toLowerCase().includes(q));
       }
@@ -399,28 +255,13 @@
     });
     applySort();
   }
-
   function applySort(){
     switch(state.sort){
-      case 'price-asc':
-        FILTERED.sort((a,b)=> (a.promotional_price || a.price) - (b.promotional_price || b.price));
-        break;
-      case 'price-desc':
-        FILTERED.sort((a,b)=> (b.promotional_price || b.price) - (a.promotional_price || a.price));
-        break;
-      case 'discount':
-        FILTERED.sort((a,b)=> {
-          const da = (a.price && a.promotional_price) ? ((a.price - a.promotional_price)/a.price) : 0;
-          const db = (b.price && b.promotional_price) ? ((b.price - b.promotional_price)/b.price) : 0;
-          return db - da;
-        });
-        break;
-      case 'newest':
-        FILTERED.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at));
-        break;
-      default:
-        // relevance -> keep original order
-        break;
+      case 'price-asc': FILTERED.sort((a,b)=> (a.promotional_price || a.price) - (b.promotional_price || b.price)); break;
+      case 'price-desc': FILTERED.sort((a,b)=> (b.promotional_price || b.price) - (a.promotional_price || a.price)); break;
+      case 'discount': FILTERED.sort((a,b)=> { const da = (a.price && a.promotional_price) ? ((a.price - a.promotional_price)/a.price) : 0; const db = (b.price && b.promotional_price) ? ((b.price - b.promotional_price)/b.price) : 0; return db - da; }); break;
+      case 'newest': FILTERED.sort((a,b)=> new Date(b.created_at) - new Date(a.created_at)); break;
+      default: break;
     }
     renderPage();
   }
@@ -436,15 +277,10 @@
     const slice = FILTERED.slice(start, start + pageSize);
 
     cont.innerHTML = '';
-    if(slice.length === 0){
-      empty.style.display = 'block';
-    } else {
-      empty.style.display = 'none';
-    }
+    if(slice.length === 0){ empty.style.display = 'block'; } else { empty.style.display = 'none'; }
 
     slice.forEach(o => {
-      const card = document.createElement('div');
-      card.className = 'card';
+      const card = document.createElement('div'); card.className = 'card';
       const promo = o.promotional_price && o.promotional_price < o.price;
       const displayed = (promo ? o.promotional_price : o.price) || 0;
       const old = promo ? o.price : null;
@@ -467,6 +303,21 @@
         </div>
       `;
       cont.appendChild(card);
+
+      const imgEl = card.querySelector('img');
+      if(imgEl){
+        imgEl.addEventListener('error', function handleError(){
+          try{
+            if(this.src && this.src.indexOf('http://') === 0){
+              const httpsSrc = this.src.replace(/^http:\/\//i,'https://');
+              if(httpsSrc !== this.src){ this.onerror = null; this.src = httpsSrc; setTimeout(()=>{ this.addEventListener('error', handleError, {once:true}); }, 800); return; }
+            }
+          }catch(e){}
+          this.onerror = null; this.src = PLACEHOLDER;
+        }, {once:true});
+        if(!imgEl.src) imgEl.src = PLACEHOLDER;
+      }
+
       const btn = card.querySelector('.btn-ghost[data-id]');
       btn.addEventListener('click', ()=> {
         const favs = JSON.parse(localStorage.getItem('favs') || '[]');
@@ -479,33 +330,15 @@
   }
 
   function renderPager(pages, total){
-    const pager = document.getElementById('pager');
-    pager.innerHTML = '';
-    const info = document.createElement('div');
-    info.textContent = `${total} resultado(s)`;
-    pager.appendChild(info);
+    const pager = document.getElementById('pager'); pager.innerHTML = '';
+    const info = document.createElement('div'); info.textContent = `${total} resultado(s)`; pager.appendChild(info);
 
-    const prev = document.createElement('button');
-    prev.textContent = '« Anterior';
-    prev.disabled = state.page <= 1;
-    prev.addEventListener('click', ()=> { state.page--; renderPage(); });
-    pager.appendChild(prev);
+    const prev = document.createElement('button'); prev.textContent = '« Anterior'; prev.disabled = state.page <= 1; prev.addEventListener('click', ()=> { state.page--; renderPage(); }); pager.appendChild(prev);
 
-    const start = Math.max(1, state.page - 3);
-    const end = Math.min(pages, start + 6);
-    for(let i=start;i<=end;i++){
-      const b = document.createElement('button');
-      b.textContent = i;
-      b.style.fontWeight = (i===state.page) ? '700' : '400';
-      b.addEventListener('click', ()=> { state.page = i; renderPage(); });
-      pager.appendChild(b);
-    }
+    const start = Math.max(1, state.page - 3); const end = Math.min(pages, start + 6);
+    for(let i=start;i<=end;i++){ const b = document.createElement('button'); b.textContent = i; b.style.fontWeight = (i===state.page) ? '700' : '400'; b.addEventListener('click', ()=> { state.page = i; renderPage(); }); pager.appendChild(b); }
 
-    const next = document.createElement('button');
-    next.textContent = 'Próximo »';
-    next.disabled = state.page >= pages;
-    next.addEventListener('click', ()=> { state.page++; renderPage(); });
-    pager.appendChild(next);
+    const next = document.createElement('button'); next.textContent = 'Próximo »'; next.disabled = state.page >= pages; next.addEventListener('click', ()=> { state.page++; renderPage(); }); pager.appendChild(next);
   }
 
   // Load sequence
@@ -514,23 +347,19 @@
     const remote = await fetchRemoteOffers();
     const local = loadLocalOffers();
     if(remote && remote.length){
-      const remoteIds = new Set(remote.map(r=>r.id));
-      const merged = remote.concat(local.filter(l=>!remoteIds.has(l.id)));
-      ALL_OFFERS = merged;
+      ALL_OFFERS = remote;
       document.getElementById('last-updated').textContent = 'Remoto';
+      const localsOnly = local.filter(l => String(l.id).startsWith('local_'));
+      if(localsOnly.length) ALL_OFFERS = ALL_OFFERS.concat(localsOnly);
     } else if(local && local.length){
       ALL_OFFERS = local;
       document.getElementById('last-updated').textContent = 'Local';
-    } else {
-      ALL_OFFERS = [];
-      document.getElementById('last-updated').textContent = '—';
-    }
+    } else { ALL_OFFERS = []; document.getElementById('last-updated').textContent = '—'; }
     saveLocalOffers(ALL_OFFERS);
-    buildCategoryOptions();
     applyFilters();
   }
 
-  // Admin behaviors
+  // Admin
   async function openAdmin(){
     const pwd = prompt('Senha:');
     if(!pwd) return;
@@ -546,6 +375,7 @@
   document.getElementById('gear').addEventListener('click', ()=> openAdmin());
   document.getElementById('open-admin-top').addEventListener('click', ()=> openAdmin());
   document.getElementById('close-admin').addEventListener('click', ()=> closeAdmin());
+  document.getElementById('open-admin').addEventListener('click', ()=> openAdmin());
 
   document.getElementById('btn-save-links').onclick = ()=> {
     const wa = normalizeUrl(document.getElementById('f-wa-link').value);
@@ -556,7 +386,7 @@
     alert('Links salvos!');
   };
 
-  document.getElementById('btn-save-product').onclick = ()=> {
+  document.getElementById('btn-save-product')?.addEventListener('click', ()=> {
     const t = document.getElementById('f-name').value.trim();
     if(!t){ alert('Informe nome'); return; }
     const cat = document.getElementById('f-category').value.trim() || 'Geral';
@@ -572,42 +402,37 @@
       price: price,
       promotional_price: promo,
       link: link,
-      image_url: image,
+      image_url: image || PLACEHOLDER,
       featured: featured,
       created_at: new Date().toISOString()
     });
     ALL_OFFERS.unshift(item);
     saveLocalOffers(ALL_OFFERS);
-    buildCategoryOptions();
     applyFilters();
     showToast('Oferta adicionada');
-  };
+  });
 
   document.getElementById('btn-clear-local').onclick = ()=> {
     if(!confirm('Remover todas as ofertas locais? (não remove o remoto)')) return;
     fetchRemoteOffers().then(remote=>{
-      if(remote && remote.length){ ALL_OFFERS = remote; } else { ALL_OFFERS = []; }
+      if(remote && remote.length){ ALL_OFFERS = remote; document.getElementById('last-updated').textContent = 'Remoto'; }
+      else { ALL_OFFERS = []; document.getElementById('last-updated').textContent = '—'; }
       saveLocalOffers(ALL_OFFERS);
-      buildCategoryOptions();
       applyFilters();
       showToast('Ofertas locais removidas');
     });
   };
 
-  // Export / Import in admin
+  // Import/Export
   document.getElementById('btn-export').addEventListener('click', ()=>{
     const data = JSON.stringify(ALL_OFFERS, null, 2);
     const blob = new Blob([data], {type:'application/json'});
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'offers.json'; a.click();
-    URL.revokeObjectURL(url);
+    const a = document.createElement('a'); a.href = url; a.download = 'offers.json'; a.click(); URL.revokeObjectURL(url);
   });
-
   document.getElementById('btn-import').addEventListener('click', ()=> document.getElementById('file-import').click());
   document.getElementById('file-import').addEventListener('change', function(){
-    const f = this.files[0];
-    if(!f) return;
+    const f = this.files[0]; if(!f) return;
     const reader = new FileReader();
     reader.onload = (ev)=>{
       try{
@@ -616,27 +441,19 @@
         const normalized = parsed.map(normalizeOffer);
         ALL_OFFERS = normalized.concat(ALL_OFFERS);
         saveLocalOffers(ALL_OFFERS);
-        buildCategoryOptions();
         applyFilters();
         showToast('Importação concluída');
       }catch(e){ alert('Erro ao importar JSON: ' + (e.message || e)); }
     };
-    reader.readAsText(f);
-    this.value = '';
+    reader.readAsText(f); this.value = '';
   });
 
-  // Search + filters bindings
+  // Search binding
   document.getElementById('q').addEventListener('input', (e)=>{ state.q = e.target.value; state.page = 1; applyFilters(); });
-  document.getElementById('category-filter').addEventListener('change', (e)=>{ state.category = e.target.value; state.page = 1; applyFilters(); });
-  document.getElementById('sort-select').addEventListener('change', (e)=>{ state.sort = e.target.value; state.page = 1; applySort(); });
-  document.getElementById('page-size').addEventListener('change', (e)=>{ state.pageSize = e.target.value; state.page = 1; renderPage(); });
   document.getElementById('btn-search').addEventListener('click', ()=> { state.q = document.getElementById('q').value; state.page = 1; applyFilters(); });
 
-  // init
   applyVipHandlers();
   loadOffers();
-
-  // reapply VIP on storage events
   window.addEventListener('storage', ()=> applyVipHandlers());
   </script>
 </body>
