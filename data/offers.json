@@ -1,6 +1,6 @@
 [
   {
-    "id": "ml_001",
+    "id": "item_001",
     "title": "Fritadeira Air Fryer Sem Óleo Oster 4,8L Preta/Inox",
     "category": "Eletroportáteis",
     "price": 499.90,
@@ -8,10 +8,10 @@
     "image_url": "https://m.media-amazon.com/images/I/616zJ7Fh7LL._AC_SL1500_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": true,
-    "created_at": "2026-06-10T10:00:00Z"
+    "created_at": "2026-06-10T14:00:00Z"
   },
   {
-    "id": "ml_002",
+    "id": "item_002",
     "title": "Secador De Cabelos Philco PSC3500 4 Em 1 Motor BLDC",
     "category": "Beleza",
     "price": 599.90,
@@ -19,10 +19,10 @@
     "image_url": "https://m.media-amazon.com/images/I/51Apt6p0WHL._AC_SL1000_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": true,
-    "created_at": "2026-06-10T10:05:00Z"
+    "created_at": "2026-06-10T14:05:00Z"
   },
   {
-    "id": "ml_003",
+    "id": "item_003",
     "title": "Bicicleta Spinning Profissional Roda de Inércia 13kg",
     "category": "Esportes",
     "price": 1899.00,
@@ -30,10 +30,10 @@
     "image_url": "https://m.media-amazon.com/images/I/61S-tVInunL._AC_SL1200_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": true,
-    "created_at": "2026-06-10T10:10:00Z"
+    "created_at": "2026-06-10T14:10:00Z"
   },
   {
-    "id": "ml_004",
+    "id": "item_004",
     "title": "Smartphone Samsung Galaxy S23 5G 256GB Dual Sim",
     "category": "Eletrônicos",
     "price": 4599.00,
@@ -41,10 +41,10 @@
     "image_url": "https://m.media-amazon.com/images/I/61itVIn-GvL._AC_SL1500_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": false,
-    "created_at": "2026-06-10T10:15:00Z"
+    "created_at": "2026-06-10T14:15:00Z"
   },
   {
-    "id": "ml_005",
+    "id": "item_005",
     "title": "Smart TV LED 50'' 4K UHD Samsung Crystal",
     "category": "Eletrônicos",
     "price": 2899.00,
@@ -52,10 +52,10 @@
     "image_url": "https://m.media-amazon.com/images/I/71LJJpSQu-L._AC_SL1500_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": false,
-    "created_at": "2026-06-10T10:20:00Z"
+    "created_at": "2026-06-10T14:20:00Z"
   },
   {
-    "id": "ml_006",
+    "id": "item_006",
     "title": "Fone de Ouvido Sony WH-1000XM5 com Noise Cancelling",
     "category": "Acessórios",
     "price": 2200.00,
@@ -63,10 +63,10 @@
     "image_url": "https://m.media-amazon.com/images/I/51f8B8Y-uNL._AC_SL1200_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": false,
-    "created_at": "2026-06-10T10:25:00Z"
+    "created_at": "2026-06-10T14:25:00Z"
   },
   {
-    "id": "ml_007",
+    "id": "item_007",
     "title": "Camisa Polo Masculina Pique Premium Algodão",
     "category": "Moda",
     "price": 129.90,
@@ -74,10 +74,10 @@
     "image_url": "https://m.media-amazon.com/images/I/51wX50RRECL._AC_UX679_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": false,
-    "created_at": "2026-06-10T10:30:00Z"
+    "created_at": "2026-06-10T14:30:00Z"
   },
   {
-    "id": "ml_008",
+    "id": "item_008",
     "title": "Kit 10 Caderneta A5 Capa Dura Com Caneta 200 Páginas",
     "category": "Papelaria",
     "price": 149.00,
@@ -85,6 +85,6 @@
     "image_url": "https://m.media-amazon.com/images/I/71YyM9UeToL._AC_SL1500_.jpg",
     "link": "https://viamaisstore.com.br/#",
     "featured": false,
-    "created_at": "2026-06-10T10:35:00Z"
+    "created_at": "2026-06-10T14:35:00Z"
   }
 ]
