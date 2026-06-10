@@ -41,7 +41,7 @@
     .desc{font-size:12px;color:var(--muted);min-height:36px;margin-bottom:8px}
     .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
     .badge-discount{background:linear-gradient(90deg,#ffbaba,#ff8a8a);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
-    .rating{display:flex;align-items:center;gap:8px;font-size:13px;color:#111}
+    .rating{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:#111}
     .stars{display:inline-flex;gap:2px;align-items:center}
     .rating .score{font-weight:700;font-size:14px;color:#111}
     .rating .count{color:var(--muted);font-size:13px}
@@ -58,8 +58,15 @@
     .small{font-size:13px;color:var(--muted)}
     .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
     .gear-btn svg{width:20px;height:20px;color:#111}
-    #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60}
+    #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60;transition:opacity .25s}
     .hidden-visually{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0!important;border:0!important;height:1px!important;width:1px!important;overflow:hidden}
+    .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
+    .reviews summary{cursor:pointer;padding:8px;border-radius:8px;background:#f7f9fc;margin-top:8px;font-weight:700}
+    .reviews-list{padding:8px 0 0}
+    .review-item{padding:8px;border-bottom:1px solid #eef2f7}
+    .review-meta{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .review-text{font-size:13px;color:#111;white-space:pre-wrap}
+    #localOffersList .edit-offer, #localOffersList .delete-offer { padding:6px 8px; border-radius:6px; border:1px solid #e6e8ef; background:#fff; cursor:pointer; }
   </style>
 </head>
 <body>
@@ -94,44 +101,55 @@
 
     <section class="container">
       <div id="offers-list" aria-live="polite"></div>
-      <div id="empty" class="muted" style="text-align:center;padding:36px;">Nenhuma oferta encontrada.</div>
+      <div id="empty" class="muted" style="text-align:center;padding:36px;display:none">Nenhuma oferta encontrada.</div>
     </section>
   </main>
 
+  <!-- ADMIN PANEL SIMPLIFICADO -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
-    <div class="card">
-      <div style="padding:16px;border-bottom:1px solid #f0f2f6;display:flex;justify-content:space-between;align-items:center">
-        <strong>Painel Admin</strong>
-        <button id="close-admin" class="btn-ghost" aria-label="Fechar painel">Fechar</button>
+    <div class="card" style="max-height:78vh;overflow:auto;position:relative;padding-bottom:12px;">
+      <button id="close-admin" class="btn-ghost" aria-label="Fechar painel" style="position:absolute;top:10px;right:10px;">Fechar</button>
+      <div style="padding:18px 18px 8px 18px;border-bottom:1px solid #f0f2f6">
+        <strong style="font-size:16px">Painel Admin</strong>
+        <div style="font-size:13px;color:#666;margin-top:6px">Salvar Links, Salvar Produto, Exportar JSON.</div>
       </div>
-      <div style="padding:16px">
-        <div class="small">Editar links de grupo (WhatsApp / Telegram)</div>
-        <div class="form-row" style="margin-top:8px">
-          <input id="f-wa-link" placeholder="Link do grupo WhatsApp (https://chat.whatsapp.com/...)">
-          <input id="f-tg-link" placeholder="Link do Telegram (https://t.me/...)">
+
+      <div style="padding:12px 18px;">
+        <div style="margin-bottom:10px">
+          <div class="small">Links de grupo (WhatsApp / Telegram)</div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <input id="f-wa-link" placeholder="Link do grupo WhatsApp (https://chat.whatsapp.com/...)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-tg-link" placeholder="Link do Telegram (https://t.me/...)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <button id="btn-save-links" class="btn-ghost" style="min-width:110px">Salvar Links</button>
+          </div>
         </div>
 
-        <div class="small" style="margin-top:12px">Adicionar oferta manual (salva somente no seu navegador):</div>
-        <div class="form-row" style="margin-top:8px">
-          <input id="f-name" placeholder="Nome do produto">
-          <input id="f-image" placeholder="URL da imagem">
-        </div>
-        <div class="form-row">
-          <input id="f-original" placeholder="Preço original (ex: 199.90)">
-          <input id="f-promo" placeholder="Preço promocional (ex: 89.90)">
-        </div>
-        <div style="margin-top:8px" class="form-row">
-          <input id="f-link" placeholder="Link de afiliado">
-          <input id="f-rating" placeholder="Avaliação (ex: 4.5) ou deixar vazio">
+        <hr style="margin:12px 0">
+
+        <div style="margin-bottom:10px">
+          <div class="small">Adicionar oferta manual (salva no seu navegador)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+            <input id="f-name" placeholder="Nome do produto" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-image" placeholder="URL da imagem" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-original" placeholder="Preço original (ex: 199.90)" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-promo" placeholder="Preço promocional (ex: 89.90)" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-link" placeholder="Link de afiliado" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-rating" placeholder="Avaliação (ex: 4.5) ou vazio" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <button id="btn-save-product" class="btn-ghost">Salvar Produto</button>
+            <button id="btn-export" class="btn-ghost">Exportar JSON</button>
+          </div>
         </div>
 
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-          <button id="btn-save-local" class="btn-ghost">Adicionar local</button>
-          <button id="btn-export" class="btn-ghost">Exportar JSON</button>
-          <button id="btn-clear" class="btn-ghost">Limpar ofertas locais</button>
-        </div>
+        <hr style="margin:12px 0">
 
-        <div style="margin-top:12px" class="small">Observação: para publicar globalmente, configure seu fluxo n8n para atualizar /data/offers.json no repositório.</div>
+        <div style="margin-top:6px">
+          <div class="small">Ofertas locais (apenas visualização)</div>
+          <div id="localOffersList" style="margin-top:8px;max-height:240px;overflow:auto;border:1px solid #f0f2f6;padding:8px;border-radius:8px;background:#fff">
+            <!-- Lista simples e apenas leitura -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -147,49 +165,89 @@
 
   <script>
   /************************************************
-   * Config
+   * Config & Helpers
    ************************************************/
   const REMOTE_JSON_PATH = '/data/offers.json';
   const LS_KEYS = ['site_offers_v1','offers','ofertas','data','minhas_ofertas'];
+  const LINKS_KEY = 'site_links_v1';
   const ADMIN_HASH = 'f69f04a9c340f2c80896c5adbfe0686369ac3ed9935af596879207ab4cc511c3';
-  /************************************************
-   * Helpers
-   ************************************************/
+  const DEFAULT_MIN_OFFERS = 2;
+  const DEFAULT_MAX_RENDER = 120;
+
   const sanitize = s => (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  function pick(obj, list){
-    for(const k of list) if(obj && obj[k]!==undefined) return obj[k];
-    return undefined;
-  }
+  function pick(obj, list){ for(const k of list) if(obj && obj[k]!==undefined) return obj[k]; return undefined; }
   function formatPriceVal(v){
     if(v===undefined || v===null || v==='') return '';
     const n = Number(v);
     if(isNaN(n)) return String(v);
     return 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2});
   }
-  function humanNumber(n){
-    if(!n && n!==0) return '';
-    n = Number(n);
-    if(isNaN(n)) return '';
-    if(n >= 1000) return (n/1000).toFixed(n>=10000?0:1) + 'k';
-    return String(n);
-  }
-  /************************************************
-   * Stars & ratings
-   ************************************************/
-  function starSVG(type='full'){ 
-    if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
-    if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
-    return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
+  function humanNumber(n){ if(!n && n!==0) return ''; n=Number(n); if(isNaN(n)) return ''; if(n>=1000) return (n/1000).toFixed(n>=10000?0:1)+'k'; return String(n); }
+
+  function showStatus(msg, ms = 4000){
+    const b = document.getElementById('offers-last-updated-badge');
+    if(!b) return;
+    b.textContent = msg;
+    b.style.opacity = '1';
+    b.style.display = 'block';
+    clearTimeout(b._hide_t);
+    b._hide_t = setTimeout(()=>{ b.style.opacity='0'; setTimeout(()=>{ b.style.display='none'; },250); }, ms);
   }
 
+  // Normalize URL: add https:// when missing (handles chat.whatsapp.com, wa.me, t.me, www.)
+  function normalizeUrlMaybe(u){
+    if(!u) return '#';
+    u = String(u).trim();
+    if(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//.test(u)) return u;
+    if(/^chat\.whatsapp\.com/i.test(u) || /^wa\.me/i.test(u) || /^t\.me/i.test(u) || /^www\./i.test(u)){
+      return 'https://' + u;
+    }
+    return 'https://' + u;
+  }
+
+  /************************************************
+   * Reviews & Stars (kept)
+   ************************************************/
+  function getReviews(item){
+    const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
+    for(const k of candidates){ if(item[k] && Array.isArray(item[k]) && item[k].length) return normalizeReviewsArray(item[k]); }
+    for(const k of candidates){
+      if(item[k] && typeof item[k] === 'object'){
+        if(Array.isArray(item[k].items) && item[k].items.length) return normalizeReviewsArray(item[k].items);
+        if(Array.isArray(item[k].data) && item[k].data.length) return normalizeReviewsArray(item[k].data);
+      }
+    }
+    return [];
+  }
+  function normalizeReviewsArray(arr){
+    const out = [];
+    for(const r of arr){
+      if(r === null || r === undefined) continue;
+      if(typeof r === 'string'){ out.push({ author: null, score: null, text: r, date: null }); continue; }
+      const text = pick(r, ['text','comment','body','review','message','descricao','conteudo']) || pick(r, ['textContent','content']) || null;
+      const score = pick(r, ['score','rating','nota','value','stars','rating_value']) || null;
+      const author = pick(r, ['author','user','usuario','name','nome','reviewer','userName']) || pick(r, ['owner']) || null;
+      const date = pick(r, ['date','created_at','updated_at','data','timestamp']) || null;
+      if(!text && !score && !author){
+        const possible = Object.values(r).filter(v => typeof v === 'string' && v.length < 300 && v.length > 5);
+        if(possible.length) out.push({ author: null, score: null, text: possible[0], date: null });
+        else out.push({ author: null, score: null, text: JSON.stringify(r), date: null });
+      } else {
+        out.push({ author: author ? String(author) : null, score: (score !== null && score !== undefined) ? score : null, text: text ? String(text) : null, date: date ? String(date) : null });
+      }
+    }
+    return out;
+  }
+  function starSVG(type='full'){
+    if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
+    if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
+    return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
+  }
   function extractRatingInfo(o){
     const reviewsField = pick(o, ['reviews','avaliacoes','ratings','comments']);
     if(Array.isArray(reviewsField) && reviewsField.length){
-      let total = 0, count = 0;
-      for(const r of reviewsField){
-        const s = pick(r, ['score','rating','nota','stars','value']);
-        if(s!==undefined && s!==null && !isNaN(Number(s))){ total += Number(s); count++; }
-      }
+      let total=0, count=0;
+      for(const r of reviewsField){ const s = pick(r, ['score','rating','nota','stars','value']); if(s!==undefined && s!==null && !isNaN(Number(s))){ total+=Number(s); count++; } }
       if(count>0) return { avg: +(total/count).toFixed(2), count: reviewsField.length };
       return { avg: null, count: reviewsField.length };
     }
@@ -200,13 +258,10 @@
     if(rNum !== null || cNum !== null) return { avg: rNum, count: cNum };
     return { avg: null, count: null };
   }
-
   function renderStarsInline(avg, count){
     if(avg === null && count === null) return '';
     const r = (avg===null) ? 0 : Math.max(0, Math.min(5, Number(avg)));
-    const full = Math.floor(r);
-    const half = (r - full) >= 0.5 ? 1 : 0;
-    const empty = 5 - full - half;
+    const full = Math.floor(r); const half = (r-full)>=0.5?1:0; const empty = 5-full-half;
     let html = `<span class="stars" aria-hidden="true">`;
     for(let i=0;i<full;i++) html += starSVG('full');
     if(half) html += starSVG('half');
@@ -218,47 +273,34 @@
   }
 
   /************************************************
-   * Load & render
+   * Local storage helpers
    ************************************************/
-  async function loadAndRender(){
-    try{
-      const resp = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache: 'no-store'});
-      if(!resp.ok) throw new Error('remote_not_found');
-      const data = await resp.json();
-      const arr = Array.isArray(data) ? data : (data.offers || data.items || data.products || []);
-      if(!Array.isArray(arr) || arr.length === 0){ showEmpty(); return; }
-      try{ LS_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(arr))); }catch(e){}
-      renderList(arr);
-      showUpdatedBadge();
-    }catch(err){
-      const local = tryLoadLocal();
-      if(local && local.length) renderList(local);
-      else showEmpty();
-      console.warn('loadAndRender:', err);
-    }
-  }
-
-  function tryLoadLocal(){
+  function tryLoadLocalArray(){
     for(const k of LS_KEYS){
-      const v = localStorage.getItem(k);
-      if(v){
-        try{ const a = JSON.parse(v); if(Array.isArray(a)) return a; }catch(e){}
-      }
+      try{
+        const raw = localStorage.getItem(k);
+        if(!raw) continue;
+        const parsed = JSON.parse(raw);
+        if(Array.isArray(parsed) && parsed.length) return parsed;
+      }catch(e){}
     }
-    return null;
+    return [];
+  }
+  function saveLocalOffersArray(arr){
+    try{
+      LS_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(arr)));
+    }catch(e){ console.warn('saveLocalOffersArray', e); }
   }
 
-  function showEmpty(){
-    document.getElementById('offers-list').innerHTML = '';
-    document.getElementById('empty').style.display = 'block';
-    document.getElementById('offers-last-updated-badge').style.display='none';
-  }
-
+  /************************************************
+   * Render (merge local + remote, normalize links, force window.open)
+   ************************************************/
   function renderList(list){
-    document.getElementById('empty').style.display = 'none';
+    document.getElementById('empty').style.display = (Array.isArray(list) && list.length) ? 'none' : 'block';
     const cont = document.getElementById('offers-list');
     cont.innerHTML = '';
-    const max = Math.min(list.length, 120);
+    if(!Array.isArray(list) || list.length === 0) return;
+    const max = Math.min(list.length, DEFAULT_MAX_RENDER);
     for(let i=0;i<max;i++){
       const o = list[i];
       const title = pick(o, ['title','name','nome','título','produto']) || pick(o, ['product_name','produto_nome']) || '';
@@ -269,7 +311,8 @@
       else if(typeof img === 'string') imageUrl = img;
       else if(o.pictures && Array.isArray(o.pictures) && o.pictures.length) imageUrl = o.pictures[0];
       else imageUrl = '';
-      const link = pick(o, ['affiliate_link','link','url','urlAfiliado','link_de_afiliado','aff_link']) || '#';
+      const linkRaw = pick(o, ['affiliate_link','link','url','urlAfiliado','link_de_afiliado','aff_link']) || '#';
+      const link = normalizeUrlMaybe(linkRaw);
       const oldPrice = pick(o, ['original_price','price_old','preco_antigo','price_original']) || pick(o,['price','price_value']) || '';
       const promoPrice = pick(o, ['promotional_price','price_promotional','preco_promocional','promo_price']) || pick(o,['promo','sale_price']) || '';
       const numericOld = Number(oldPrice) || null;
@@ -282,8 +325,22 @@
         discountHtml = `<span class="badge-discount">-${p}%</span>`;
       }
 
-      const ratingInfo = extractRatingInfo(o); // {avg, count}
+      const ratingInfo = extractRatingInfo(o);
       const ratingHtml = (ratingInfo.avg !== null || ratingInfo.count !== null) ? `<div class="rating" aria-hidden="false">${renderStarsInline(ratingInfo.avg, ratingInfo.count)}</div>` : '';
+
+      const reviewsArr = getReviews(o);
+      let reviewsHtml = '';
+      if(Array.isArray(reviewsArr) && reviewsArr.length){
+        let itemsHtml = '';
+        for(const r of reviewsArr){
+          const author = r.author ? sanitize(r.author) : '';
+          const scoreText = (r.score !== null && r.score !== undefined) ? ` — <strong>${sanitize(String(r.score))}</strong>` : '';
+          const dateText = r.date ? ` • ${sanitize(r.date)}` : '';
+          const textHtml = r.text ? `<div class="review-text">${sanitize(r.text)}</div>` : '';
+          itemsHtml += `<div class="review-item"><div class="review-meta">${author}${scoreText}${dateText}</div>${textHtml}</div>`;
+        }
+        reviewsHtml = `<details class="reviews"><summary>Ver avaliações (${reviewsArr.length})</summary><div class="reviews-list">${itemsHtml}</div></details>`;
+      }
 
       const card = document.createElement('article');
       card.className = 'card';
@@ -293,6 +350,7 @@
           <div class="title">${sanitize(title)}</div>
           <div class="meta">${discountHtml}${ratingHtml}</div>
           <div class="desc">${sanitize(desc)}</div>
+          ${reviewsHtml}
           <div style="margin-top:auto">
             <div class="price-row">
               <div>
@@ -300,13 +358,24 @@
                 ${displayOld && displayPromo ? `<div class="old-price">${displayOld}</div>` : ''}
               </div>
               <div>
-                <a class="buy" href="${sanitize(link)}" target="_blank" rel="noopener">Ver oferta</a>
+                <a class="buy" href="${sanitize(link)}" rel="noopener">Ver oferta</a>
               </div>
             </div>
           </div>
         </div>
       `;
       cont.appendChild(card);
+
+      // forçar abertura externa (window.open) no botão Ver oferta
+      const a = card.querySelector('a.buy');
+      if(a){
+        a.addEventListener('click', function(e){
+          e.preventDefault();
+          const href = a.getAttribute('href') || link;
+          if(!href || href === '#') return;
+          try{ window.open(href, '_blank'); }catch(err){ location.href = href; }
+        });
+      }
     }
   }
 
@@ -324,6 +393,94 @@
     return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join('');
   }
 
+  /************************************************
+   * Load & Merge: mantém ofertas locais e as mescla com remoto
+   ************************************************/
+  async function loadAndRenderMerged(remotePath){
+    remotePath = remotePath || REMOTE_JSON_PATH;
+    try{
+      const resp = await fetch(remotePath + '?t=' + Date.now(), { cache: 'no-store' });
+      if(!resp.ok) throw new Error('remote_not_found');
+      const data = await resp.json();
+      const remoteArr = Array.isArray(data) ? data : (data.offers || data.items || data.products || []);
+      const minOffers = parseInt(localStorage.getItem('site_min_offers')) || DEFAULT_MIN_OFFERS;
+      const localAll = tryLoadLocalArray() || [];
+      // locais criados pelo painel (id começa com local-)
+      const localOnly = localAll.filter(i => i && String(i.id || '').startsWith('local-'));
+      // caso remoto vazio -> manter localOnly (se existir)
+      if(!Array.isArray(remoteArr) || remoteArr.length === 0){
+        if(localOnly.length){
+          saveLocalOffersArray(localOnly);
+          renderList(localOnly);
+          showStatus('Usando ofertas locais (remoto vazio).');
+          return;
+        } else {
+          renderList([]);
+          showStatus('Nenhuma oferta encontrada.');
+          return;
+        }
+      }
+      // regra de proteção: se remoto menor e local tem itens, e remoto < minOffers, manter local
+      if(Array.isArray(remoteArr) && remoteArr.length < minOffers && Array.isArray(localAll) && localAll.length >= minOffers){
+        saveLocalOffersArray(localAll);
+        renderList(localAll);
+        showStatus('Mantendo ofertas locais (remoto menor que mínimo).');
+        return;
+      }
+      // mesclar: locais (topo) + remoto (removendo duplicados por id)
+      const remoteClean = Array.isArray(remoteArr) ? remoteArr.slice() : [];
+      const remoteIds = new Set(remoteClean.map(x => x.id).filter(Boolean));
+      const filteredLocal = localOnly.filter(i => !(i.id && remoteIds.has(i.id)));
+      const merged = filteredLocal.concat(remoteClean);
+      // persistir merged nas chaves locais
+      saveLocalOffersArray(merged);
+      renderList(merged);
+      showUpdatedBadge();
+    }catch(err){
+      const localAny = tryLoadLocalArray();
+      if(localAny && localAny.length){
+        renderList(localAny);
+        showStatus('Erro remoto — exibindo cache local.');
+        return;
+      }
+      console.warn('loadAndRenderMerged error', err);
+      renderList([]);
+      showStatus('Erro ao carregar ofertas.');
+    }
+  }
+
+  /************************************************
+   * Admin interactions: Vip buttons, painel, salvar/descarregar
+   ************************************************/
+  function updateVipButtons(){
+    const wa = localStorage.getItem('site_wa') || '#';
+    const tg = localStorage.getItem('site_tg') || '#';
+    const a1 = document.getElementById('vip-wa');
+    const a2 = document.getElementById('vip-tg');
+    if(a1){
+      a1.href = wa;
+      a1.setAttribute('target','_blank');
+      a1.setAttribute('rel','noopener noreferrer');
+      a1.onclick = function(e){
+        e.preventDefault();
+        const url = localStorage.getItem('site_wa') || wa;
+        if(!url || url === '#') return;
+        try{ window.open(url, '_blank'); }catch(err){ location.href = url; }
+      };
+    }
+    if(a2){
+      a2.href = tg;
+      a2.setAttribute('target','_blank');
+      a2.setAttribute('rel','noopener noreferrer');
+      a2.onclick = function(e){
+        e.preventDefault();
+        const url = localStorage.getItem('site_tg') || tg;
+        if(!url || url === '#') return;
+        try{ window.open(url, '_blank'); }catch(err){ location.href = url; }
+      };
+    }
+  }
+
   document.getElementById('gear').addEventListener('click', async () => {
     const pwd = prompt('Senha do painel administrativo:');
     if(!pwd) return;
@@ -334,6 +491,7 @@
       panel.setAttribute('aria-hidden','false');
       document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
       document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
+      if(typeof window.__adminSupplementInit === 'function') window.__adminSupplementInit();
     } else {
       alert('Senha incorreta');
     }
@@ -344,51 +502,166 @@
     panel.setAttribute('aria-hidden','true');
   });
 
-  document.getElementById('btn-save-local').addEventListener('click', () => {
-    const name = document.getElementById('f-name').value.trim();
-    if(!name){ alert('Informe o nome'); return; }
-    const image = document.getElementById('f-image').value.trim();
-    const oldP = document.getElementById('f-original').value.trim();
-    const promoP = document.getElementById('f-promo').value.trim();
-    const link = document.getElementById('f-link').value.trim() || '#';
-    const rating = document.getElementById('f-rating').value.trim();
-    const obj = { title: name, image_url: image, original_price: oldP || '', promotional_price: promoP || '', affiliate_link: link, rating: rating || undefined };
-    const existing = tryLoadLocal() || [];
-    existing.unshift(obj);
-    try{ localStorage.setItem('site_offers_v1', JSON.stringify(existing)); }catch(e){}
-    renderList(existing);
-    alert('Oferta adicionada localmente.');
-  });
-
-  document.getElementById('btn-export').addEventListener('click', () => {
-    const data = tryLoadLocal() || [];
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
-    URL.revokeObjectURL(url);
-  });
-
-  document.getElementById('btn-clear').addEventListener('click', () => {
-    if(!confirm('Limpar ofertas locais?')) return;
-    LS_KEYS.forEach(k => localStorage.removeItem(k));
-    location.reload();
-  });
-
-  function updateVipButtons(){
-    const wa = localStorage.getItem('site_wa') || '#';
-    const tg = localStorage.getItem('site_tg') || '#';
-    document.getElementById('vip-wa').href = wa;
-    document.getElementById('vip-tg').href = tg;
-  }
-  document.getElementById('f-wa-link').addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
-  document.getElementById('f-tg-link').addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
-
+  /************************************************
+   * Init
+   ************************************************/
   (function init(){
     updateVipButtons();
-    loadAndRender();
-    setInterval(loadAndRender, 180000);
+    const localAny = tryLoadLocalArray() || null;
+    if(localAny && localAny.length) renderList(localAny);
+    loadAndRenderMerged(REMOTE_JSON_PATH);
+    setInterval(()=>loadAndRenderMerged(REMOTE_JSON_PATH), 180000);
   })();
   </script>
+
+  <!-- SCRIPT SUPLEMENTAR: painel (normalizeLink, salvar ofertas locais, export) -->
+  <script>
+  (function(){
+    const STORAGE_OFFERS_KEY = 'site_offers_v1';
+    const LINKS_KEY = 'site_links_v1';
+    const LS_KEYS = ['site_offers_v1','offers','ofertas','data','minhas_ofertas'];
+
+    function qs(sel){ return document.querySelector(sel); }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function normalizeLink(url){
+      if(!url) return '#';
+      url = String(url).trim();
+      if(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//.test(url)) return url;
+      if(/^chat\.whatsapp\.com/i.test(url) || /^wa\.me/i.test(url) || /^t\.me/i.test(url) || /^www\./i.test(url)){
+        return 'https://' + url;
+      }
+      return 'https://' + url;
+    }
+
+    function loadOffers(){ try{ const raw = localStorage.getItem(STORAGE_OFFERS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; } }
+    function saveOffers(arr){
+      try{
+        LS_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(arr)));
+      }catch(e){}
+      if(typeof renderList === 'function') renderList(arr);
+      renderOffersList();
+    }
+
+    function renderOffersList(){
+      const root = qs('#localOffersList');
+      if(!root) return;
+      const offers = loadOffers();
+      if(!offers.length){ root.innerHTML = '<div style="color:#666">Nenhuma oferta local.</div>'; return; }
+      root.innerHTML = '';
+      offers.forEach(o=>{
+        const div = document.createElement('div');
+        div.style.padding = '8px';
+        div.style.borderBottom = '1px solid #f3f4f6';
+        div.innerHTML = `<div style="font-weight:700">${escapeHtml(o.title || o.name || '(sem título)')}</div>
+                         <div style="font-size:13px;color:#666">${escapeHtml(o.original_price || o.price || '')} ${o.promotional_price ? '→ ' + escapeHtml(o.promotional_price) : ''}</div>`;
+        root.appendChild(div);
+      });
+    }
+
+    // salvar links (usa normalizeLink)
+    const btnSaveLinks = qs('#btn-save-links');
+    if(btnSaveLinks){
+      btnSaveLinks.addEventListener('click', ()=>{
+        const waRaw = (qs('#f-wa-link')?.value || '').trim();
+        const tgRaw = (qs('#f-tg-link')?.value || '').trim();
+        const wa = normalizeLink(waRaw);
+        const tg = normalizeLink(tgRaw);
+        localStorage.setItem('site_wa', wa);
+        localStorage.setItem('site_tg', tg);
+        localStorage.setItem(LINKS_KEY, JSON.stringify({ whatsapp: wa, telegram: tg }));
+        if(typeof updateVipButtons === 'function') updateVipButtons();
+        alert('Links salvos!');
+      });
+    }
+
+    // salvar produto (adiciona ao topo e persiste)
+    const btnSaveProduct = qs('#btn-save-product');
+    if(btnSaveProduct){
+      btnSaveProduct.addEventListener('click', ()=>{
+        const name = (qs('#f-name')?.value || '').trim();
+        if(!name) return alert('Informe o nome do produto.');
+        const image = (qs('#f-image')?.value || '').trim();
+        const original = (qs('#f-original')?.value || '').trim();
+        const promo = (qs('#f-promo')?.value || '').trim();
+        const link = (qs('#f-link')?.value || '').trim() || '#';
+        const rating = (qs('#f-rating')?.value || '').trim();
+
+        const offers = loadOffers();
+        const newItem = {
+          id: 'local-' + Date.now() + '-' + Math.floor(Math.random()*1000),
+          title: name,
+          image_url: image,
+          original_price: original,
+          promotional_price: promo,
+          affiliate_link: link,
+          rating: rating || undefined
+        };
+        offers.unshift(newItem);
+        saveOffers(offers);
+
+        qs('#f-name').value = '';
+        qs('#f-image').value = '';
+        qs('#f-original').value = '';
+        qs('#f-promo').value = '';
+        qs('#f-link').value = '';
+        qs('#f-rating').value = '';
+
+        alert('Produto salvo localmente. Para que outros vejam: clique em Exportar JSON e faça commit do arquivo offers-export.json em /data/offers.json no seu repositório (ou use um fluxo automático).');
+      });
+    }
+
+    // export JSON
+    const btnExport = qs('#btn-export');
+    if(btnExport){
+      btnExport.addEventListener('click', ()=>{
+        const data = loadOffers();
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    // fechamento do painel (limpa campos)
+    const closeBtn = qs('#close-admin');
+    if(closeBtn){
+      closeBtn.addEventListener('click', ()=>{
+        const panel = qs('#admin-panel');
+        if(panel) panel.classList.remove('active');
+        if(panel) panel.setAttribute('aria-hidden','true');
+        qs('#f-name').value = '';
+        qs('#f-image').value = '';
+        qs('#f-original').value = '';
+        qs('#f-promo').value = '';
+        qs('#f-link').value = '';
+        qs('#f-rating').value = '';
+      });
+    }
+
+    // inicializador chamado quando painel é aberto
+    window.__adminSupplementInit = function(){
+      try{
+        const wa = localStorage.getItem('site_wa') || '';
+        const tg = localStorage.getItem('site_tg') || '';
+        if(qs('#f-wa-link')) qs('#f-wa-link').value = wa;
+        if(qs('#f-tg-link')) qs('#f-tg-link').value = tg;
+      }catch(e){}
+      renderOffersList();
+    };
+
+    // renderiza lista local dentro do painel
+    function renderOffersList(){ try{ const root = qs('#localOffersList'); if(!root) return; const offers = loadOffers(); if(!offers.length){ root.innerHTML = '<div style="color:#666">Nenhuma oferta local.</div>'; return; } root.innerHTML = ''; offers.forEach(o=>{ const div = document.createElement('div'); div.style.padding='8px'; div.style.borderBottom='1px solid #f3f4f6'; div.innerHTML = `<div style="font-weight:700">${escapeHtml(o.title||o.name||'(sem título)')}</div><div style="font-size:13px;color:#666">${escapeHtml(o.original_price||'')} ${o.promotional_price? '→ '+escapeHtml(o.promotional_price):''}</div>`; root.appendChild(div); }); }catch(e){console.warn(e);} }
+    // inicial
+    renderOffersList();
+  })();
+  </script>
+
+  <!-- Comentário útil:
+       - Para que novos produtos apareçam para TODOS os visitantes, clique em "Exportar JSON" no painel,
+         faça download do offers-export.json e adicione/atualize o arquivo /data/offers.json no seu repositório
+         (commit + push). O GitHub Pages então servirá esse JSON remoto e todos verão as ofertas.
+       - Se quiser automatizar esse passo, eu posso te enviar um workflow N8N / script que commita no GitHub via API.
+  -->
 
 </body>
 </html>
