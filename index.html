@@ -555,5 +555,61 @@
   })();
   </script>
 
+<!-- Painel Admin (substitua o modal atual pelo bloco abaixo) -->
+<div id="adminModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Painel Admin</h3>
+      <button id="closeAdmin" class="btn">Fechar</button>
+    </div>
+
+    <div class="modal-body">
+      <label>Links de grupo (WhatsApp / Telegram)</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="input-whatsapp" type="text" placeholder="https://chat.whatsapp.com/..." style="flex:1" />
+        <input id="input-telegram" type="text" placeholder="https://t.me/..." style="flex:1" />
+        <button id="save-links-btn" class="btn">Salvar Links</button>
+      </div>
+      <small>Depois de salvar, os botões do site serão atualizados automaticamente.</small>
+
+      <hr/>
+
+      <label>Adicionar/Editar oferta manual (salva localmente no navegador)</label>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <input id="input-title" placeholder="Nome do produto" />
+        <input id="input-image" placeholder="URL da imagem" />
+        <input id="input-price" placeholder="Preço original (ex: 199.90)" />
+        <input id="input-promo" placeholder="Preço promocional (ex: 89.90)" />
+        <input id="input-aff" placeholder="Link de afiliado" style="grid-column:1 / -1;" />
+        <input id="input-rating" placeholder="Avaliação (ex: 4.5) ou vazio" />
+      </div>
+      <div style="margin-top:8px;display:flex;gap:8px;">
+        <button id="save-product-btn" class="btn">Salvar Produto</button>
+        <button id="add-local-btn" class="btn">Adicionar (novo)</button>
+        <button id="export-json-btn" class="btn">Exportar JSON</button>
+        <button id="clear-local-btn" class="btn">Limpar ofertas locais</button>
+      </div>
+
+      <hr/>
+
+      <label>Ofertas locais (salvas no navegador)</label>
+      <div id="localOffersList" style="max-height:200px;overflow:auto;margin-top:8px;border:1px solid #eee;padding:8px;border-radius:6px;">
+        <!-- Lista será gerada dinamicamente -->
+      </div>
+
+      <hr/>
+      <label>Mínimo de ofertas para aceitar atualização remota</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="input-min-remote" placeholder="Número mínimo (ex: 2)" style="width:140px;" />
+        <button id="apply-min-btn" class="btn">Aplicar</button>
+        <button id="remove-min-btn" class="btn">Remover</button>
+      </div>
+
+      <p style="font-size:12px;color:#666;margin-top:10px;">
+        Observação: para publicar globalmente, configure seu fluxo n8n para atualizar /data/offers.json no repositório.
+      </p>
+    </div>
+  </div>
+</div>
 </body>
 </html>
