@@ -194,7 +194,6 @@
     b._hide_t = setTimeout(()=>{ b.style.opacity='0'; setTimeout(()=>{ b.style.display='none'; },250); }, ms);
   }
 
-  // Normalize URL: add https:// when missing (handles chat.whatsapp.com, wa.me, t.me, www.)
   function normalizeUrlMaybe(u){
     if(!u) return '#';
     u = String(u).trim();
@@ -206,7 +205,7 @@
   }
 
   /************************************************
-   * Reviews & Stars (kept)
+   * Reviews & Stars
    ************************************************/
   function getReviews(item){
     const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
@@ -394,7 +393,7 @@
   }
 
   /************************************************
-   * Load & Merge: mantém ofertas locais e as mescla com remoto
+   * Load & Merge
    ************************************************/
   async function loadAndRenderMerged(remotePath){
     remotePath = remotePath || REMOTE_JSON_PATH;
@@ -405,9 +404,7 @@
       const remoteArr = Array.isArray(data) ? data : (data.offers || data.items || data.products || []);
       const minOffers = parseInt(localStorage.getItem('site_min_offers')) || DEFAULT_MIN_OFFERS;
       const localAll = tryLoadLocalArray() || [];
-      // locais criados pelo painel (id começa com local-)
       const localOnly = localAll.filter(i => i && String(i.id || '').startsWith('local-'));
-      // caso remoto vazio -> manter localOnly (se existir)
       if(!Array.isArray(remoteArr) || remoteArr.length === 0){
         if(localOnly.length){
           saveLocalOffersArray(localOnly);
@@ -420,19 +417,16 @@
           return;
         }
       }
-      // regra de proteção: se remoto menor e local tem itens, e remoto < minOffers, manter local
       if(Array.isArray(remoteArr) && remoteArr.length < minOffers && Array.isArray(localAll) && localAll.length >= minOffers){
         saveLocalOffersArray(localAll);
         renderList(localAll);
         showStatus('Mantendo ofertas locais (remoto menor que mínimo).');
         return;
       }
-      // mesclar: locais (topo) + remoto (removendo duplicados por id)
       const remoteClean = Array.isArray(remoteArr) ? remoteArr.slice() : [];
       const remoteIds = new Set(remoteClean.map(x => x.id).filter(Boolean));
       const filteredLocal = localOnly.filter(i => !(i.id && remoteIds.has(i.id)));
       const merged = filteredLocal.concat(remoteClean);
-      // persistir merged nas chaves locais
       saveLocalOffersArray(merged);
       renderList(merged);
       showUpdatedBadge();
@@ -451,36 +445,105 @@
 
   /************************************************
    * Admin interactions: Vip buttons, painel, salvar/descarregar
+   * (Sem botão "Copiar link" — fallback automático)
    ************************************************/
-  function updateVipButtons(){
-    const wa = localStorage.getItem('site_wa') || '#';
-    const tg = localStorage.getItem('site_tg') || '#';
-    const a1 = document.getElementById('vip-wa');
-    const a2 = document.getElementById('vip-tg');
-    if(a1){
-      a1.href = wa;
-      a1.setAttribute('target','_blank');
-      a1.setAttribute('rel','noopener noreferrer');
-      a1.onclick = function(e){
-        e.preventDefault();
-        const url = localStorage.getItem('site_wa') || wa;
-        if(!url || url === '#') return;
-        try{ window.open(url, '_blank'); }catch(err){ location.href = url; }
+  function applyRobustExternalOpeners(){
+    function normalizeUrl(u){
+      if(!u) return '#';
+      u = String(u).trim();
+      if(/^[a-zA-Z][a-zA-Z0-9+\-.]*:\/\//.test(u)) return u;
+      return 'https://' + u;
+    }
+    function copyToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+      return new Promise((res, rej) => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try{ document.execCommand('copy'); document.body.removeChild(ta); res(); }catch(e){ document.body.removeChild(ta); rej(e); }
+      });
+    }
+    function showToast(msg, timeout=3500){
+      let t = document.getElementById('__ext_toast');
+      if(!t){
+        t = document.createElement('div'); t.id = '__ext_toast';
+        t.style.position='fixed'; t.style.left='50%'; t.style.transform='translateX(-50%)';
+        t.style.bottom='16px'; t.style.background='rgba(0,0,0,0.85)'; t.style.color='#fff';
+        t.style.padding='10px 14px'; t.style.borderRadius='10px'; t.style.zIndex=99999; t.style.fontSize='14px';
+        document.body.appendChild(t);
+      }
+      t.textContent = msg; t.style.display='block';
+      clearTimeout(t._hid); t._hid = setTimeout(()=>{ t.style.display='none'; }, timeout);
+    }
+
+    // elements
+    const aWa = document.getElementById('vip-wa');
+    const aTg = document.getElementById('vip-tg');
+
+    const storedWa = (localStorage.getItem('site_wa') || '').trim();
+    const storedTg = (localStorage.getItem('site_tg') || '').trim();
+    const waHref = storedWa || (aWa ? (aWa.getAttribute('href') || '').trim() : '');
+    const tgHref = storedTg || (aTg ? (aTg.getAttribute('href') || '').trim() : '');
+
+    const waUrl = normalizeUrl(waHref || '#');
+    const tgUrl = normalizeUrl(tgHref || '#');
+
+    if(aWa){ aWa.href = waUrl; aWa.setAttribute('rel','noopener noreferrer'); aWa.setAttribute('target','_blank'); }
+    if(aTg){ aTg.href = tgUrl; aTg.setAttribute('rel','noopener noreferrer'); aTg.setAttribute('target','_blank'); }
+
+    function openWhatsAppInvite(u){
+      if(!u || u === '#'){ showToast('Link inválido'); return; }
+      try{
+        const w = window.open(u, '_blank');
+        if(w) return;
+      }catch(e){}
+      try{
+        if(/chat\.whatsapp\.com|wa\.me/i.test(u)){
+          const cleaned = u.replace(/^https?:\/\//,'');
+          const intent = 'intent://' + cleaned + '#Intent;package=com.whatsapp;scheme=https;end';
+          window.location.href = intent;
+          setTimeout(()=>{ copyToClipboard(u).then(()=> showToast('Não abriu o app — link copiado para colar no navegador/WhatsApp.')); }, 1200);
+          return;
+        }
+      }catch(e){}
+      try{ window.location.href = u; } catch(e){ copyToClipboard(u).then(()=> showToast('Não abriu — link copiado.')); }
+    }
+
+    function openTelegram(u){
+      if(!u || u === '#'){ showToast('Link inválido'); return; }
+      try{
+        const w = window.open(u, '_blank');
+        if(w) return;
+      }catch(e){}
+      try{
+        if(/^https?:\/\/(t\.me|telegram\.me)/i.test(u)){
+          const user = u.replace(/^https?:\/\/(t\.me|telegram\.me)\/?/i,'');
+          window.location.href = 'tg://resolve?domain=' + user;
+          setTimeout(()=>{ window.location.href = u; }, 800);
+          return;
+        }
+      }catch(e){}
+      try{ window.location.href = u; }catch(e){ copyToClipboard(u).then(()=> showToast('Não abriu — link copiado.')); }
+    }
+
+    if(aWa){
+      aWa.onclick = function(ev){
+        ev.preventDefault();
+        openWhatsAppInvite(waUrl);
       };
     }
-    if(a2){
-      a2.href = tg;
-      a2.setAttribute('target','_blank');
-      a2.setAttribute('rel','noopener noreferrer');
-      a2.onclick = function(e){
-        e.preventDefault();
-        const url = localStorage.getItem('site_tg') || tg;
-        if(!url || url === '#') return;
-        try{ window.open(url, '_blank'); }catch(err){ location.href = url; }
+    if(aTg){
+      aTg.onclick = function(ev){
+        ev.preventDefault();
+        openTelegram(tgUrl);
       };
     }
+
+    console.log('Robust external openers applied (no copy button). waUrl=', waUrl, 'tgUrl=', tgUrl);
   }
 
+  // Setup admin open & close
   document.getElementById('gear').addEventListener('click', async () => {
     const pwd = prompt('Senha do painel administrativo:');
     if(!pwd) return;
@@ -506,7 +569,7 @@
    * Init
    ************************************************/
   (function init(){
-    updateVipButtons();
+    applyRobustExternalOpeners();
     const localAny = tryLoadLocalArray() || null;
     if(localAny && localAny.length) renderList(localAny);
     loadAndRenderMerged(REMOTE_JSON_PATH);
@@ -558,7 +621,6 @@
       });
     }
 
-    // salvar links (usa normalizeLink)
     const btnSaveLinks = qs('#btn-save-links');
     if(btnSaveLinks){
       btnSaveLinks.addEventListener('click', ()=>{
@@ -569,12 +631,11 @@
         localStorage.setItem('site_wa', wa);
         localStorage.setItem('site_tg', tg);
         localStorage.setItem(LINKS_KEY, JSON.stringify({ whatsapp: wa, telegram: tg }));
-        if(typeof updateVipButtons === 'function') updateVipButtons();
+        if(typeof applyRobustExternalOpeners === 'function') applyRobustExternalOpeners();
         alert('Links salvos!');
       });
     }
 
-    // salvar produto (adiciona ao topo e persiste)
     const btnSaveProduct = qs('#btn-save-product');
     if(btnSaveProduct){
       btnSaveProduct.addEventListener('click', ()=>{
@@ -610,7 +671,6 @@
       });
     }
 
-    // export JSON
     const btnExport = qs('#btn-export');
     if(btnExport){
       btnExport.addEventListener('click', ()=>{
@@ -622,7 +682,6 @@
       });
     }
 
-    // fechamento do painel (limpa campos)
     const closeBtn = qs('#close-admin');
     if(closeBtn){
       closeBtn.addEventListener('click', ()=>{
@@ -638,7 +697,6 @@
       });
     }
 
-    // inicializador chamado quando painel é aberto
     window.__adminSupplementInit = function(){
       try{
         const wa = localStorage.getItem('site_wa') || '';
@@ -649,19 +707,13 @@
       renderOffersList();
     };
 
-    // renderiza lista local dentro do painel
-    function renderOffersList(){ try{ const root = qs('#localOffersList'); if(!root) return; const offers = loadOffers(); if(!offers.length){ root.innerHTML = '<div style="color:#666">Nenhuma oferta local.</div>'; return; } root.innerHTML = ''; offers.forEach(o=>{ const div = document.createElement('div'); div.style.padding='8px'; div.style.borderBottom='1px solid #f3f4f6'; div.innerHTML = `<div style="font-weight:700">${escapeHtml(o.title||o.name||'(sem título)')}</div><div style="font-size:13px;color:#666">${escapeHtml(o.original_price||'')} ${o.promotional_price? '→ '+escapeHtml(o.promotional_price):''}</div>`; root.appendChild(div); }); }catch(e){console.warn(e);} }
-    // inicial
     renderOffersList();
   })();
   </script>
 
-  <!-- Comentário útil:
-       - Para que novos produtos apareçam para TODOS os visitantes, clique em "Exportar JSON" no painel,
-         faça download do offers-export.json e adicione/atualize o arquivo /data/offers.json no seu repositório
-         (commit + push). O GitHub Pages então servirá esse JSON remoto e todos verão as ofertas.
-       - Se quiser automatizar esse passo, eu posso te enviar um workflow N8N / script que commita no GitHub via API.
+  <!-- Nota:
+       - Sem botão de "Copiar link". O site tenta abrir o link e, se falhar, copia automaticamente para o clipboard e mostra um aviso.
+       - Para publicar ofertas para todos: Exportar JSON -> commit em /data/offers.json no repositório (branch usada pelo Pages).
   -->
-
 </body>
 </html>
