@@ -41,7 +41,7 @@
     .desc{font-size:12px;color:var(--muted);min-height:36px;margin-bottom:8px}
     .meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap}
     .badge-discount{background:linear-gradient(90deg,#ffbaba,#ff8a8a);color:#7a0505;padding:4px 8px;border-radius:999px;font-weight:700;font-size:12px}
-    .rating{display:flex;align-items:center;gap:8px;font-size:13px;color:#111}
+    .rating{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:#111}
     .stars{display:inline-flex;gap:2px;align-items:center}
     .rating .score{font-weight:700;font-size:14px;color:#111}
     .rating .count{color:var(--muted);font-size:13px}
@@ -108,58 +108,50 @@
     </section>
   </main>
 
-  <!-- ADMIN PANEL (mantive id/admin flow original, substituí o conteúdo interno para incluir botão "Salvar Links" e área de ofertas) -->
+  <!-- ADMIN PANEL SIMPLIFICADO: substituir o bloco existente com id="admin-panel" -->
   <div id="admin-panel" class="admin-panel" aria-hidden="true">
-    <div class="card">
-      <div style="padding:16px;border-bottom:1px solid #f0f2f6;display:flex;justify-content:space-between;align-items:center">
-        <strong>Painel Admin</strong>
-        <button id="close-admin" class="btn-ghost" aria-label="Fechar painel">Fechar</button>
+    <div class="card" style="max-height:78vh;overflow:auto;position:relative;padding-bottom:12px;">
+      <button id="close-admin" class="btn-ghost" aria-label="Fechar painel" style="position:absolute;top:10px;right:10px;">Fechar</button>
+      <div style="padding:18px 18px 8px 18px;border-bottom:1px solid #f0f2f6">
+        <strong style="font-size:16px">Painel Admin</strong>
+        <div style="font-size:13px;color:#666;margin-top:6px">Somente "Salvar Links" e "Salvar Produto".</div>
       </div>
-      <div style="padding:16px">
-        <div class="small">Editar links de grupo (WhatsApp / Telegram)</div>
-        <div class="form-row" style="margin-top:8px">
-          <input id="f-wa-link" placeholder="Link do grupo WhatsApp (https://chat.whatsapp.com/...)">
-          <input id="f-tg-link" placeholder="Link do Telegram (https://t.me/...)">
-          <!-- botão Salvar Links adicionado visualmente -->
-          <!-- será criado dinamicamente pelo script suplementar -->
+
+      <div style="padding:12px 18px;">
+        <div style="margin-bottom:10px">
+          <div class="small">Links de grupo (WhatsApp / Telegram)</div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <input id="f-wa-link" placeholder="Link do grupo WhatsApp (https://chat.whatsapp.com/...)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-tg-link" placeholder="Link do Telegram (https://t.me/...)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <button id="btn-save-links" class="btn-ghost" style="min-width:110px">Salvar Links</button>
+          </div>
         </div>
 
         <hr style="margin:12px 0">
 
-        <div class="small" style="margin-top:12px">Adicionar oferta manual (salva somente no seu navegador):</div>
-        <div class="form-row" style="margin-top:8px">
-          <input id="f-name" placeholder="Nome do produto">
-          <input id="f-image" placeholder="URL da imagem">
-        </div>
-        <div class="form-row">
-          <input id="f-original" placeholder="Preço original (ex: 199.90)">
-          <input id="f-promo" placeholder="Preço promocional (ex: 89.90)">
-        </div>
-        <div style="margin-top:8px" class="form-row">
-          <input id="f-link" placeholder="Link de afiliado">
-          <input id="f-rating" placeholder="Avaliação (ex: 4.5) ou deixar vazio">
-        </div>
-
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-          <button id="btn-save-local" class="btn-ghost">Adicionar local</button>
-          <button id="btn-export" class="btn-ghost">Exportar JSON</button>
-          <button id="btn-clear" class="btn-ghost">Limpar ofertas locais</button>
+        <div style="margin-bottom:10px">
+          <div class="small">Adicionar oferta manual (salva no seu navegador)</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+            <input id="f-name" placeholder="Nome do produto" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-image" placeholder="URL da imagem" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-original" placeholder="Preço original (ex: 199.90)" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-promo" placeholder="Preço promocional (ex: 89.90)" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-link" placeholder="Link de afiliado" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+            <input id="f-rating" placeholder="Avaliação (ex: 4.5) ou vazio" style="padding:8px;border-radius:8px;border:1px solid #e6e8ef" />
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <button id="btn-save-product" class="btn-ghost">Salvar Produto</button>
+          </div>
         </div>
 
-        <!-- Local Offers list será inserida aqui dinamicamente pelo script suplementar -->
-        <div id="localOffersContainer" style="margin-top:12px"></div>
+        <hr style="margin:12px 0">
 
-        <hr style="margin:14px 0">
-
-        <div class="small">Mínimo de ofertas para aceitar atualização remota:</div>
-        <div class="form-row" style="margin-top:8px">
-          <input id="f-min-offers" placeholder="Número mínimo (ex: 2)" />
-          <button id="btn-apply-min" class="btn-ghost">Aplicar</button>
-          <button id="btn-clear-min" class="btn-ghost">Remover</button>
+        <div style="margin-top:6px">
+          <div class="small">Ofertas locais (apenas visualização)</div>
+          <div id="localOffersList" style="margin-top:8px;max-height:240px;overflow:auto;border:1px solid #f0f2f6;padding:8px;border-radius:8px;background:#fff">
+            <!-- Lista simples e apenas leitura -->
+          </div>
         </div>
-        <div class="small" style="margin-top:8px">Se a atualização remota retornar menos que este valor, ela será ignorada e o site continuará mostrando a última lista válida.</div>
-
-        <div style="margin-top:12px" class="small">Observação: para publicar globalmente, configure seu fluxo n8n para atualizar /data/offers.json no repositório.</div>
       </div>
     </div>
   </div>
@@ -223,7 +215,7 @@
   }
 
   /************************************************
-   * Reviews normalization: tenta extrair avaliações detalhadas
+   * Reviews normalization
    ************************************************/
   function getReviews(item){
     const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
@@ -263,11 +255,11 @@
   }
 
   /************************************************
-   * Stars & ratings (unchanged)
+   * Stars & ratings
    ************************************************/
   function starSVG(type='full'){
     if(type==='full') return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#ffb400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
-    if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
+    if(type==='half') return `<svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g"><stop offset="50%" stop-color="#ffb400"/><stop offset="50%" stop-color="#e5e7eb"/></linearGradient></defs><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z" fill="url(#g)"/></svg>`;
     return `<svg width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 17.3l6.18 3.73-1.64-7.07L21.9 9.24l-7.19-.62L12 2 9.29 8.62 2.1 9.24l5.36 4.72L5.82 21z"/></svg>`;
   }
   function extractRatingInfo(o){
@@ -456,7 +448,7 @@
   }
 
   /************************************************
-   * Admin interactions (mantive seu flow e acrescentei melhorias)
+   * Admin interactions
    ************************************************/
   document.getElementById('gear').addEventListener('click', async () => {
     const pwd = prompt('Senha do painel administrativo:');
@@ -469,7 +461,6 @@
       document.getElementById('f-wa-link').value = localStorage.getItem('site_wa') || '';
       document.getElementById('f-tg-link').value = localStorage.getItem('site_tg') || '';
       document.getElementById('f-min-offers').value = localStorage.getItem('site_min_offers') || '';
-      // abrir/renderizar lista local (o script suplementar cuida disso)
       if(typeof window.__adminSupplementInit === 'function') window.__adminSupplementInit();
     } else {
       alert('Senha incorreta');
@@ -481,19 +472,19 @@
     panel.setAttribute('aria-hidden','true');
   });
 
-  document.getElementById('btn-save-local').addEventListener('click', () => {
-    // este handler é apenas um fallback — o script suplementar substitui esse comportamento
-    // para evitar duplicidade, deixamos este handler leve.
-    // Se o suplementar não estiver presente, seguimos com o comportamento antigo:
-    const name = document.getElementById('f-name').value.trim();
+  document.getElementById('btn-save-local')?.addEventListener('click', () => {
+    // fallback: mantém compatibilidade, mas o script suplementar principal faz o trabalho
+    const name = document.getElementById('f-name')?.value?.trim();
     if(!name){ alert('Informe o nome'); return; }
-    const image = document.getElementById('f-image').value.trim();
-    const oldP = document.getElementById('f-original').value.trim();
-    const promoP = document.getElementById('f-promo').value.trim();
-    const link = document.getElementById('f-link').value.trim() || '#';
-    const rating = document.getElementById('f-rating').value.trim();
+    const image = document.getElementById('f-image')?.value?.trim();
+    const oldP = document.getElementById('f-original')?.value?.trim();
+    const promoP = document.getElementById('f-promo')?.value?.trim();
+    const link = document.getElementById('f-link')?.value?.trim() || '#';
+    const rating = document.getElementById('f-rating')?.value?.trim();
     const obj = { title: name, image_url: image, original_price: oldP || '', promotional_price: promoP || '', affiliate_link: link, rating: rating || undefined };
-    const existing = tryLoadLocal() || [];
+    const existing = (function(){
+      try{ return JSON.parse(localStorage.getItem('site_offers_v1')||'[]'); }catch(e){ return []; }
+    })();
     existing.unshift(obj);
     try{ localStorage.setItem('site_offers_v1', JSON.stringify(existing)); }catch(e){}
     currentOffers = existing;
@@ -501,15 +492,15 @@
     alert('Oferta adicionada localmente.');
   });
 
-  document.getElementById('btn-export').addEventListener('click', () => {
-    const data = tryLoadLocal() || [];
+  document.getElementById('btn-export')?.addEventListener('click', () => {
+    const data = (function(){ try{ return JSON.parse(localStorage.getItem('site_offers_v1')||'[]'); }catch(e){ return []; } })();
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
     URL.revokeObjectURL(url);
   });
 
-  document.getElementById('btn-clear').addEventListener('click', () => {
+  document.getElementById('btn-clear')?.addEventListener('click', () => {
     if(!confirm('Limpar ofertas locais?')) return;
     LS_KEYS.forEach(k => localStorage.removeItem(k));
     location.reload();
@@ -521,12 +512,11 @@
     document.getElementById('vip-wa').href = wa;
     document.getElementById('vip-tg').href = tg;
   }
-  // mantive os event listeners existentes para salvar ao mudar; o suplementar adiciona botão "Salvar Links"
-  document.getElementById('f-wa-link').addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
-  document.getElementById('f-tg-link').addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
+  document.getElementById('f-wa-link')?.addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
+  document.getElementById('f-tg-link')?.addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
 
-  document.getElementById('btn-apply-min').addEventListener('click', () => {
-    const v = document.getElementById('f-min-offers').value.trim();
+  document.getElementById('btn-apply-min')?.addEventListener('click', () => {
+    const v = document.getElementById('f-min-offers')?.value?.trim();
     if(!v){ localStorage.removeItem('site_min_offers'); alert('Mínimo removido.'); return; }
     const n = Number(v);
     if(isNaN(n) || n <= 0){ alert('Informe um número válido.'); return; }
@@ -534,9 +524,10 @@
     alert('Mínimo salvo: ' + Math.floor(n));
   });
 
-  document.getElementById('btn-clear-min').addEventListener('click', () => {
+  document.getElementById('btn-clear-min')?.addEventListener('click', () => {
     localStorage.removeItem('site_min_offers');
-    document.getElementById('f-min-offers').value = '';
+    const el = document.getElementById('f-min-offers');
+    if(el) el.value = '';
     alert('Mínimo removido (voltando ao padrão).');
   });
 
@@ -551,169 +542,61 @@
   })();
   </script>
 
-  <!-- SCRIPT SUPLEMENTAR: adiciona botão "Salvar Links" e gerência local completo (salvar/editar/excluir) -->
+  <!-- SCRIPT SUPLEMENTAR SIMPLIFICADO -->
   <script>
   (function(){
-    // chaves e elementos (compatíveis com seu HTML existente)
-    const LINKS_KEY = 'site_links_v1'; // usado internamente pelo suplementar
-    const STORAGE_OFFERS_KEY = 'site_offers_v1'; // mantém compatibilidade com o seu uso anterior
-    let offers = []; // lista local gerenciada aqui (salva em STORAGE_OFFERS_KEY)
-    let editingId = null;
+    const STORAGE_OFFERS_KEY = 'site_offers_v1';
+    const LINKS_KEY = 'site_links_v1';
 
-    // utilidades
-    function qs(sel, root=document){ return root.querySelector(sel); }
-    function qsa(sel, root=document){ return Array.from((root||document).querySelectorAll(sel)); }
-    function escapeHtml(str){ if(!str) return ''; return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    function qs(sel){ return document.querySelector(sel); }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
-    // criar botão Salvar Links ao lado do input de tg se não existir
-    const tgInput = qs('#f-tg-link');
-    if(tgInput){
-      const saveBtn = document.createElement('button');
-      saveBtn.id = 'btn-save-links';
-      saveBtn.className = 'btn-ghost';
-      saveBtn.textContent = 'Salvar Links';
-      saveBtn.style.minWidth = '110px';
-      // inserir após o input tg dentro da mesma linha (.form-row)
-      const parentRow = tgInput.parentNode;
-      parentRow.appendChild(saveBtn);
-      saveBtn.addEventListener('click', () => {
+    function loadOffers(){ try{ const raw = localStorage.getItem(STORAGE_OFFERS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; } }
+    function saveOffers(arr){ try{ localStorage.setItem(STORAGE_OFFERS_KEY, JSON.stringify(arr)); }catch(e){} if(typeof renderList === 'function') renderList(arr); renderOffersList(); }
+    function renderOffersList(){
+      const root = qs('#localOffersList');
+      if(!root) return;
+      const offers = loadOffers();
+      if(!offers.length){ root.innerHTML = '<div style="color:#666">Nenhuma oferta local.</div>'; return; }
+      root.innerHTML = '';
+      offers.forEach(o=>{
+        const div = document.createElement('div');
+        div.style.padding = '8px';
+        div.style.borderBottom = '1px solid #f3f4f6';
+        div.innerHTML = `<div style="font-weight:700">${escapeHtml(o.title || o.name || '(sem título)')}</div>
+                         <div style="font-size:13px;color:#666">${escapeHtml(o.original_price || o.price || '')} ${o.promotional_price ? '→ ' + escapeHtml(o.promotional_price) : ''}</div>`;
+        root.appendChild(div);
+      });
+    }
+
+    // salvar links
+    const btnSaveLinks = qs('#btn-save-links');
+    if(btnSaveLinks){
+      btnSaveLinks.addEventListener('click', ()=>{
         const wa = (qs('#f-wa-link')?.value || '').trim();
         const tg = (qs('#f-tg-link')?.value || '').trim();
         localStorage.setItem('site_wa', wa);
         localStorage.setItem('site_tg', tg);
-        // armazena também em uma chave consolidada para possível uso futuro
         localStorage.setItem(LINKS_KEY, JSON.stringify({ whatsapp: wa, telegram: tg }));
-        // atualiza os botões VIP
         if(typeof updateVipButtons === 'function') updateVipButtons();
         alert('Links salvos!');
       });
     }
 
-    // criar container de lista local de ofertas abaixo dos botões (localOffersContainer)
-    const localOffersContainer = qs('#localOffersContainer');
-    if(localOffersContainer){
-      const listDiv = document.createElement('div');
-      listDiv.id = 'localOffersList';
-      listDiv.style.maxHeight = '220px';
-      listDiv.style.overflow = 'auto';
-      listDiv.style.marginTop = '8px';
-      listDiv.style.border = '1px solid #f0f2f6';
-      listDiv.style.padding = '8px';
-      listDiv.style.borderRadius = '8px';
-      localOffersContainer.appendChild(listDiv);
-    }
+    // salvar produto (apenas adiciona ao topo, sem editar/excluir)
+    const btnSaveProduct = qs('#btn-save-product');
+    if(btnSaveProduct){
+      btnSaveProduct.addEventListener('click', ()=>{
+        const name = (qs('#f-name')?.value || '').trim();
+        if(!name) return alert('Informe o nome do produto.');
+        const image = (qs('#f-image')?.value || '').trim();
+        const original = (qs('#f-original')?.value || '').trim();
+        const promo = (qs('#f-promo')?.value || '').trim();
+        const link = (qs('#f-link')?.value || '').trim() || '#';
+        const rating = (qs('#f-rating')?.value || '').trim();
 
-    // carregar ofertas da storage
-    function loadOffers(){
-      try{
-        const raw = localStorage.getItem(STORAGE_OFFERS_KEY);
-        if(!raw){ offers = []; return; }
-        offers = JSON.parse(raw) || [];
-      }catch(e){ offers = []; }
-    }
-    function saveOffers(){
-      try{
-        localStorage.setItem(STORAGE_OFFERS_KEY, JSON.stringify(offers));
-      }catch(e){
-        console.error('Erro ao salvar ofertas locais', e);
-      }
-      // atualizar a exibição principal do site
-      if(typeof renderList === 'function'){
-        // renderList espera um array
-        renderList(offers);
-      }
-      renderOffersList();
-    }
-
-    function renderOffersList(){
-      const root = qs('#localOffersList');
-      if(!root) return;
-      root.innerHTML = '';
-      if(!offers.length){
-        root.innerHTML = '<div style="color:#666;padding:6px">Nenhuma oferta local salva.</div>';
-        return;
-      }
-      offers.forEach(o=>{
-        const row = document.createElement('div');
-        row.style.display='flex';
-        row.style.justifyContent='space-between';
-        row.style.alignItems='center';
-        row.style.padding='6px 4px';
-        row.style.borderBottom='1px solid #f7f8fb';
-        row.innerHTML = `
-          <div style="flex:1">
-            <div style="font-weight:700;font-size:13px">${escapeHtml(o.title || o.name || '(sem título)')}</div>
-            <div style="font-size:12px;color:#666">${escapeHtml(o.price || o.preço || '')} ${o.promo ? '→ ' + escapeHtml(o.promo) : ''}</div>
-          </div>
-          <div style="display:flex;gap:6px;margin-left:8px">
-            <button class="edit-offer btn-ghost" data-id="${escapeHtml(o.id)}">Editar</button>
-            <button class="delete-offer btn-ghost" data-id="${escapeHtml(o.id)}">Excluir</button>
-          </div>
-        `;
-        root.appendChild(row);
-      });
-      // attach events
-      qsa('.edit-offer', root).forEach(b => b.addEventListener('click', e => {
-        const id = e.currentTarget.getAttribute('data-id');
-        startEditOffer(id);
-      }));
-      qsa('.delete-offer', root).forEach(b => b.addEventListener('click', e => {
-        const id = e.currentTarget.getAttribute('data-id');
-        if(confirm('Excluir esta oferta local?')) {
-          offers = offers.filter(x => String(x.id) !== String(id));
-          saveOffers();
-          alert('Oferta excluída.');
-        }
-      }));
-    }
-
-    function startEditOffer(id){
-      const o = offers.find(x => String(x.id) === String(id));
-      if(!o) return;
-      editingId = String(id);
-      qs('#f-name').value = o.title || o.name || '';
-      qs('#f-image').value = o.image_url || o.imagem_url || '';
-      qs('#f-original').value = o.original_price || o.price || o.preço || '';
-      qs('#f-promo').value = o.promotional_price || o.promo || o.sale_price || '';
-      qs('#f-link').value = o.affiliate_link || o.link_de_afiliado || o.link || '';
-      qs('#f-rating').value = o.rating || o.avaliacao || '';
-      const addBtn = qs('#btn-save-local');
-      if(addBtn) addBtn.textContent = 'Salvar Alteração';
-    }
-
-    function clearProductForm(){
-      editingId = null;
-      qs('#f-name').value = '';
-      qs('#f-image').value = '';
-      qs('#f-original').value = '';
-      qs('#f-promo').value = '';
-      qs('#f-link').value = '';
-      qs('#f-rating').value = '';
-      const addBtn = qs('#btn-save-local');
-      if(addBtn) addBtn.textContent = 'Adicionar local';
-    }
-
-    function addOrUpdateProduct(){
-      const name = (qs('#f-name').value || '').trim();
-      if(!name){ alert('Preencha ao menos o nome do produto.'); return; }
-      const image = (qs('#f-image').value || '').trim();
-      const original = (qs('#f-original').value || '').trim();
-      const promo = (qs('#f-promo').value || '').trim();
-      const link = (qs('#f-link').value || '').trim() || '#';
-      const rating = (qs('#f-rating').value || '').trim();
-
-      if(editingId){
-        offers = offers.map(o => {
-          if(String(o.id) === String(editingId)){
-            return Object.assign({}, o, {
-              title: name, image_url: image, original_price: original, promotional_price: promo, affiliate_link: link, rating: rating || undefined
-            });
-          }
-          return o;
-        });
-        alert('Oferta atualizada.');
-      } else {
-        const newObj = {
+        const offers = loadOffers();
+        const newItem = {
           id: 'local-' + Date.now() + '-' + Math.floor(Math.random()*1000),
           title: name,
           image_url: image,
@@ -722,80 +605,49 @@
           affiliate_link: link,
           rating: rating || undefined
         };
-        offers.unshift(newObj); // add on top
-        alert('Oferta adicionada.');
-      }
-      saveOffers();
-      clearProductForm();
-    }
+        offers.unshift(newItem);
+        saveOffers(offers);
 
-    // botão salvar links já criado; agora substituímos o comportamento do btn-save-local para usar addOrUpdateProduct
-    const btnSaveLocal = qs('#btn-save-local');
-    if(btnSaveLocal){
-      // remover listeners anteriores (se existirem) substituindo por clone (safer)
-      const newBtn = btnSaveLocal.cloneNode(true);
-      btnSaveLocal.parentNode.replaceChild(newBtn, btnSaveLocal);
-      newBtn.addEventListener('click', addOrUpdateProduct);
-    }
+        qs('#f-name').value = '';
+        qs('#f-image').value = '';
+        qs('#f-original').value = '';
+        qs('#f-promo').value = '';
+        qs('#f-link').value = '';
+        qs('#f-rating').value = '';
 
-    // aplicar função export/clear já presentes no seu código — mas garantimos que render list seja atualizada
-    const btnExport = qs('#btn-export');
-    if(btnExport){
-      btnExport.addEventListener('click', () => {
-        const data = offers || [];
-        const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = 'offers-local.json'; a.click();
-        URL.revokeObjectURL(url);
-      });
-    }
-    const btnClear = qs('#btn-clear');
-    if(btnClear){
-      btnClear.addEventListener('click', () => {
-        if(!confirm('Remover todas as ofertas locais?')) return;
-        offers = [];
-        saveOffers();
+        alert('Produto salvo localmente.');
       });
     }
 
-    // Quando o admin fecha, limpamos o formulário (comportamento amigável)
-    const closeAdmin = qs('#close-admin');
-    if(closeAdmin) closeAdmin.addEventListener('click', () => clearProductForm());
+    // fechamento do painel (limpa campos)
+    const closeBtn = qs('#close-admin');
+    if(closeBtn){
+      closeBtn.addEventListener('click', ()=>{
+        const panel = qs('#admin-panel');
+        if(panel) panel.classList.remove('active');
+        if(panel) panel.setAttribute('aria-hidden','true');
+        qs('#f-name').value = '';
+        qs('#f-image').value = '';
+        qs('#f-original').value = '';
+        qs('#f-promo').value = '';
+        qs('#f-link').value = '';
+        qs('#f-rating').value = '';
+      });
+    }
 
-    // Expor uma função para inicializar (chamada pelo código principal ao abrir o painel)
+    // inicializador chamado quando painel é aberto
     window.__adminSupplementInit = function(){
-      loadOffers();
-      renderOffersList();
-      // preencher inputs de links a partir das chaves existentes (site_wa/site_tg)
       try{
         const wa = localStorage.getItem('site_wa') || '';
         const tg = localStorage.getItem('site_tg') || '';
         if(qs('#f-wa-link')) qs('#f-wa-link').value = wa;
         if(qs('#f-tg-link')) qs('#f-tg-link').value = tg;
       }catch(e){}
+      renderOffersList();
     };
 
-    // inicializa ao carregar a página (para caso admin já aberto)
-    loadOffers();
+    // se já tiver conteúdo ao carregar
     renderOffersList();
-
-    // permitir abrir admin pelo link superior se quiser (compat)
-    const openAdminTop = qs('#open-admin-top');
-    if(openAdminTop){
-      openAdminTop.addEventListener('click', () => {
-        document.getElementById('gear').click();
-      });
-    }
-
-    // segurança: intercepta cliques em links de chat.whatsapp e garante target/_blank
-    document.addEventListener('click', function(e){
-      const a = e.target.closest && e.target.closest('a[href*="chat.whatsapp.com"], a[href*="wa.me"], a[href*="t.me"]');
-      if(a){
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
-      }
-    }, true);
-
   })();
   </script>
 
