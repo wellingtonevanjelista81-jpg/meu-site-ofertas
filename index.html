@@ -453,7 +453,7 @@
 
   /************************************************
    * Admin interactions: Vip buttons, painel, salvar/descarregar
-   * Robust vip handler: removes old listeners, intent fallback, copy-to-clipboard
+   * Versão atualizada de updateVipButtons() com cópia imediata no clique
    ************************************************/
   function copyToClipboard(text){
     if(!text) return Promise.reject();
@@ -480,11 +480,9 @@
   }
 
   function updateVipButtons(){
-    // get elements (may be replaced to clear old listeners)
     let a1 = document.getElementById('vip-wa');
     let a2 = document.getElementById('vip-tg');
 
-    // if element exists, replace with clone to remove any previous listeners attached inline or otherwise
     if(a1){
       const n = a1.cloneNode(true);
       a1.parentNode.replaceChild(n, a1);
@@ -496,7 +494,6 @@
       a2 = n2;
     }
 
-    // priority: localStorage value, fallback to attribute href
     const rawWa = (localStorage.getItem('site_wa') || (a1 ? a1.getAttribute('href') : '#')||'#').trim();
     const rawTg = (localStorage.getItem('site_tg') || (a2 ? a2.getAttribute('href') : '#')||'#').trim();
     const wa = normalizeUrlMaybe(rawWa);
@@ -505,25 +502,37 @@
     if(a1){ a1.href = wa; a1.setAttribute('rel','noopener noreferrer'); a1.setAttribute('target','_blank'); }
     if(a2){ a2.href = tg; a2.setAttribute('rel','noopener noreferrer'); a2.setAttribute('target','_blank'); }
 
-    function openWhatsAppInvite(u){
+    async function openWhatsAppInvite(u){
       if(!u || u === '#'){ showToast('Link inválido'); return; }
+      // copy inside gesture
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText){
+          await navigator.clipboard.writeText(u);
+          showToast('Link copiado para a área de transferência');
+        } else {
+          const ta = document.createElement('textarea'); ta.value = u; ta.style.position='fixed'; ta.style.left='-9999px';
+          document.body.appendChild(ta); ta.select();
+          try{ document.execCommand('copy'); showToast('Link copiado para a área de transferência'); }catch(e){ console.warn('copy fallback failed', e); }
+          document.body.removeChild(ta);
+        }
+      }catch(e){ console.warn('copy failed', e); }
+
       try{
         const w = window.open(u, '_blank');
         if(w) return;
-      }catch(e){}
+      }catch(e){ /* ignore */ }
+
       try{
-        // tenta intent / esquema nativo para chat.whatsapp.com ou wa.me
         if(/chat\.whatsapp\.com|wa\.me/i.test(u)){
           const cleaned = u.replace(/^https?:\/\//,'');
           const intent = 'intent://' + cleaned + '#Intent;package=com.whatsapp;scheme=https;end';
-          // tentativa de abrir via intent
           window.location.href = intent;
-          // se não abrir em 1.2s, copia link para clipboard e avisa
-          setTimeout(()=>{ copyToClipboard(u).then(()=> showToast('Não abriu o app — link copiado para colar no navegador/WhatsApp.')); }, 1200);
+          setTimeout(()=>{ window.location.href = u; }, 900);
           return;
         }
-      }catch(e){}
-      try{ window.location.href = u; } catch(e){ copyToClipboard(u).then(()=> showToast('Não abriu — link copiado.')); }
+      }catch(e){ /* ignore */ }
+
+      try{ window.location.href = u; }catch(e){ copyToClipboard(u).then(()=> showToast('Link copiado')); }
     }
 
     function openTelegram(u){
@@ -540,20 +549,20 @@
           return;
         }
       }catch(e){}
-      try{ window.location.href = u; }catch(e){ copyToClipboard(u).then(()=> showToast('Não abriu — link copiado.')); }
+      try{ window.location.href = u; }catch(e){ copyToClipboard(u).then(()=> showToast('Link copiado.')); }
     }
 
     if(a1){
       a1.addEventListener('click', function(ev){
         ev.preventDefault();
         openWhatsAppInvite(wa);
-      }, { passive: false });
+      }, { passive:false });
     }
     if(a2){
       a2.addEventListener('click', function(ev){
         ev.preventDefault();
         openTelegram(tg);
-      }, { passive: false });
+      }, { passive:false });
     }
   }
 
