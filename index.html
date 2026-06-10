@@ -61,14 +61,11 @@
     #offers-last-updated-badge{position:fixed;right:12px;bottom:12px;padding:8px 10px;background:rgba(0,0,0,0.7);color:#fff;border-radius:8px;font-size:12px;z-index:60;transition:opacity .25s}
     .hidden-visually{position:absolute!important;clip:rect(1px,1px,1px,1px);padding:0!important;border:0!important;height:1px!important;width:1px!important;overflow:hidden}
     .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
-    /* reviews */
     .reviews summary{cursor:pointer;padding:8px;border-radius:8px;background:#f7f9fc;margin-top:8px;font-weight:700}
     .reviews-list{padding:8px 0 0}
     .review-item{padding:8px;border-bottom:1px solid #eef2f7}
     .review-meta{font-size:12px;color:var(--muted);margin-bottom:6px}
     .review-text{font-size:13px;color:#111;white-space:pre-wrap}
-    .no-reviews{font-size:13px;color:var(--muted);padding:8px}
-    /* local offers list in admin */
     #localOffersList .edit-offer, #localOffersList .delete-offer { padding:6px 8px; border-radius:6px; border:1px solid #e6e8ef; background:#fff; cursor:pointer; }
   </style>
 </head>
@@ -114,7 +111,7 @@
       <button id="close-admin" class="btn-ghost" aria-label="Fechar painel" style="position:absolute;top:10px;right:10px;">Fechar</button>
       <div style="padding:18px 18px 8px 18px;border-bottom:1px solid #f0f2f6">
         <strong style="font-size:16px">Painel Admin</strong>
-        <div style="font-size:13px;color:#666;margin-top:6px">Somente "Salvar Links" e "Salvar Produto".</div>
+        <div style="font-size:13px;color:#666;margin-top:6px">Salvar Links, Salvar Produto, Exportar JSON.</div>
       </div>
 
       <div style="padding:12px 18px;">
@@ -141,6 +138,7 @@
           </div>
           <div style="margin-top:10px;display:flex;gap:8px;">
             <button id="btn-save-product" class="btn-ghost">Salvar Produto</button>
+            <button id="btn-export" class="btn-ghost">Exportar JSON</button>
           </div>
         </div>
 
@@ -176,7 +174,7 @@
   const DEFAULT_MAX_RENDER = 120;
 
   /************************************************
-   * Helpers (mesmos do seu código original)
+   * Helpers
    ************************************************/
   const sanitize = s => (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;');
   function pick(obj, list){
@@ -215,7 +213,7 @@
   }
 
   /************************************************
-   * Reviews normalization & stars
+   * Reviews & stars (kept)
    ************************************************/
   function getReviews(item){
     const candidates = [ 'reviews', 'avaliacoes', 'comments', 'ratings', 'feedback', 'avaliacoes_produto' ];
@@ -294,7 +292,7 @@
   }
 
   /************************************************
-   * Load & render (com proteção de mínimo)
+   * Load & render (corrigido para não sobrescrever cache)
    ************************************************/
   let currentOffers = null;
 
@@ -304,6 +302,9 @@
       if(!resp.ok) throw new Error('remote_not_found');
       const data = await resp.json();
       const arr = Array.isArray(data) ? data : (data.offers || data.items || data.products || []);
+      const minOffers = parseMinOffers() || DEFAULT_MIN_OFFERS;
+
+      // se remoto vazio -> tenta usar local
       if(!Array.isArray(arr) || arr.length === 0){
         const local = tryLoadLocal();
         if(local && local.length){ currentOffers = local; renderList(local); showStatus('Usando cache local (remoto vazio).'); }
@@ -311,25 +312,19 @@
         return;
       }
 
-      const minOffers = parseMinOffers() || DEFAULT_MIN_OFFERS;
-      if(arr.length < minOffers){
-        if(currentOffers && Array.isArray(currentOffers) && currentOffers.length >= minOffers){
-          console.warn(`Atualização remota ignorada: ${arr.length} < min ${minOffers}`);
-          showStatus(`Atualização ignorada: apenas ${arr.length} ofertas (mínimo ${minOffers}). Mantendo última lista válida.`, 5000);
-          renderList(currentOffers);
+      // se remoto tem menos ofertas que mínimo, evite sobrescrever cache local maior
+      const existingLocal = tryLoadLocal();
+      if(existingLocal && Array.isArray(existingLocal) && existingLocal.length > 0){
+        // regra: não sobrescrever cache local se remoto tem menos itens que o local e é menor que minOffers
+        if(arr.length < existingLocal.length && arr.length < minOffers){
+          currentOffers = existingLocal;
+          renderList(existingLocal);
+          showStatus('Mantendo ofertas locais (remoto menor).', 5000);
           return;
         }
-        const local = tryLoadLocal();
-        if(local && local.length >= minOffers){
-          currentOffers = local;
-          showStatus(`Atualização remota pequena (${arr.length}) — usando cache local com ${local.length} ofertas.`, 5000);
-          renderList(local);
-          return;
-        }
-        console.warn(`Atualização remota aceita (primeira carga) apesar de ${arr.length} < min ${minOffers}`);
-        showStatus(`Atualização remota aceita (${arr.length} ofertas) — atenção: abaixo do mínimo configurado (${minOffers}).`, 5000);
       }
 
+      // grava remoto no cache local (somente quando aceitável)
       try{ LS_KEYS.forEach(k => localStorage.setItem(k, JSON.stringify(arr))); }catch(e){}
       currentOffers = arr;
       renderList(arr);
@@ -346,7 +341,7 @@
     for(const k of LS_KEYS){
       const v = localStorage.getItem(k);
       if(v){
-        try{ const a = JSON.parse(v); if(Array.isArray(a)) return a; }catch(e){}
+        try{ const a = JSON.parse(v); if(Array.isArray(a) && a.length) return a; }catch(e){}
       }
     }
     return null;
@@ -386,10 +381,10 @@
         discountHtml = `<span class="badge-discount">-${p}%</span>`;
       }
 
-      const ratingInfo = extractRatingInfo(o); // {avg, count}
+      const ratingInfo = extractRatingInfo(o);
       const ratingHtml = (ratingInfo.avg !== null || ratingInfo.count !== null) ? `<div class="rating" aria-hidden="false">${renderStarsInline(ratingInfo.avg, ratingInfo.count)}</div>` : '';
 
-      const reviewsArr = getReviews(o); // array de {author, score, text, date}
+      const reviewsArr = getReviews(o);
 
       const card = document.createElement('article');
       card.className = 'card';
@@ -445,7 +440,7 @@
   }
 
   /************************************************
-   * Admin interactions
+   * Admin interactions (corrigidos)
    ************************************************/
   function updateVipButtons(){
     const wa = localStorage.getItem('site_wa') || '#';
@@ -456,11 +451,24 @@
       a1.href = wa;
       a1.setAttribute('target','_blank');
       a1.setAttribute('rel','noopener noreferrer');
+      // fallback for caso href seja relativo: abrir explicitamente o link normalizado
+      a1.onclick = function(e){
+        e.preventDefault();
+        const url = localStorage.getItem('site_wa') || a1.href;
+        if(!url || url === '#' ) return;
+        try{ window.open(url, '_blank'); }catch(err){ location.href = url; }
+      };
     }
     if(a2){
       a2.href = tg;
       a2.setAttribute('target','_blank');
       a2.setAttribute('rel','noopener noreferrer');
+      a2.onclick = function(e){
+        e.preventDefault();
+        const url = localStorage.getItem('site_tg') || a2.href;
+        if(!url || url === '#') return;
+        try{ window.open(url, '_blank'); }catch(err){ location.href = url; }
+      };
     }
   }
 
@@ -485,25 +493,9 @@
     panel.setAttribute('aria-hidden','true');
   });
 
-  document.getElementById('btn-save-local')?.addEventListener('click', () => {
-    const name = document.getElementById('f-name')?.value?.trim();
-    if(!name){ alert('Informe o nome'); return; }
-    const image = document.getElementById('f-image')?.value?.trim();
-    const oldP = document.getElementById('f-original')?.value?.trim();
-    const promoP = document.getElementById('f-promo')?.value?.trim();
-    const link = document.getElementById('f-link')?.value?.trim() || '#';
-    const rating = document.getElementById('f-rating')?.value?.trim();
-    const obj = { title: name, image_url: image, original_price: oldP || '', promotional_price: promoP || '', affiliate_link: link, rating: rating || undefined };
-    const existing = (function(){
-      try{ return JSON.parse(localStorage.getItem('site_offers_v1')||'[]'); }catch(e){ return []; }
-    })();
-    existing.unshift(obj);
-    try{ localStorage.setItem('site_offers_v1', JSON.stringify(existing)); }catch(e){}
-    currentOffers = existing;
-    renderList(existing);
-    alert('Oferta adicionada localmente.');
-  });
-
+  /************************************************
+   * Buttons que já existem mas garantimos handlers
+   ************************************************/
   document.getElementById('btn-export')?.addEventListener('click', () => {
     const data = (function(){ try{ return JSON.parse(localStorage.getItem('site_offers_v1')||'[]'); }catch(e){ return []; } })();
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
@@ -511,15 +503,6 @@
     const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
     URL.revokeObjectURL(url);
   });
-
-  document.getElementById('btn-clear')?.addEventListener('click', () => {
-    if(!confirm('Limpar ofertas locais?')) return;
-    LS_KEYS.forEach(k => localStorage.removeItem(k));
-    location.reload();
-  });
-
-  document.getElementById('f-wa-link')?.addEventListener('change', e => { localStorage.setItem('site_wa', e.target.value.trim()); updateVipButtons(); });
-  document.getElementById('f-tg-link')?.addEventListener('change', e => { localStorage.setItem('site_tg', e.target.value.trim()); updateVipButtons(); });
 
   /************************************************
    * Init
@@ -532,12 +515,11 @@
   })();
   </script>
 
-  <!-- SCRIPT SUPLEMENTAR SIMPLIFICADO (com normalizeLink) -->
+  <!-- SCRIPT SUPLEMENTAR (salvar local + normalize + export) -->
   <script>
   (function(){
     const STORAGE_OFFERS_KEY = 'site_offers_v1';
     const LINKS_KEY = 'site_links_v1';
-
     function qs(sel){ return document.querySelector(sel); }
     function escapeHtml(s){ if(!s) return ''; return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
 
@@ -556,7 +538,17 @@
     }
 
     function loadOffers(){ try{ const raw = localStorage.getItem(STORAGE_OFFERS_KEY); return raw ? JSON.parse(raw) : []; }catch(e){ return []; } }
-    function saveOffers(arr){ try{ localStorage.setItem(STORAGE_OFFERS_KEY, JSON.stringify(arr)); }catch(e){} if(typeof renderList === 'function') renderList(arr); renderOffersList(); }
+    function saveOffers(arr){
+      try{
+        // gravar em todas as chaves para compatibilidade com tryLoadLocal()
+        ['site_offers_v1','offers','ofertas','data','minhas_ofertas'].forEach(k => {
+          localStorage.setItem(k, JSON.stringify(arr));
+        });
+      }catch(e){}
+      if(typeof renderList === 'function') renderList(arr);
+      renderOffersList();
+    }
+
     function renderOffersList(){
       const root = qs('#localOffersList');
       if(!root) return;
@@ -589,7 +581,7 @@
       });
     }
 
-    // salvar produto (apenas adiciona ao topo, sem editar/excluir)
+    // salvar produto (adiciona ao topo e persiste)
     const btnSaveProduct = qs('#btn-save-product');
     if(btnSaveProduct){
       btnSaveProduct.addEventListener('click', ()=>{
@@ -621,7 +613,19 @@
         qs('#f-link').value = '';
         qs('#f-rating').value = '';
 
-        alert('Produto salvo localmente.');
+        alert('Produto salvo localmente. Para que outros vejam, exporte o JSON e faça commit em /data/offers.json no repo (veja instruções abaixo).');
+      });
+    }
+
+    // export already wired in main script too, but keep local fallback
+    const btnExport = qs('#btn-export');
+    if(btnExport){
+      btnExport.addEventListener('click', ()=>{
+        const data = loadOffers();
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'offers-export.json'; a.click();
+        URL.revokeObjectURL(url);
       });
     }
 
