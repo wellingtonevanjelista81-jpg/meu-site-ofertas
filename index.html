@@ -194,6 +194,7 @@
 
   <script>
   const REMOTE_JSON_PATH = '/data/offers.json';
+  const SITE_CONFIG_PATH = '/data/site-config.json';
   const ADMIN_HASH = 'f69f04a9c340f2c80896c5adbfe0686369ac3ed9935af596879207ab4cc511c3';
   const PLACEHOLDER = "data:image/svg+xml;utf8," + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="#f3f4f6" width="100%" height="100%"/><text x="50%" y="54%" font-family="Arial" font-size="28" fill="#9ca3af" text-anchor="middle">Imagem indisponível</text></svg>'
@@ -303,9 +304,7 @@
         // touchend handler forces navigation via location.href (more reliable on mobile to open apps)
         const handler = function(e){
           // allow normal behavior if user used long-press / context menu
-          // avoid interfering with synthetic events
           if(!link || link === '#') return;
-          // small delay to let UI feedback finish
           setTimeout(()=> {
             try { window.location.href = link; } catch(e){}
           }, 10);
@@ -330,6 +329,22 @@
 
     makeTouchFriendly(a1, wa);
     makeTouchFriendly(a2, tg);
+  }
+
+  // fetch site-config.json and populate localStorage so every device (including anon tab) gets links
+  async function fetchSiteConfigAndApply(){
+    try{
+      const r = await fetch(SITE_CONFIG_PATH + '?t=' + Date.now(), {cache:'no-store'});
+      if(!r.ok) return;
+      const cfg = await r.json();
+      if(cfg.site_wa) localStorage.setItem('site_wa', String(cfg.site_wa));
+      if(cfg.site_tg) localStorage.setItem('site_tg', String(cfg.site_tg));
+    }catch(e){
+      console.warn('site-config fetch failed', e);
+    }finally{
+      // always apply handlers afterwards to pick up values (remote or local)
+      try{ applyVipHandlers(); }catch(_){}
+    }
   }
 
   // fetch / normalize offers (same logic as before)
@@ -596,10 +611,12 @@
   document.getElementById('q').addEventListener('input', (e)=>{ state.q = e.target.value; state.page = 1; applyFilters(); });
   document.getElementById('btn-search').addEventListener('click', ()=> { state.q = document.getElementById('q').value; state.page = 1; applyFilters(); });
 
-  // initialize: position vip, set handlers, load offers
+  // initialize: position vip, try to fetch site-config (populate localStorage), then load offers
   function init(){
     positionVipBar();
-    applyVipHandlers();
+    // populate links for all clients (including anon tabs)
+    fetchSiteConfigAndApply();
+    // then load offers
     loadOffers();
   }
   window.addEventListener('load', init);
