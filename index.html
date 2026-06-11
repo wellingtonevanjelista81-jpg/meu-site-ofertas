@@ -37,7 +37,7 @@
     .searchbar button{padding:10px 14px;border-radius:8px;border:none;background:#222;color:#fff;cursor:pointer}
     .store-name{font-weight:900;font-size:18px;color:#000;margin-left:12px;white-space:nowrap}
 
-    /* VIP bar - now prepared to be fixed by JS on load */
+    /* VIP bar - prepared to be fixed by JS on load */
     .vip-black{background:#000;color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 6px 18px rgba(0,0,0,0.02)}
     .vip-left{display:flex;align-items:center;gap:12px}
     .vip-title{font-weight:800; display:inline-block; background:var(--vip-gold); color:#000; padding:6px 12px; border-radius:8px}
@@ -260,7 +260,7 @@
     document.body.style.paddingTop = totalHeader + 'px';
   }
 
-  // VIP handlers: use href default navigation (no preventDefault), robust for mobile
+  // TOUCH-FRIENDLY VIP HANDLERS (permanent)
   function applyVipHandlers(){
     const a1 = document.getElementById('vip-wa');
     const a2 = document.getElementById('vip-tg');
@@ -269,30 +269,67 @@
     const wa = (rawWa && rawWa !== '#' && rawWa !== 'null') ? normalizeUrl(rawWa) : '';
     const tg = (rawTg && rawTg !== '#' && rawTg !== 'null') ? normalizeUrl(rawTg) : '';
 
-    function setup(aEl, link, name){
+    function removeLegacy(aEl){
       if(!aEl) return;
-      // remove legacy listeners/onclick attributes that could call preventDefault
       try{ if(aEl._vip_listener) aEl.removeEventListener('click', aEl._vip_listener); }catch(e){}
-      aEl.onclick = null; aEl.removeAttribute('onclick');
+      try{ if(aEl._vip_touch_handler) aEl.removeEventListener('touchend', aEl._vip_touch_handler); }catch(e){}
+      try{ if(aEl._vip_click_handler) aEl.removeEventListener('click', aEl._vip_click_handler); }catch(e){}
+      try{ aEl.onclick = null; aEl.removeAttribute('onclick'); }catch(e){}
+    }
 
-      if(link && link !== '#'){
-        aEl.href = link;
-        aEl.setAttribute('target','_blank');
+    function makeTouchFriendly(aEl, link){
+      if(!aEl) return;
+      removeLegacy(aEl);
+
+      // Always ensure pointer events active
+      aEl.style.pointerEvents = 'auto';
+      aEl.setAttribute('role','link');
+
+      // Set href (for copy/long-press) and rel
+      aEl.href = link || '#';
+      if(link){
         aEl.setAttribute('rel','noopener noreferrer');
-        aEl.classList.remove('disabled');
-        // ensure pointer events
-        aEl.style.pointerEvents = 'auto';
       } else {
-        aEl.href = '#';
-        aEl.removeAttribute('target');
         aEl.removeAttribute('rel');
-        aEl.classList.add('disabled');
-        aEl.style.pointerEvents = 'none';
+      }
+
+      // Detect touch devices
+      const isTouch = (('ontouchstart' in window) || navigator.maxTouchPoints > 0);
+
+      if(isTouch){
+        // Prefer same-tab navigation on touch so OS can open app reliably
+        aEl.removeAttribute('target');
+
+        // touchend handler forces navigation via location.href (more reliable on mobile to open apps)
+        const handler = function(e){
+          // allow normal behavior if user used long-press / context menu
+          // avoid interfering with synthetic events
+          if(!link || link === '#') return;
+          // small delay to let UI feedback finish
+          setTimeout(()=> {
+            try { window.location.href = link; } catch(e){}
+          }, 10);
+        };
+        aEl._vip_touch_handler = handler;
+        aEl.addEventListener('touchend', handler, {passive:true});
+
+        // Fallback click handler for some mobile browsers
+        const clickHandler = function(e){
+          if(!link || link === '#') return;
+          setTimeout(()=> {
+            try { window.location.href = link; } catch(e){}
+          }, 10);
+        };
+        aEl._vip_click_handler = clickHandler;
+        aEl.addEventListener('click', clickHandler, {passive:true});
+      } else {
+        // Desktop: open in new tab
+        aEl.setAttribute('target','_blank');
       }
     }
 
-    setup(a1, wa, 'WhatsApp');
-    setup(a2, tg, 'Telegram');
+    makeTouchFriendly(a1, wa);
+    makeTouchFriendly(a2, tg);
   }
 
   // fetch / normalize offers (same logic as before)
