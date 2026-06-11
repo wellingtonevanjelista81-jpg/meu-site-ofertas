@@ -79,6 +79,7 @@
     .btn-ghost{background:#fff;border:1px solid #e6e8ef;padding:8px 10px;border-radius:8px;cursor:pointer}
     .gear-btn{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:999px;padding:10px;border:1px solid #e6e8ef;box-shadow:0 6px 18px rgba(0,0,0,0.06);cursor:pointer;z-index:100}
     .small{font-size:13px;color:var(--muted)}
+    .fav-btn{border-radius:999px;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:1px solid #e6e8ef;background:#fff;cursor:pointer}
 
     @media (max-width:780px){
       .searchbar input{padding:10px}
@@ -134,7 +135,6 @@
         <h1>Ofertas do Dia</h1>
         <p>Confira os melhores descontos selecionados.</p>
       </div>
-      <!-- botão Admin removido; admin acessível apenas pela engrenagem ⚙ -->
     </div>
 
     <main class="content" id="main-content">
@@ -198,40 +198,32 @@
     '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect fill="#f3f4f6" width="100%" height="100%"/><text x="50%" y="54%" font-family="Arial" font-size="28" fill="#9ca3af" text-anchor="middle">Imagem indisponível</text></svg>'
   );
 
-  // sanitize / format
   function sanitize(s){ return (s===undefined || s===null) ? '' : String(s).replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function formatBR(value){ return Number(value || 0).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 
-  // robust number parser: handles "R$ 1.400,00", "1400.00", "1.400", "1.53", "1,400.00", numeric inputs
   function toNumber(v){
     if(v === undefined || v === null) return 0;
     if(typeof v === 'number' && isFinite(v)) return Math.round((v + Number.EPSILON) * 100) / 100;
     let s = String(v).trim();
     if(!s) return 0;
-    // remove currency symbol, spaces and anything except digits, dot, comma, minus
     s = s.replace(/\s/g,'').replace(/[Rr]\$\s*/g,'').replace(/[^0-9\.,-]/g,'');
     if(!s) return 0;
-    // both comma and dot -> assume dot thousands, comma decimal
     if(s.indexOf(',') > -1 && s.indexOf('.') > -1){
-      s = s.replace(/\./g,''); // remove thousands dots
-      s = s.replace(/,/g,'.'); // comma -> decimal
+      s = s.replace(/\./g,'');
+      s = s.replace(/,/g,'.');
     } else if(s.indexOf(',') > -1 && s.indexOf('.') === -1){
-      // only comma -> decimal
       s = s.replace(/,/g,'.');
     } else if(s.indexOf('.') > -1 && s.indexOf(',') === -1){
-      // only dot -> could be decimal or thousands. If last group has 3 digits, treat as thousands separators.
       const parts = s.split('.');
       const last = parts[parts.length - 1];
       if(last.length === 3 && parts.length > 1){
-        s = s.replace(/\./g,''); // remove thousands dots
+        s = s.replace(/\./g,'');
       }
-      // else leave as decimal separator
     }
     const n = parseFloat(s);
     return isNaN(n) ? 0 : Math.round((n + Number.EPSILON) * 100) / 100;
   }
 
-  // normalize urls (WhatsApp + Telegram tolerant)
   function normalizeUrl(u){
     if(!u) return '#';
     u = String(u).trim();
@@ -249,7 +241,6 @@
 
   function showToast(msg){ let t = document.getElementById('__toast'); if(!t){ t = document.createElement('div'); t.id = '__toast'; Object.assign(t.style, {position:'fixed',left:'50%',transform:'translateX(-50%)',bottom:'20px',background:'#222',color:'#fff',padding:'12px',borderRadius:'8px',zIndex:10000}); document.body.appendChild(t); } t.textContent = msg; t.style.display='block'; setTimeout(()=>t.style.display='none', 3000); }
 
-  // VIP handlers: robust, always assign event listeners that call window.open
   function applyVipHandlers(){
     const a1 = document.getElementById('vip-wa');
     const a2 = document.getElementById('vip-tg');
@@ -260,7 +251,6 @@
 
     function setup(aEl, link, name){
       if(!aEl) return;
-      // remove previous listener if present
       if(aEl._vip_listener) aEl.removeEventListener('click', aEl._vip_listener);
       aEl._vip_listener = function(e){
         e.preventDefault();
@@ -281,7 +271,6 @@
     setup(a2, tg, 'Telegram');
   }
 
-  // fetch / normalize offers
   async function fetchRemoteOffers(){
     try{
       const r = await fetch(REMOTE_JSON_PATH + '?t=' + Date.now(), {cache:'no-store'});
@@ -384,17 +373,41 @@
         if(!imgEl.src) imgEl.src = PLACEHOLDER;
       }
 
+      // FAVORITOS: botão com coração (♡ vazio / ♥ preenchido)
       const favBtn = document.createElement('button');
-      favBtn.className = 'btn-ghost';
-      favBtn.style.fontSize = '12px';
+      favBtn.className = 'fav-btn';
+      favBtn.style.fontSize = '18px';
       favBtn.style.marginTop = '6px';
-      favBtn.textContent = '★';
-      favBtn.title = 'Salvar nos favoritos';
-      favBtn.addEventListener('click', ()=> {
+      favBtn.setAttribute('aria-label', 'Favoritar');
+      favBtn.title = 'Favoritar';
+      // estado inicial e atualizador
+      function updateFavState(){
         const favs = JSON.parse(localStorage.getItem('favs') || '[]');
-        if(!favs.includes(o.id)){ favs.push(o.id); localStorage.setItem('favs', JSON.stringify(favs)); showToast('Salvo nos favoritos'); }
-        else { showToast('Já salvo'); }
+        if(favs.includes(o.id)){
+          favBtn.innerHTML = '♥';
+          favBtn.style.color = 'crimson';
+          favBtn.title = 'Remover dos favoritos';
+        } else {
+          favBtn.innerHTML = '♡';
+          favBtn.style.color = '#333';
+          favBtn.title = 'Salvar nos favoritos';
+        }
+      }
+      favBtn.addEventListener('click', ()=> {
+        let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+        if(!favs.includes(o.id)){
+          favs.push(o.id);
+          localStorage.setItem('favs', JSON.stringify(favs));
+          showToast('Salvo nos favoritos');
+        } else {
+          favs = favs.filter(id => id !== o.id);
+          localStorage.setItem('favs', JSON.stringify(favs));
+          showToast('Removido dos favoritos');
+        }
+        updateFavState();
       });
+      updateFavState();
+
       const rightColumn = card.querySelector('div[style*="margin-left:auto"]');
       if(rightColumn) rightColumn.appendChild(favBtn);
     });
@@ -431,7 +444,6 @@
     applyFilters();
   }
 
-  // Admin open/close
   async function openAdmin(){
     const pwd = prompt('Senha:');
     if(!pwd) return;
@@ -439,7 +451,6 @@
     if(h !== ADMIN_HASH){ alert('Senha incorreta'); return; }
     document.getElementById('admin-panel').classList.add('active');
     document.getElementById('admin-panel').setAttribute('aria-hidden','false');
-    // fill inputs without protocol for easier editing
     document.getElementById('f-wa-link').value = (localStorage.getItem('site_wa') || '').replace(/^https?:\/\//,'');
     document.getElementById('f-tg-link').value = (localStorage.getItem('site_tg') || '').replace(/^https?:\/\//,'');
   }
@@ -523,12 +534,10 @@
   document.getElementById('q').addEventListener('input', (e)=>{ state.q = e.target.value; state.page = 1; applyFilters(); });
   document.getElementById('btn-search').addEventListener('click', ()=> { state.q = document.getElementById('q').value; state.page = 1; applyFilters(); });
 
-  // initialize
   applyVipHandlers();
   loadOffers();
   window.addEventListener('storage', ()=> applyVipHandlers());
 
-  // sha utility
   async function sha256Hex(text){ const enc = new TextEncoder().encode(text); const hash = await crypto.subtle.digest('SHA-256', enc); return [...new Uint8Array(hash)].map(b => b.toString(16).padStart(2,'0')).join(''); }
   </script>
 </body>
