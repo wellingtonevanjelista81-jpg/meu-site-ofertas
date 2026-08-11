@@ -29,7 +29,7 @@
       --theme-bg-1:#0a0a0a;
       --theme-bg-2:#070707;
       --hero-glow:rgba(255,216,0,.28);
-      font-family:Arial,Helvetica,sans-serif;
+      font-family:"Segoe UI", Inter, Poppins, Arial, Helvetica, sans-serif;
       background:
         radial-gradient(circle at 70% 8%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 25%),
         linear-gradient(180deg,var(--theme-bg-1) 0%,var(--theme-bg-2) 100%);
@@ -63,13 +63,19 @@
     }
 
     body.theme-amakha{
-      --accent:#c7a56a;--accent-2:#ead8b5;--theme-bg-1:#f7f3ec;--theme-bg-2:#e9e1d5;
-      --hero-glow:rgba(199,165,106,.30);
+      --accent:#d4af37;
+      --accent-2:#f0d978;
+      --theme-bg-1:#12100b;
+      --theme-bg-2:#050504;
+      --hero-glow:rgba(212,175,55,.28);
     }
 
     body.theme-clovis{
-      --accent:#e30613;--accent-2:#ff4b55;--theme-bg-1:#171717;--theme-bg-2:#050505;
-      --hero-glow:rgba(227,6,19,.30);
+      --accent:#14a9a8;
+      --accent-2:#54c9c8;
+      --theme-bg-1:#072323;
+      --theme-bg-2:#031313;
+      --hero-glow:rgba(20,169,168,.30);
     }
 
     body.theme-hotmart{
@@ -183,33 +189,94 @@
     .nav button:hover{color:var(--accent)}
 
 
+
+    .marketplace-caption{
+      width:min(1480px,94%);
+      margin:0 auto 5px;
+      color:#cfcfcf;
+      font-size:9px;
+      font-weight:600;
+      letter-spacing:.35px;
+      text-align:left;
+      text-transform:uppercase;
+    }
+
     /* ABAS DOS MARKETPLACES */
-    .market-nav{background:#050505;border-bottom:1px solid #202020;padding:10px 0}
-    .market-nav-inner{width:min(1480px,94%);margin:auto;display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-    .market-tab{min-height:58px;border:2px solid transparent;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:12px;font-weight:900;font-size:16px;transition:.2s}
-    .market-tab:hover{transform:translateY(-2px)}
+    .market-nav{background:#050505;border-bottom:1px solid #202020;padding:5px 0 6px}
+    .market-nav-inner{
+      width:min(1480px,94%);
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:5px;
+    }
+    .market-tab{
+      min-height:34px;
+      padding:3px 5px;
+      border:1px solid transparent;
+      border-radius:7px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      font-family:"Segoe UI", Inter, Poppins, Arial, sans-serif;
+      font-weight:650;
+      font-size:10px;
+      letter-spacing:-.1px;
+      line-height:1;
+      white-space:nowrap;
+      cursor:default;
+      transition:.2s;
+    }
+    .market-tab:hover{transform:none}
     .market-tab.active{box-shadow:0 0 0 2px #fff inset}
     .ml-tab{background:#ffe600;color:#111}
     .shopee-tab{background:#ee4d2d;color:#fff}
     .amazon-tab{background:#131921;color:#fff;border-color:#ff9900}
-    .ml-symbol{width:42px;height:30px;border-radius:18px;background:#fff;display:grid;place-items:center;font-size:21px}
-    .shopee-symbol{width:32px;height:32px;border:2px solid #fff;border-radius:5px;display:grid;place-items:center;font-size:18px}
-    .amazon-symbol{font-size:21px}.amazon-symbol b{color:#ff9900}
+    .ml-symbol{width:21px;height:21px;border-radius:18px;background:#fff;display:grid;place-items:center;font-size:11px}
+    .shopee-symbol{width:21px;height:21px;border:2px solid #fff;border-radius:5px;display:grid;place-items:center;font-size:11px}
+    .amazon-symbol{font-size:12px;font-weight:800;letter-spacing:-.5px}.amazon-symbol b{color:#ff9900}.amazon-symbol b{color:#ff9900}.amazon-symbol b{color:#ff9900}
 
-    .amakha-tab{background:#f5efe5;color:#161616;border-color:#c7a56a}
-    .clovis-tab{background:#e30613;color:#fff;border-color:#e30613}
+    .amakha-tab{background:#0c0c0c;color:#d4af37;border-color:#d4af37}
+    .clovis-tab{background:#14a9a8;color:#fff;border-color:#f58220}
     .hotmart-tab{background:#ff5a1f;color:#fff}
     .amakha-symbol{
-      width:34px;height:34px;border:2px solid #d4af37;border-radius:50%;
-      display:grid;place-items:center;color:#d4af37;font-family:Georgia,serif;font-size:18px;font-weight:900
+      width:21px;height:21px;border:2px solid #d4af37;border-radius:50%;
+      display:grid;place-items:center;color:#d4af37;font-family:Georgia,serif;font-size:11px;font-weight:900
     }
     .clovis-symbol{
-      width:34px;height:34px;background:#fff;color:#e21b23;border-radius:50%;
-      display:grid;place-items:center;font-size:18px;font-weight:900
+      width:21px;height:21px;
+      background:#f58220;
+      color:#ffffff;
+      border:2px solid #ffffff;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      font-weight:900
     }
+
+    .evas-tab{
+      background:#c92f7a;
+      color:#fff;
+      border-color:#c92f7a;
+    }
+    .evas-symbol{
+      width:21px;
+      height:21px;
+      background:#fff;
+      color:#c92f7a;
+      border-radius:8px;
+      display:grid;
+      place-items:center;
+      font-size:11px;
+      font-weight:900;
+      text-transform:lowercase;
+    }
+
     .hotmart-symbol{
-      width:34px;height:34px;background:#fff;color:#ff5a1f;border-radius:50%;
-      display:grid;place-items:center;font-size:20px;font-weight:900
+      width:21px;height:21px;background:#fff;color:#ff5a1f;border-radius:50%;
+      display:grid;place-items:center;font-size:11px;font-weight:900
     }
 
 
@@ -520,18 +587,15 @@
       z-index:999;
     }
 
-
-    body.theme-amakha .hero{color:#fff;background:radial-gradient(circle at 88% 35%,var(--hero-glow),transparent 23%),linear-gradient(120deg,#171513 0%,#211d18 56%,#8c7249 100%);border-color:#c7a56a}
-    body.theme-amakha .benefits{background:linear-gradient(#211d18,#151310);border-color:#806d4d}
-    body.theme-amakha .section-head h2{color:#161616}
-    body.theme-amakha .section-head h2 small{color:#5e5548!important}
-    body.theme-amakha .notice{background:#1c1915;border-color:#8a7653}
-    body.theme-amakha footer{background:#161411;border-top-color:#6f6048}
-    body.theme-amakha .whats-cta{background:linear-gradient(90deg,#d1b57f,#eee0c6)}
-
     /* RESPONSIVE */
     @media(max-width:1200px){
-      .market-nav-inner{grid-template-columns:repeat(3,1fr)}
+      .market-nav-inner{
+      width:min(1480px,94%);
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:5px;
+    }
     }
     @media(max-width:1300px){
       .products{grid-template-columns:repeat(4,1fr);gap:12px}
@@ -548,8 +612,31 @@
       .footer-grid{grid-template-columns:repeat(2,1fr)}
     }
     @media(max-width:700px){
-      .market-nav-inner{grid-template-columns:1fr;gap:7px}
-      .market-tab{min-height:48px;font-size:14px}
+      .market-nav-inner{
+      width:min(1480px,94%);
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:5px;
+    }
+      .market-tab{
+      min-height:34px;
+      padding:3px 5px;
+      border:1px solid transparent;
+      border-radius:7px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      font-family:"Segoe UI", Inter, Poppins, Arial, sans-serif;
+      font-weight:650;
+      font-size:10px;
+      letter-spacing:-.1px;
+      line-height:1;
+      white-space:nowrap;
+      cursor:default;
+      transition:.2s;
+    }
 
       .topbar-inner{
         grid-template-columns:1fr;
@@ -577,7 +664,122 @@
       .section-head{align-items:flex-start}
       .section-head h2{font-size:20px}
     }
-  </style>
+  
+    @media(max-width:1200px){
+      .market-nav-inner{
+      width:min(1480px,94%);
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:5px;
+    }
+    }
+    @media(max-width:700px){
+      .market-nav-inner{
+      width:min(1480px,94%);
+      margin:auto;
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:5px;
+    }
+      .market-tab{
+      min-height:34px;
+      padding:3px 5px;
+      border:1px solid transparent;
+      border-radius:7px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      font-family:"Segoe UI", Inter, Poppins, Arial, sans-serif;
+      font-weight:650;
+      font-size:10px;
+      letter-spacing:-.1px;
+      line-height:1;
+      white-space:nowrap;
+      cursor:default;
+      transition:.2s;
+    }
+      .marketplace-caption{
+      width:min(1480px,94%);
+      margin:0 auto 5px;
+      color:#cfcfcf;
+      font-size:9px;
+      font-weight:600;
+      letter-spacing:.35px;
+      text-align:left;
+      text-transform:uppercase;
+    }
+    }
+
+  
+    @media(max-width:900px){
+      .market-nav-inner{
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:5px;
+      }
+      .market-tab{
+        min-height:32px;
+        font-size:9px;
+        padding:3px 4px;
+        gap:4px;
+      }
+    }
+
+    @media(max-width:600px){
+      .market-nav{
+        padding:5px 0 6px;
+      }
+      .marketplace-caption{
+        width:95%;
+        text-align:center;
+        font-size:8px;
+        margin-bottom:5px;
+      }
+      .market-nav-inner{
+        width:95%;
+        grid-template-columns:repeat(4,minmax(0,1fr));
+        gap:4px;
+      }
+      .market-tab{
+        min-height:29px;
+        font-size:8px;
+        border-radius:6px;
+        padding:2px 3px;
+        gap:3px;
+      }
+      .market-tab span:last-child{
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .ml-symbol,
+      .shopee-symbol,
+      .amakha-symbol,
+      .clovis-symbol,
+      .hotmart-symbol,
+      .evas-symbol{
+        width:18px!important;
+        height:18px!important;
+        min-width:18px;
+        font-size:9px!important;
+        border-width:1px!important;
+      }
+      .amazon-symbol{
+        font-size:9px!important;
+      }
+    }
+
+    @media(max-width:390px){
+      .market-nav-inner{
+        grid-template-columns:repeat(3,minmax(0,1fr));
+      }
+      .market-tab{
+        min-height:28px;
+        font-size:8px;
+      }
+    }
+
+</style>
 </head>
 
 <body>
@@ -605,24 +807,28 @@
 </header>
 
 <nav class="market-nav" aria-label="Marketplaces">
+  <div class="marketplace-caption">Melhores Marketplaces do Brasil</div>
   <div class="market-nav-inner">
-    <button class="market-tab ml-tab active" onclick="setMarketplace('Mercado Livre', this)">
+    <button class="market-tab ml-tab active">
       <span class="ml-symbol">🤝</span><span>Mercado Livre</span>
     </button>
-    <button class="market-tab shopee-tab" onclick="setMarketplace('Shopee', this)">
+    <button class="market-tab shopee-tab">
       <span class="shopee-symbol">S</span><span>Shopee</span>
     </button>
-    <button class="market-tab amazon-tab" onclick="setMarketplace('Amazon', this)">
+    <button class="market-tab amazon-tab">
       <span class="amazon-symbol">amazon<b>⌣</b></span><span>Amazon</span>
     </button>
-    <button class="market-tab amakha-tab" onclick="setMarketplace('Amakha Paris', this)">
+    <button class="market-tab amakha-tab">
       <span class="amakha-symbol">AP</span><span>Amakha Paris</span>
     </button>
-    <button class="market-tab clovis-tab" onclick="setMarketplace('Clovis Calçados', this)">
+    <button class="market-tab clovis-tab">
       <span class="clovis-symbol">C</span><span>Clovis Calçados</span>
     </button>
-    <button class="market-tab hotmart-tab" onclick="setMarketplace('Hotmart', this)">
+    <button class="market-tab hotmart-tab">
       <span class="hotmart-symbol">🔥</span><span>Hotmart</span>
+    </button>
+    <button class="market-tab evas-tab">
+      <span class="evas-symbol">e</span><span>Evas Perfumaria</span>
     </button>
   </div>
 </nav>
