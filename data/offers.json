@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": "teste-001",
+    "title": "Produto de teste - Integração n8n",
+    "category": "Teste",
+    "marketplace": "Mercado Livre",
+    "price": 99.90,
+    "oldPrice": 149.90,
+    "installments": "Confira as condições",
+    "emoji": "🛍️",
+    "badge": "TESTE",
+    "affiliateLink": "https://www.mercadolivre.com.br/"
+  }
+]
