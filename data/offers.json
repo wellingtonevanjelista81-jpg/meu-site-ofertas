@@ -1,11 +1,25 @@
 [
   {
+    "id": "MLB54964776",
+    "title": "Smart TV 43\" LED, Full HD, Ultrafina,",
+    "category": "ML",
+    "marketplace": "Mercado Livre",
+    "price": 1289,
+    "oldPrice": 1289,
+    "installments": "Confira as condições",
+    "image": "https://http2.mlstatic.com/D_Q_NP_2X_718744-MLA99445276132_112025-AB.webp",
+    "emoji": "🛍️",
+    "badge": "OFERTA",
+    "affiliateLink": "https://meli.la/22jR5BT",
+    "publishedAt": "2026-08-11T01:56:39.918Z"
+  },
+  {
     "id": "teste-001",
     "title": "Produto de teste - Integração n8n",
     "category": "Teste",
     "marketplace": "Mercado Livre",
-    "price": 99.90,
-    "oldPrice": 149.90,
+    "price": 99.9,
+    "oldPrice": 149.9,
     "installments": "Confira as condições",
     "emoji": "🛍️",
     "badge": "TESTE",
