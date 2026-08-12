@@ -1004,6 +1004,7 @@
       "title": "Nome do produto",
       "category": "Celulares",
       "price": 1299.90,
+      "oldPrice": 1599.90,
       "installments": "Em até 12x",
       "emoji": "📱",
       "badge": "OFERTA",
@@ -1226,9 +1227,11 @@ function renderProducts(list){
       <div class="product-body">
         <h3>${safeText(product.title)}</h3>
 
-        <div class="old-price">
-          ${product.oldPrice ? money(product.oldPrice) : ""}
-        </div>
+        ${
+          Number(product.oldPrice) > Number(product.price)
+            ? `<div class="old-price">${money(product.oldPrice)}</div>`
+            : ""
+        }
 
         <div class="price">${money(product.price)}</div>
 
@@ -1282,7 +1285,7 @@ function getBuyButtonLabel(){
   if(currentMarketplace === "Amakha Paris") return "COMPRAR NA AMAKHA";
   if(currentMarketplace === "Clovis Calçados") return "COMPRAR NA CLOVIS";
   if(currentMarketplace === "Hotmart") return "COMPRAR NA HOTMART";
-  return "COMPRAR";
+  return "COMPRAR NO ML";
 }
 
 function applyMarketplaceTheme(){
