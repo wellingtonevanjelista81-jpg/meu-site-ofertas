@@ -1,5 +1,19 @@
 [
   {
+    "id": "AMAKHA-413",
+    "title": "Vale-Presente",
+    "category": "Outros",
+    "marketplace": "AMAKHA_PARIS",
+    "price": 100,
+    "oldPrice": 100,
+    "installments": "Confira as condições",
+    "image": "https://amakha.vteximg.com.br/arquivos/ids/161127-500-500/vale-presente-r-100-00_0.webp?v=638805065917100000",
+    "emoji": "🛍️",
+    "badge": "OFERTA",
+    "affiliateLink": "https://lmdee.link/Emzt7xAzApCa",
+    "publishedAt": "2026-08-14T20:00:27.175Z"
+  },
+  {
     "id": "EVAS-44530641629",
     "title": "Kit Wella Professionals Invigo Sun Reflections Duo",
     "category": "Outros",
