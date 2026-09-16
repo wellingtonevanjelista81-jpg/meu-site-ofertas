@@ -1,5 +1,19 @@
 [
   {
+    "id": "AMAKHA-413",
+    "title": "Vale-Presente",
+    "category": "Outros",
+    "marketplace": "AMAKHA_PARIS",
+    "price": 100,
+    "oldPrice": 100,
+    "installments": "Confira as condições",
+    "image": "https://amakha.vteximg.com.br/arquivos/ids/161127-500-500/vale-presente-r-100-00_0.webp?v=638805065917100000",
+    "emoji": "🛍️",
+    "badge": "OFERTA",
+    "affiliateLink": "https://lmdee.link/Emzt7xAzApCa",
+    "publishedAt": "2026-09-16T20:00:32.952Z"
+  },
+  {
     "id": "23498317667",
     "title": "Capa De Cadeira Lisas Kit Com 2 4 E 6 Capas Com Elástico",
     "category": "100636,100711,101154",
